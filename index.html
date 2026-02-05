@@ -248,6 +248,13 @@
       white-space: nowrap;
     }
 
+    .heroMetaRow{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
     .statsRow{
       display:grid;
       grid-template-columns: repeat(5, 1fr);
@@ -264,12 +271,17 @@
     .stat span{ display:block; margin-top: 4px; font-size: 16px; font-weight: 800; }
 
     .sectionTitle{
+      display:flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
       margin: 18px 0 10px;
       font-size: 14px;
       letter-spacing: .06em;
       text-transform: uppercase;
-      opacity: .85;
+      opacity: .92;
     }
+    .sectionTitle .sub { font-size: 12px; opacity:.75; text-transform: none; letter-spacing: 0; }
 
     .miniTableWrap{ overflow:auto; border: 1px solid rgba(255,255,255,.10); border-radius: 16px; }
     .miniTable{ width:100%; border-collapse: separate; border-spacing:0; }
@@ -295,7 +307,7 @@
       border-radius: 18px;
       padding: 14px;
       margin-top: 10px;
-      font-weight: 800;
+      font-weight: 900;
     }
     .bigError .icon{ font-size: 22px; }
 
@@ -484,8 +496,16 @@
     modalBody.innerHTML = "";
   }
 
-  function buildHero(playerObj) {
-    const elo = Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "";
+  function safeInt(x) { return Number.isFinite(x) ? x.toFixed(0) : ""; }
+
+  function buildHero(playerObj, parsedMeta = null) {
+    // preferuj "Current rating" z player listu, pokud existuje
+    const currentFromList = parsedMeta?.currentRating;
+    const elo = Number.isFinite(currentFromList) ? currentFromList.toFixed(0)
+              : (Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "");
+
+    const recordText = parsedMeta?.recordText ? `Record (W-L-D): ${parsedMeta.recordText}` : null;
+
     return `
       <div class="playerHero">
         <div class="heroCard">
@@ -496,6 +516,9 @@
               <div class="heroRank">
                 <span class="chip">${rankCellHtml(playerObj.rank)}</span>
                 <span class="chip">ELO</span>
+              </div>
+              <div class="heroMetaRow">
+                ${recordText ? `<span class="chip">${escapeHtml(recordText)}</span>` : ``}
               </div>
             </div>
             <div style="text-align:right;">
@@ -513,16 +536,12 @@
           </div>
         </div>
 
-        <div class="chartCard" id="chartCard">
+        <div class="chartCard">
           <div class="muted" style="margin-bottom:8px;">Vývoj ELO</div>
           <div id="eloChart" class="muted">Načítám data hráče…</div>
         </div>
       </div>
     `;
-  }
-
-  function safeInt(x) {
-    return Number.isFinite(x) ? x.toFixed(0) : "";
   }
 
   function render(rows) {
@@ -539,15 +558,11 @@
       return;
     }
 
-    filtered.forEach((r, idx) => {
+    filtered.forEach((r) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="rank">${rankCellHtml(r.rank)}</td>
-        <td>
-          <button class="playerBtn" data-index="${idx}" type="button">
-            ${escapeHtml(r.player)}
-          </button>
-        </td>
+        <td><button class="playerBtn" type="button">${escapeHtml(r.player)}</button></td>
         <td class="num">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
         <td class="num">${safeInt(r.games)}</td>
         <td class="num">${safeInt(r.win)}</td>
@@ -555,7 +570,6 @@
         <td class="num">${safeInt(r.draw)}</td>
         <td class="num">${escapeHtml(r.winrate || "")}</td>
       `;
-      // uložíme referenci přímo na objekt (nebudeme řešit index přes filtrované pole)
       tr.querySelector(".playerBtn")._playerObj = r;
       tbody.appendChild(tr);
     });
@@ -598,7 +612,7 @@
 
       const { res, text } = await fetchUtf8Text(u.toString());
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      if (text.trim().startsWith("<")) throw new Error("Místo CSV přišlo HTML (sheet není veřejný / není publikovaný).");
+      if (text.trim().startsWith("<")) throw new Error("Místo CSV přišlo HTML.");
 
       const rows = parseCSV(text);
       if (!rows.length) throw new Error("Prázdné CSV.");
@@ -647,7 +661,7 @@
     await Promise.all([loadStandings(), loadLastData()]);
   }
 
-  // ---------- PLAYER DETAIL ----------
+  // -------- Detail parsing (tailored) --------
   function buildSvgLineChart(values, opts = {}) {
     const w = opts.width ?? 960;
     const h = opts.height ?? 220;
@@ -664,95 +678,176 @@
     const x = (i) => padX + (i * (w - padX*2)) / Math.max(1, n - 1);
     const y = (v) => (h - padY) - ((v - min) * (h - padY*2)) / span;
 
-    let points = "";
+    let d = "";
+    let started = false;
     for (let i = 0; i < values.length; i++) {
       const v = values[i];
       if (!Number.isFinite(v)) continue;
-      points += `${x(i).toFixed(1)},${y(v).toFixed(1)} `;
+      const px = x(i), py = y(v);
+      d += (started ? " L " : " M ") + px.toFixed(2) + " " + py.toFixed(2);
+      started = true;
     }
 
-    // jednoduché vodorovné linky (3)
     const grid = [0, .5, 1].map(t => {
       const yy = padY + (1 - t) * (h - padY*2);
       return `<line x1="${padX}" y1="${yy}" x2="${w-padX}" y2="${yy}" stroke="rgba(255,255,255,.10)" />`;
     }).join("");
 
+    const last = clean[clean.length - 1];
+
     return `
       <svg viewBox="0 0 ${w} ${h}" width="100%" height="220" role="img" aria-label="ELO chart">
         ${grid}
-        <polyline points="${points.trim()}" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.5" />
-        <circle cx="${x(values.length-1)}" cy="${y(values[values.length-1])}" r="3.5" fill="rgba(255,215,74,.95)" />
+        <path d="${d}" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.5" />
         <text x="${padX}" y="${padY-2}" fill="rgba(255,255,255,.65)" font-size="11">min ${min}</text>
         <text x="${w-padX}" y="${padY-2}" text-anchor="end" fill="rgba(255,255,255,.65)" font-size="11">max ${max}</text>
+        <text x="${w-padX}" y="${h-6}" text-anchor="end" fill="rgba(255,255,255,.70)" font-size="11">last ${last}</text>
       </svg>
     `;
   }
 
-  function parsePlayerSheetStructure(grid) {
-    // Najdeme sekce: řádek s názvem (např. "Grail 17.1.2026" nebo "FNM"),
-    // a pod ní tabulku s hlavičkou obsahující "round" a "matchid".
-    const sections = [];
+  function parseMetaFromGrid(grid) {
+    // očekáváme:
+    // A1: jméno
+    // A2: "Current rating:"  B2: číslo
+    // A3: "Record (W-L-D):"  B3: "25-7-1_"
+    let currentRating = NaN;
+    let recordText = "";
 
-    const norm = (s) => normalizeKey(s).replace(/\s+/g, " ").trim();
+    for (let r = 0; r < Math.min(grid.length, 10); r++) {
+      const a = (grid[r][0] ?? "").toString().trim();
+      const b = (grid[r][1] ?? "").toString().trim();
+      const aN = normalizeKey(a);
+
+      if (aN.startsWith("current rating")) {
+        currentRating = toNumber(b);
+      }
+      if (aN.startsWith("record")) {
+        recordText = b.replace(/_+$/g, ""); // odstraní trailing _
+      }
+    }
+
+    return { currentRating, recordText };
+  }
+
+  function parseSectionsFromGrid(grid) {
+    // Sekce = řádek kde je A: název (např. "Grail 17.1.2026" nebo "FNM")
+    // a někde na tom řádku je text "starting rating:" a číslo.
+    // Následuje hlavička: round matchID opponent (rating) result (+-) Elo
+    // a datové řádky 1..N; po nich řádek TOP s meta informacemi.
+    const sections = [];
+    const norm = (s) => normalizeKey((s ?? "").toString()).replace(/\s+/g, " ").trim();
     const isInt = (s) => /^\s*\d+\s*$/.test((s ?? "").toString());
 
+    const findInRow = (row, needleNorm) => row.findIndex(c => norm(c).includes(needleNorm));
+    const getCell = (r, c) => (grid[r] && grid[r][c] != null) ? grid[r][c].toString().trim() : "";
+
     for (let r = 0; r < grid.length; r++) {
-      const a = (grid[r][0] ?? "").toString().trim();
-      if (!a) continue;
+      const name = getCell(r, 0);
+      if (!name) continue;
 
-      const aN = norm(a);
-      const looksLikeSection = aN.startsWith("grail") || aN === "fnm" || aN.startsWith("fnm") || aN.includes("grail");
+      // sekci bereme, pokud na tom řádku existuje "starting rating"
+      const row = grid[r] || [];
+      const srIdx = findInRow(row, "starting rating");
+      if (srIdx === -1) continue;
 
-      if (!looksLikeSection) continue;
+      // starting rating hodnota bývá o 1–2 sloupce vpravo
+      let startingRating = NaN;
+      for (let k = srIdx + 1; k < Math.min(row.length, srIdx + 4); k++) {
+        const v = toNumber(row[k]);
+        if (Number.isFinite(v)) { startingRating = v; break; }
+      }
 
-      const sectionName = a.trim();
-
-      // najdi hlavičku tabulky pod tím
+      // najdi hlavičku tabulky
       let headerRow = -1;
-      for (let k = r + 1; k < Math.min(grid.length, r + 12); k++) {
-        const row = grid[k].map(c => norm(c));
-        if (row.includes("round") && row.includes("matchid")) {
+      for (let k = r + 1; k < Math.min(grid.length, r + 10); k++) {
+        const rowN = (grid[k] || []).map(norm);
+        if (rowN.includes("round") && rowN.includes("matchid") && rowN.includes("result") && rowN.includes("elo")) {
           headerRow = k;
           break;
         }
       }
       if (headerRow === -1) continue;
 
-      const hdr = grid[headerRow].map(c => norm(c));
-      const col = (name) => hdr.indexOf(name);
-
+      const hdrN = (grid[headerRow] || []).map(norm);
+      const col = (key) => hdrN.indexOf(key);
       const iRound = col("round");
       const iMatch = col("matchid");
-      const iOpp   = hdr.findIndex(x => x.startsWith("opponent"));
-      const iRes   = col("result");
-      const iDelta = hdr.findIndex(x => x.includes("(+") || x.includes("+-") || x.includes("+") || x.includes("(-)") || x === "(+)");
-      const iElo   = hdr.findIndex(x => x === "elo");
+      const iOpp = hdrN.findIndex(x => x.startsWith("opponent"));
+      const iRes = col("result");
+      const iDelta = hdrN.findIndex(x => x.includes("(+-") || x === "(+-)" || x === "(+ -)" || x === "(+)" || x === "(+-)" || x.includes("(+"));
+      const iElo = col("elo");
 
-      // data řádky: dokud první sloupec je číslo
       const rows = [];
-      for (let k = headerRow + 1; k < grid.length; k++) {
-        const first = (grid[k][iRound] ?? grid[k][0] ?? "").toString();
-        if (!isInt(first)) break;
+      let topRowIndex = -1;
 
-        rows.push({
-          round: (grid[k][iRound] ?? "").toString().trim(),
-          matchID: (grid[k][iMatch] ?? "").toString().trim(),
-          opponent: (grid[k][iOpp] ?? "").toString().trim(),
-          result: (grid[k][iRes] ?? "").toString().trim(),
-          delta: (grid[k][iDelta] ?? "").toString().trim(),
-          elo: toNumber(grid[k][iElo] ?? "")
+      for (let k = headerRow + 1; k < grid.length; k++) {
+        const first = getCell(k, iRound >= 0 ? iRound : 0);
+        if (isInt(first)) {
+          rows.push({
+            round: first,
+            matchID: getCell(k, iMatch),
+            opponent: getCell(k, iOpp),
+            result: getCell(k, iRes),
+            delta: getCell(k, iDelta),
+            elo: toNumber(getCell(k, iElo))
+          });
+          continue;
+        }
+
+        // TOP řádek
+        const a0 = norm(getCell(k, 0));
+        if (a0 === "top") {
+          topRowIndex = k;
+        }
+        break;
+      }
+
+      let topMeta = null;
+      if (topRowIndex !== -1) {
+        // Příklad: "TOP", "", "average opponent: 1503", "record: 4-3-0", "new rating:", "1518"
+        const rowTop = grid[topRowIndex] || [];
+        const avIdx = findInRow(rowTop, "average opponent");
+        const recIdx = findInRow(rowTop, "record:");
+        const newIdx = findInRow(rowTop, "new rating");
+
+        const parseAfterColon = (s) => {
+          const m = (s ?? "").toString().split(":");
+          return (m.length > 1 ? m.slice(1).join(":").trim() : (s ?? "").toString().trim());
+        };
+
+        const averageOpponent = avIdx !== -1 ? toNumber(parseAfterColon(rowTop[avIdx])) : NaN;
+        const record = recIdx !== -1 ? parseAfterColon(rowTop[recIdx]).replace(/_+$/g, "") : "";
+        let newRating = NaN;
+        if (newIdx !== -1) {
+          // někdy je "new rating:" v jedné buňce a číslo v další
+          const maybe = toNumber(parseAfterColon(rowTop[newIdx]));
+          if (Number.isFinite(maybe)) newRating = maybe;
+          else {
+            for (let k = newIdx + 1; k < Math.min(rowTop.length, newIdx + 4); k++) {
+              const v = toNumber(rowTop[k]);
+              if (Number.isFinite(v)) { newRating = v; break; }
+            }
+          }
+        }
+
+        topMeta = { averageOpponent, record, newRating };
+      }
+
+      if (rows.length) {
+        sections.push({
+          name,
+          startingRating,
+          rows,
+          topMeta
         });
       }
-
-      if (rows.length) sections.push({ name: sectionName, rows });
     }
 
-    // složíme sérii ELO postupně (z řádků v sekcích v pořadí, jak jsou v sheetu)
+    // ELO series = postupně přes všechny sekce a zápasy
     const eloSeries = [];
     for (const s of sections) {
-      for (const m of s.rows) {
-        if (Number.isFinite(m.elo)) eloSeries.push(m.elo);
-      }
+      for (const m of s.rows) if (Number.isFinite(m.elo)) eloSeries.push(m.elo);
     }
 
     return { sections, eloSeries };
@@ -770,8 +865,23 @@
       </tr>
     `).join("");
 
+    const top = section.topMeta;
+    const topLine = top ? `
+      <div class="muted" style="margin-top:8px;">
+        TOP • average opponent: ${Number.isFinite(top.averageOpponent) ? top.averageOpponent.toFixed(0) : "?"}
+        • record: ${escapeHtml(top.record || "?")}
+        • new rating: ${Number.isFinite(top.newRating) ? top.newRating.toFixed(0) : "?"}
+      </div>
+    ` : ``;
+
     return `
-      <div class="sectionTitle">${escapeHtml(section.name)}</div>
+      <div class="sectionTitle">
+        <div>${escapeHtml(section.name)}</div>
+        <div class="sub">
+          starting rating: ${Number.isFinite(section.startingRating) ? section.startingRating.toFixed(0) : "?"}
+        </div>
+      </div>
+
       <div class="miniTableWrap">
         <table class="miniTable">
           <thead>
@@ -787,21 +897,20 @@
           <tbody>${rowsHtml}</tbody>
         </table>
       </div>
+      ${topLine}
     `;
   }
 
   async function loadPlayerDetail(playerObj) {
-    // 1) otevři modal hned se summary (z Elo standings)
     modalName.textContent = playerObj.player;
     modalSub.textContent = "Načítám podrobnosti…";
-    modalBody.innerHTML = buildHero(playerObj);
+    modalBody.innerHTML = buildHero(playerObj, null);
     openModal();
 
     openSheetTabBtn.onclick = () => {
       window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
     };
 
-    // 2) stáhni CSV z tabu se stejným názvem
     const playerSheetUrl =
       `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(playerObj.player)}`;
 
@@ -816,29 +925,30 @@
       const grid = parseCSV(text);
       if (!grid.length) throw new Error("EMPTY");
 
-      const { sections, eloSeries } = parsePlayerSheetStructure(grid);
+      const meta = parseMetaFromGrid(grid);
+      const { sections, eloSeries } = parseSectionsFromGrid(grid);
 
-      // 3) chart
+      // Vykresli hero znovu s meta daty (current rating + record)
+      modalBody.innerHTML = buildHero(playerObj, meta);
+
+      // Graf
       const chartEl = document.getElementById("eloChart");
       chartEl.innerHTML = buildSvgLineChart(eloSeries);
 
-      // 4) tabulky sekcí
-      let detailsHtml = "";
-      if (sections.length) {
-        detailsHtml += sections.map(renderMatchesTable).join("");
-        modalSub.textContent = `Detail hráče • sekcí: ${sections.length}`;
-      } else {
-        modalSub.textContent = "Detail hráče • struktura se nepodařila rozpoznat";
-        detailsHtml += `<div class="muted">Nenašel jsem sekce typu “Grail …”/“FNM”.</div>`;
+      // Sekce
+      if (!sections.length) {
+        modalSub.textContent = "Detail hráče • sekce nenalezeny";
+        modalBody.innerHTML += `<div class="muted">Nenašel jsem sekce (Grail/FNM). Zkontroluj strukturu listu.</div>`;
+        return;
       }
 
-      modalBody.innerHTML = buildHero(playerObj) + detailsHtml;
+      modalSub.textContent = `Detail hráče • sekcí: ${sections.length}`;
+      modalBody.innerHTML += sections.map(renderMatchesTable).join("");
 
-    } catch (e) {
-      // ✅ TADY je oprava chování: modal zůstane a ukáže chybu
+    } catch {
       modalSub.textContent = "Detail hráče";
       modalBody.innerHTML =
-        buildHero(playerObj) +
+        buildHero(playerObj, null) +
         `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>` +
         `<div class="muted" style="margin-top:10px;">(Nenalezen list se stejným názvem jako hráč.)</div>`;
     }
@@ -857,12 +967,8 @@
   });
 
   closeModalBtn.addEventListener("click", closeModal);
-  modalOverlay.addEventListener("click", (e) => {
-    if (e.target === modalOverlay) closeModal();
-  });
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modalOverlay.style.display === "block") closeModal();
-  });
+  modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) closeModal(); });
+  window.addEventListener("keydown", (e) => { if (e.key === "Escape" && modalOverlay.style.display === "block") closeModal(); });
 
   // ---------- Init ----------
   loadAll();
