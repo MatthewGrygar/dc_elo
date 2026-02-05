@@ -16,8 +16,6 @@
       color: #eef2ff;
     }
 
-    a { color: inherit; }
-
     header {
       padding: 18px 18px 14px;
       border-bottom: 1px solid rgba(255,255,255,.10);
@@ -116,7 +114,6 @@
     }
 
     th, td { text-align: left; padding: 12px 12px; }
-    tbody tr { border-top: 1px solid rgba(255,255,255,.06); }
     tbody tr:nth-child(2n) { background: rgba(255,255,255,.02); }
     tbody tr:hover { background: rgba(255,255,255,.055); }
 
@@ -135,9 +132,9 @@
     }
     .playerBtn:hover { text-decoration-color: rgba(255,255,255,.6); }
 
-    .r1 { color: #ffd54a; font-weight: 800; }
-    .r2 { color: #d6dbe6; font-weight: 800; }
-    .r3 { color: #d29a6a; font-weight: 800; }
+    .r1 { color: #ffd54a; font-weight: 900; }
+    .r2 { color: #d6dbe6; font-weight: 900; }
+    .r3 { color: #d29a6a; font-weight: 900; }
 
     #error { display:none; margin-top: 12px; white-space: pre-wrap; color: #ff7a7a; }
 
@@ -197,50 +194,114 @@
       font-size: 12px;
       opacity: .75;
     }
+
     .modalBody{
-      padding: 10px 12px 14px;
+      padding: 12px;
       overflow: auto;
     }
-    .gridTable{
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 16px;
-      overflow: hidden;
-      background: rgba(255,255,255,.02);
-    }
-    .gridTable td{
-      border-top: 1px solid rgba(255,255,255,.08);
-      border-right: 1px solid rgba(255,255,255,.08);
-      padding: 8px 10px;
-      vertical-align: top;
-      white-space: pre-wrap;
-    }
-    .gridTable tr:first-child td { border-top: none; }
-    .gridTable td:last-child { border-right: none; }
-    .gridTable tr:nth-child(2n) td { background: rgba(255,255,255,.02); }
 
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      background: rgba(15,17,21,.95);
+    .playerHero{
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .heroCard{
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,.03);
+    }
+    .heroTop{
+      display:flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .heroName{
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      margin: 0 0 6px;
+    }
+    .heroElo{
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1;
+      margin: 0;
+    }
+    .heroRank{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
       border: 1px solid rgba(255,255,255,.16);
-      box-shadow: 0 18px 55px rgba(0,0,0,.45);
-      padding: 10px 12px;
-      border-radius: 14px;
-      font-size: 13px;
-      display:none;
-      z-index: 60;
-      max-width: min(680px, calc(100vw - 36px));
+      background: rgba(255,255,255,.06);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      white-space: nowrap;
     }
 
-    @media (max-width: 740px) {
-      header .wrap { flex-direction: column; }
-      .right { width: 100%; justify-content: space-between; }
-      .rank { width: 80px; }
+    .statsRow{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .stat{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+      border-radius: 14px;
+      padding: 10px 10px;
+    }
+    .stat b{ display:block; font-size: 12px; opacity:.75; letter-spacing:.06em; text-transform: uppercase; }
+    .stat span{ display:block; margin-top: 4px; font-size: 16px; font-weight: 800; }
+
+    .sectionTitle{
+      margin: 18px 0 10px;
+      font-size: 14px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      opacity: .85;
+    }
+
+    .miniTableWrap{ overflow:auto; border: 1px solid rgba(255,255,255,.10); border-radius: 16px; }
+    .miniTable{ width:100%; border-collapse: separate; border-spacing:0; }
+    .miniTable th, .miniTable td { padding: 10px 10px; border-top: 1px solid rgba(255,255,255,.08); }
+    .miniTable thead th { position: sticky; top: 0; background: rgba(15,17,21,.96); border-top: none; }
+    .miniTable tbody tr:nth-child(2n) { background: rgba(255,255,255,.02); }
+    .miniTable .num { text-align:right; }
+
+    .chartCard{
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(255,255,255,.03);
+    }
+
+    .bigError{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      border: 1px solid rgba(255,122,122,.35);
+      background: rgba(255,122,122,.08);
+      color: #ffd0d0;
+      border-radius: 18px;
+      padding: 14px;
+      margin-top: 10px;
+      font-weight: 800;
+    }
+    .bigError .icon{ font-size: 22px; }
+
+    @media (max-width: 860px) {
+      .playerHero { grid-template-columns: 1fr; }
+      .statsRow { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -312,27 +373,20 @@
           <button id="closeModalBtn" type="button">Zavřít</button>
         </div>
       </div>
-      <div class="modalBody" id="modalBody">
-        <!-- grid -->
-      </div>
+      <div class="modalBody" id="modalBody"></div>
     </div>
   </div>
 
-  <div id="toast" class="toast"></div>
-
 <script>
-  // --- ZDROJOVÝ SHEET ---
   const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
   const ELO_SHEET_NAME = "Elo standings";
   const DATA_SHEET_NAME = "Data";
 
   const ELO_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(ELO_SHEET_NAME)}`;
-
   const DATA_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(DATA_SHEET_NAME)}`;
 
-  // --- DOM ---
   const statusEl = document.getElementById("status");
   const tbody = document.getElementById("tbody");
   const errorEl = document.getElementById("error");
@@ -347,21 +401,11 @@
   const modalSub = document.getElementById("modalSub");
   const modalBody = document.getElementById("modalBody");
 
-  const toastEl = document.getElementById("toast");
-
   let allRows = [];
 
-  // --- Helpers ---
   function setStatus(text) { statusEl.textContent = text; }
   function showError(msg) { errorEl.style.display = "block"; errorEl.textContent = msg; }
   function hideError() { errorEl.style.display = "none"; errorEl.textContent = ""; }
-
-  function toast(msg) {
-    toastEl.textContent = msg;
-    toastEl.style.display = "block";
-    clearTimeout(toastEl._t);
-    toastEl._t = setTimeout(() => toastEl.style.display = "none", 2600);
-  }
 
   function escapeHtml(str) {
     return (str ?? "").toString()
@@ -380,7 +424,6 @@
       .normalize("NFD").replace(/\p{Diacritic}/gu, "");
   }
 
-  // CSV parser s podporou uvozovek
   function parseCSV(csvText) {
     const rows = [];
     let row = [];
@@ -403,12 +446,10 @@
         cur += c;
       }
     }
-
     if (cur.length || row.length) {
       row.push(cur);
       if (row.some(x => x.trim() !== "")) rows.push(row);
     }
-
     return rows;
   }
 
@@ -433,10 +474,59 @@
     return `${rank}`;
   }
 
+  function openModal() {
+    modalOverlay.style.display = "block";
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal() {
+    modalOverlay.style.display = "none";
+    document.body.style.overflow = "";
+    modalBody.innerHTML = "";
+  }
+
+  function buildHero(playerObj) {
+    const elo = Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "";
+    return `
+      <div class="playerHero">
+        <div class="heroCard">
+          <div class="heroTop">
+            <div style="min-width:0;">
+              <div class="heroName">${escapeHtml(playerObj.player)}</div>
+              <div class="muted">Pořadí v žebříčku</div>
+              <div class="heroRank">
+                <span class="chip">${rankCellHtml(playerObj.rank)}</span>
+                <span class="chip">ELO</span>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="muted">aktuální rating</div>
+              <div class="heroElo">${escapeHtml(elo)}</div>
+            </div>
+          </div>
+
+          <div class="statsRow">
+            <div class="stat"><b>games</b><span>${safeInt(playerObj.games)}</span></div>
+            <div class="stat"><b>win</b><span>${safeInt(playerObj.win)}</span></div>
+            <div class="stat"><b>loss</b><span>${safeInt(playerObj.loss)}</span></div>
+            <div class="stat"><b>draw</b><span>${safeInt(playerObj.draw)}</span></div>
+            <div class="stat"><b>winrate</b><span>${escapeHtml(playerObj.winrate || "")}</span></div>
+          </div>
+        </div>
+
+        <div class="chartCard" id="chartCard">
+          <div class="muted" style="margin-bottom:8px;">Vývoj ELO</div>
+          <div id="eloChart" class="muted">Načítám data hráče…</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function safeInt(x) {
+    return Number.isFinite(x) ? x.toFixed(0) : "";
+  }
+
   function render(rows) {
     const q = normalizeKey(searchEl.value);
-
-    // filtrujeme, ale rank necháváme "locknutý"
     const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q));
     filtered.sort((a, b) => a.rank - b.rank);
 
@@ -449,27 +539,28 @@
       return;
     }
 
-    for (const r of filtered) {
+    filtered.forEach((r, idx) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="rank">${rankCellHtml(r.rank)}</td>
         <td>
-          <button class="playerBtn" data-player="${escapeHtml(r.player)}" type="button">
+          <button class="playerBtn" data-index="${idx}" type="button">
             ${escapeHtml(r.player)}
           </button>
         </td>
         <td class="num">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
-        <td class="num">${Number.isFinite(r.games) ? r.games.toFixed(0) : ""}</td>
-        <td class="num">${Number.isFinite(r.win) ? r.win.toFixed(0) : ""}</td>
-        <td class="num">${Number.isFinite(r.loss) ? r.loss.toFixed(0) : ""}</td>
-        <td class="num">${Number.isFinite(r.draw) ? r.draw.toFixed(0) : ""}</td>
+        <td class="num">${safeInt(r.games)}</td>
+        <td class="num">${safeInt(r.win)}</td>
+        <td class="num">${safeInt(r.loss)}</td>
+        <td class="num">${safeInt(r.draw)}</td>
         <td class="num">${escapeHtml(r.winrate || "")}</td>
       `;
+      // uložíme referenci přímo na objekt (nebudeme řešit index přes filtrované pole)
+      tr.querySelector(".playerBtn")._playerObj = r;
       tbody.appendChild(tr);
-    }
+    });
   }
 
-  // --- "poslední data" z listu Data, sloupec B ---
   async function loadLastData() {
     try {
       const u = new URL(DATA_CSV_URL);
@@ -496,7 +587,6 @@
     }
   }
 
-  // --- standings ---
   async function loadStandings() {
     hideError();
     setStatus("Načítám…");
@@ -525,10 +615,7 @@
       const iWinrate = headers.findIndex(h => h === "winrate" || h.includes("winrate"));
 
       if ([iPlayer, iRating, iGames, iWin, iLoss, iDraw].some(i => i === -1) || iWinrate === -1) {
-        throw new Error(
-          "Nenašel jsem všechny požadované sloupce A–G (player, rating, games, win, loss, draw, winrate).\n" +
-          `Hlavičky v CSV: ${headers.join(", ")}`
-        );
+        throw new Error("Nenašel jsem sloupce A–G (player,rating,games,win,loss,draw,winrate).");
       }
 
       const loaded = rows.slice(1)
@@ -543,10 +630,7 @@
         }))
         .filter(x => x.player.length > 0);
 
-      // Žebříček podle ratingu
       loaded.sort((a, b) => (b.rating || -Infinity) - (a.rating || -Infinity));
-
-      // LOCK pořadí
       allRows = loaded.map((p, i) => ({ ...p, rank: i + 1 }));
 
       setStatus(`Načteno: ${allRows.length}`);
@@ -563,90 +647,213 @@
     await Promise.all([loadStandings(), loadLastData()]);
   }
 
-  // --- Player detail modal ---
-  function openModal() {
-    modalOverlay.style.display = "block";
-    document.body.style.overflow = "hidden";
-  }
-  function closeModal() {
-    modalOverlay.style.display = "none";
-    document.body.style.overflow = "";
-    modalBody.innerHTML = "";
+  // ---------- PLAYER DETAIL ----------
+  function buildSvgLineChart(values, opts = {}) {
+    const w = opts.width ?? 960;
+    const h = opts.height ?? 220;
+    const padX = 18, padY = 16;
+
+    const clean = values.filter(v => Number.isFinite(v));
+    if (clean.length < 2) return `<div class="muted">Graf nelze vykreslit (málo dat).</div>`;
+
+    const min = Math.min(...clean);
+    const max = Math.max(...clean);
+    const span = Math.max(1, max - min);
+
+    const n = values.length;
+    const x = (i) => padX + (i * (w - padX*2)) / Math.max(1, n - 1);
+    const y = (v) => (h - padY) - ((v - min) * (h - padY*2)) / span;
+
+    let points = "";
+    for (let i = 0; i < values.length; i++) {
+      const v = values[i];
+      if (!Number.isFinite(v)) continue;
+      points += `${x(i).toFixed(1)},${y(v).toFixed(1)} `;
+    }
+
+    // jednoduché vodorovné linky (3)
+    const grid = [0, .5, 1].map(t => {
+      const yy = padY + (1 - t) * (h - padY*2);
+      return `<line x1="${padX}" y1="${yy}" x2="${w-padX}" y2="${yy}" stroke="rgba(255,255,255,.10)" />`;
+    }).join("");
+
+    return `
+      <svg viewBox="0 0 ${w} ${h}" width="100%" height="220" role="img" aria-label="ELO chart">
+        ${grid}
+        <polyline points="${points.trim()}" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.5" />
+        <circle cx="${x(values.length-1)}" cy="${y(values[values.length-1])}" r="3.5" fill="rgba(255,215,74,.95)" />
+        <text x="${padX}" y="${padY-2}" fill="rgba(255,255,255,.65)" font-size="11">min ${min}</text>
+        <text x="${w-padX}" y="${padY-2}" text-anchor="end" fill="rgba(255,255,255,.65)" font-size="11">max ${max}</text>
+      </svg>
+    `;
   }
 
-  function buildGridTable(rows) {
-    // ořízneme trailing prázdné sloupce, a necháme rozumný počet
-    const trimmed = rows
-      .map(r => {
-        let lastNonEmpty = -1;
-        for (let i = 0; i < r.length; i++) {
-          if ((r[i] ?? "").toString().trim() !== "") lastNonEmpty = i;
+  function parsePlayerSheetStructure(grid) {
+    // Najdeme sekce: řádek s názvem (např. "Grail 17.1.2026" nebo "FNM"),
+    // a pod ní tabulku s hlavičkou obsahující "round" a "matchid".
+    const sections = [];
+
+    const norm = (s) => normalizeKey(s).replace(/\s+/g, " ").trim();
+    const isInt = (s) => /^\s*\d+\s*$/.test((s ?? "").toString());
+
+    for (let r = 0; r < grid.length; r++) {
+      const a = (grid[r][0] ?? "").toString().trim();
+      if (!a) continue;
+
+      const aN = norm(a);
+      const looksLikeSection = aN.startsWith("grail") || aN === "fnm" || aN.startsWith("fnm") || aN.includes("grail");
+
+      if (!looksLikeSection) continue;
+
+      const sectionName = a.trim();
+
+      // najdi hlavičku tabulky pod tím
+      let headerRow = -1;
+      for (let k = r + 1; k < Math.min(grid.length, r + 12); k++) {
+        const row = grid[k].map(c => norm(c));
+        if (row.includes("round") && row.includes("matchid")) {
+          headerRow = k;
+          break;
         }
-        return r.slice(0, Math.max(0, lastNonEmpty + 1));
-      })
-      .filter(r => r.some(cell => (cell ?? "").toString().trim() !== ""));
-
-    if (!trimmed.length) return `<div class="muted">Žádná data.</div>`;
-
-    const maxCols = Math.min(12, Math.max(...trimmed.map(r => r.length)));
-    const htmlRows = trimmed.map(r => {
-      const cells = [];
-      for (let i = 0; i < maxCols; i++) {
-        const v = (r[i] ?? "").toString();
-        cells.push(`<td>${escapeHtml(v)}</td>`);
       }
-      return `<tr>${cells.join("")}</tr>`;
-    });
+      if (headerRow === -1) continue;
 
-    return `<table class="gridTable">${htmlRows.join("")}</table>`;
+      const hdr = grid[headerRow].map(c => norm(c));
+      const col = (name) => hdr.indexOf(name);
+
+      const iRound = col("round");
+      const iMatch = col("matchid");
+      const iOpp   = hdr.findIndex(x => x.startsWith("opponent"));
+      const iRes   = col("result");
+      const iDelta = hdr.findIndex(x => x.includes("(+") || x.includes("+-") || x.includes("+") || x.includes("(-)") || x === "(+)");
+      const iElo   = hdr.findIndex(x => x === "elo");
+
+      // data řádky: dokud první sloupec je číslo
+      const rows = [];
+      for (let k = headerRow + 1; k < grid.length; k++) {
+        const first = (grid[k][iRound] ?? grid[k][0] ?? "").toString();
+        if (!isInt(first)) break;
+
+        rows.push({
+          round: (grid[k][iRound] ?? "").toString().trim(),
+          matchID: (grid[k][iMatch] ?? "").toString().trim(),
+          opponent: (grid[k][iOpp] ?? "").toString().trim(),
+          result: (grid[k][iRes] ?? "").toString().trim(),
+          delta: (grid[k][iDelta] ?? "").toString().trim(),
+          elo: toNumber(grid[k][iElo] ?? "")
+        });
+      }
+
+      if (rows.length) sections.push({ name: sectionName, rows });
+    }
+
+    // složíme sérii ELO postupně (z řádků v sekcích v pořadí, jak jsou v sheetu)
+    const eloSeries = [];
+    for (const s of sections) {
+      for (const m of s.rows) {
+        if (Number.isFinite(m.elo)) eloSeries.push(m.elo);
+      }
+    }
+
+    return { sections, eloSeries };
   }
 
-  async function loadPlayerSheet(playerName) {
-    // list se jmenuje stejně jako hráč
-    const url =
-      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(playerName)}`;
+  function renderMatchesTable(section) {
+    const rowsHtml = section.rows.map(m => `
+      <tr>
+        <td class="num">${escapeHtml(m.round)}</td>
+        <td class="num">${escapeHtml(m.matchID)}</td>
+        <td>${escapeHtml(m.opponent)}</td>
+        <td>${escapeHtml(m.result)}</td>
+        <td class="num">${escapeHtml(m.delta)}</td>
+        <td class="num">${Number.isFinite(m.elo) ? m.elo.toFixed(0) : ""}</td>
+      </tr>
+    `).join("");
 
-    modalName.textContent = playerName;
-    modalSub.textContent = "Načítám detail…";
-    modalBody.innerHTML = `<div class="muted">Načítám…</div>`;
+    return `
+      <div class="sectionTitle">${escapeHtml(section.name)}</div>
+      <div class="miniTableWrap">
+        <table class="miniTable">
+          <thead>
+            <tr>
+              <th class="num">round</th>
+              <th class="num">matchID</th>
+              <th>opponent (rating)</th>
+              <th>result</th>
+              <th class="num">(+/-)</th>
+              <th class="num">Elo</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  async function loadPlayerDetail(playerObj) {
+    // 1) otevři modal hned se summary (z Elo standings)
+    modalName.textContent = playerObj.player;
+    modalSub.textContent = "Načítám podrobnosti…";
+    modalBody.innerHTML = buildHero(playerObj);
     openModal();
 
-    // tlačítko otevřít celý dokument (tab konkrétní neumíme bez gid)
     openSheetTabBtn.onclick = () => {
       window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
     };
 
+    // 2) stáhni CSV z tabu se stejným názvem
+    const playerSheetUrl =
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(playerObj.player)}`;
+
     try {
-      const u = new URL(url);
+      const u = new URL(playerSheetUrl);
       u.searchParams.set("_", Date.now().toString());
 
       const { res, text } = await fetchUtf8Text(u.toString());
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (text.trim().startsWith("<")) throw new Error("HTML místo CSV");
 
-      // Neexistující sheet často vrátí HTML nebo prázdno
-      if (!res.ok) throw new Error("HTTP");
-      if (text.trim().startsWith("<")) throw new Error("HTML");
+      const grid = parseCSV(text);
+      if (!grid.length) throw new Error("EMPTY");
 
-      const rows = parseCSV(text);
-      if (!rows.length) throw new Error("EMPTY");
+      const { sections, eloSeries } = parsePlayerSheetStructure(grid);
 
-      modalSub.textContent = "Detail z listu se stejným názvem";
-      modalBody.innerHTML = buildGridTable(rows);
-    } catch {
-      closeModal();
-      toast("Podrobná data hráče nenalezena");
+      // 3) chart
+      const chartEl = document.getElementById("eloChart");
+      chartEl.innerHTML = buildSvgLineChart(eloSeries);
+
+      // 4) tabulky sekcí
+      let detailsHtml = "";
+      if (sections.length) {
+        detailsHtml += sections.map(renderMatchesTable).join("");
+        modalSub.textContent = `Detail hráče • sekcí: ${sections.length}`;
+      } else {
+        modalSub.textContent = "Detail hráče • struktura se nepodařila rozpoznat";
+        detailsHtml += `<div class="muted">Nenašel jsem sekce typu “Grail …”/“FNM”.</div>`;
+      }
+
+      modalBody.innerHTML = buildHero(playerObj) + detailsHtml;
+
+    } catch (e) {
+      // ✅ TADY je oprava chování: modal zůstane a ukáže chybu
+      modalSub.textContent = "Detail hráče";
+      modalBody.innerHTML =
+        buildHero(playerObj) +
+        `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>` +
+        `<div class="muted" style="margin-top:10px;">(Nenalezen list se stejným názvem jako hráč.)</div>`;
     }
   }
 
-  // --- events ---
+  // ---------- Events ----------
   searchEl.addEventListener("input", () => render(allRows));
   refreshBtn.addEventListener("click", loadAll);
 
   tbody.addEventListener("click", (e) => {
     const btn = e.target.closest(".playerBtn");
     if (!btn) return;
-    const player = btn.getAttribute("data-player");
-    if (!player) return;
-    loadPlayerSheet(player);
+    const playerObj = btn._playerObj;
+    if (!playerObj) return;
+    loadPlayerDetail(playerObj);
   });
 
   closeModalBtn.addEventListener("click", closeModal);
@@ -657,7 +864,12 @@
     if (e.key === "Escape" && modalOverlay.style.display === "block") closeModal();
   });
 
+  // ---------- Init ----------
   loadAll();
+
+  async function loadAll() {
+    await Promise.all([loadStandings(), loadLastData()]);
+  }
 </script>
 </body>
 </html>
