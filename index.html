@@ -4,19 +4,34 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ELO žebříček</title>
+
   <style>
     :root { color-scheme: light dark; }
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background:#111; color:#eee; }
-    header { padding: 28px 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
-    header .wrap { max-width: 900px; margin: 0 auto; }
+
+    header { padding: 22px 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
+    header .wrap { max-width: 1100px; margin: 0 auto; display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; }
     h1 { margin: 0 0 6px; font-size: 26px; }
     .muted { opacity: .75; }
+    .credit { margin-top: 6px; }
 
-    main { max-width: 900px; margin: 0 auto; padding: 16px; }
+    main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+
     .card { margin-top: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 18px; overflow: hidden; background: rgba(255,255,255,.03); }
+
     .toolbar { display:flex; gap: 12px; align-items:center; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(255,255,255,.10); }
     .left { display:flex; gap: 12px; align-items:center; }
-    .badge { font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); }
+    .right { display:flex; gap: 10px; align-items:center; }
+
+    .badge {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      white-space: nowrap;
+    }
+
     input[type="search"]{
       width: min(360px, 60vw);
       padding: 10px 12px;
@@ -25,6 +40,7 @@
       background: transparent;
       color: inherit;
     }
+
     button{
       padding: 10px 12px;
       border-radius: 12px;
@@ -32,6 +48,7 @@
       background: transparent;
       color: inherit;
       cursor: pointer;
+      white-space: nowrap;
     }
     button:disabled { opacity: .6; cursor: not-allowed; }
 
@@ -41,20 +58,31 @@
     tbody tr { border-top: 1px solid rgba(255,255,255,.08); }
     tbody tr:hover { background: rgba(255,255,255,.05); }
     .num { text-align: right; font-variant-numeric: tabular-nums; }
-    .rank { width: 64px; opacity: .8; }
-    .gold { color: gold; font-weight: 700; }
-    .silver { color: silver; font-weight: 700; }
-    .bronze { color: #cd7f32; font-weight: 700; }
+    .rank { width: 80px; opacity: .85; }
 
     #error { display:none; margin-top: 12px; white-space: pre-wrap; color: #ff6b6b; }
+
     footer { padding: 12px; opacity: .7; font-size: 12px; border-top: 1px solid rgba(255,255,255,.10); }
+
+    @media (max-width: 740px) {
+      header .wrap { flex-direction: column; }
+      .right { width: 100%; justify-content: space-between; }
+    }
   </style>
 </head>
+
 <body>
   <header>
     <div class="wrap">
-      <h1>ELO žebříček</h1>
-      <div class="muted">Načítáno z Google Sheets (list: “Elo standings”).</div>
+      <div>
+        <h1>ELO žebříček</h1>
+        <div class="muted">Načítáno z Google Sheets (list: “Elo standings”).</div>
+        <div class="credit muted">
+          Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně zpravuje:
+        </div>
+      </div>
+
+      <div class="badge" id="lastDataBadge">poslední data: načítám…</div>
     </div>
   </header>
 
@@ -65,17 +93,23 @@
           <span id="status" class="badge">Načítám…</span>
           <input id="search" type="search" placeholder="Hledat hráče…" autocomplete="off" />
         </div>
-        <button id="refresh" type="button">Obnovit</button>
+
+        <div class="right">
+          <button id="refresh" type="button">Znovu načíst</button>
+        </div>
       </div>
 
       <div style="overflow:auto;">
         <table>
           <thead>
             <tr>
-              <th class="rank">#</th>
-              <th>Hráč</th>
-              <th class="num">ELO</th>
+              <th class="rank">Pořadí</th>
+              <th>Player</th>
+              <th class="num">Rating</th>
               <th class="num">Games</th>
+              <th class="num">Win</th>
+              <th class="num">Loss</th>
+              <th class="num">Draw</th>
               <th class="num">Winrate</th>
             </tr>
           </thead>
@@ -84,7 +118,7 @@
       </div>
 
       <footer>
-        Sloupce: <b>player</b>, <b>rating</b>, <b>games</b>, <b>winrate</b> (podle CSV exportu).
+        Pořadí je „locknuté“ po načtení dat (vyhledávání ho nemění).
       </footer>
     </div>
 
@@ -92,15 +126,24 @@
   </main>
 
 <script>
-  // Tvůj CSV endpoint
-  const SHEETS_CSV_URL =
-    "https://docs.google.com/spreadsheets/d/1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA/gviz/tq?tqx=out:csv&sheet=Elo%20standings";
+  // --- CSV endpointy ---
+  const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
+  const ELO_SHEET_NAME = "Elo standings";
+  const DATA_SHEET_NAME = "Data";
 
+  const ELO_CSV_URL =
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(ELO_SHEET_NAME)}`;
+
+  const DATA_CSV_URL =
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(DATA_SHEET_NAME)}`;
+
+  // --- DOM ---
   const statusEl = document.getElementById("status");
   const tbody = document.getElementById("tbody");
   const errorEl = document.getElementById("error");
   const searchEl = document.getElementById("search");
   const refreshBtn = document.getElementById("refresh");
+  const lastDataBadge = document.getElementById("lastDataBadge");
 
   let allRows = [];
 
@@ -148,10 +191,12 @@
         cur += c;
       }
     }
+
     if (cur.length || row.length) {
       row.push(cur);
       if (row.some(x => x.trim() !== "")) rows.push(row);
     }
+
     return rows;
   }
 
@@ -162,63 +207,88 @@
     return Number.isFinite(n) ? n : NaN;
   }
 
-  function render(rows) {
-    const q = normalizeKey(searchEl.value);
-    const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q));
-
-    tbody.innerHTML = "";
-
-    if (!filtered.length) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="5" class="muted">Nic nenalezeno.</td>`;
-      tbody.appendChild(tr);
-      return;
-    }
-
-    filtered.forEach((r, idx) => {
-      let medal = "";
-      if (idx === 0) medal = "gold";
-      else if (idx === 1) medal = "silver";
-      else if (idx === 2) medal = "bronze";
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="rank ${medal}">${idx + 1}</td>
-        <td>${escapeHtml(r.player)}</td>
-        <td class="num">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
-        <td class="num">${Number.isFinite(r.games) ? r.games.toFixed(0) : ""}</td>
-        <td class="num">${escapeHtml(r.winrateText || "")}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
   async function fetchUtf8Text(url) {
-    // Důležité: čteme bytes a dekódujeme jako UTF-8,
-    // aby se nerozbila diakritika.
     const res = await fetch(url, { cache: "no-store" });
     const buf = await res.arrayBuffer();
     const text = new TextDecoder("utf-8").decode(buf);
     return { res, text };
   }
 
-  async function load() {
+  function render(rows) {
+    const q = normalizeKey(searchEl.value);
+
+    // filtrujeme, ale rank necháváme původní ("locknutý")
+    const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q));
+    filtered.sort((a, b) => a.rank - b.rank);
+
+    tbody.innerHTML = "";
+
+    if (!filtered.length) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="8" class="muted">Nic nenalezeno.</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+
+    filtered.forEach((r) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="rank">${r.rank}</td>
+        <td>${escapeHtml(r.player)}</td>
+        <td class="num">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
+        <td class="num">${Number.isFinite(r.games) ? r.games.toFixed(0) : ""}</td>
+        <td class="num">${Number.isFinite(r.win) ? r.win.toFixed(0) : ""}</td>
+        <td class="num">${Number.isFinite(r.loss) ? r.loss.toFixed(0) : ""}</td>
+        <td class="num">${Number.isFinite(r.draw) ? r.draw.toFixed(0) : ""}</td>
+        <td class="num">${escapeHtml(r.winrate || "")}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function loadLastData() {
+    // Bere poslední neprázdnou hodnotu ze sloupce B na listu "Data"
+    try {
+      const u = new URL(DATA_CSV_URL);
+      u.searchParams.set("_", Date.now().toString());
+
+      const { res, text } = await fetchUtf8Text(u.toString());
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      if (text.trim().startsWith("<")) throw new Error("List Data není dostupný (HTML místo CSV).");
+
+      const rows = parseCSV(text);
+      if (rows.length < 2) {
+        lastDataBadge.textContent = "poslední data: (nenalezeno)";
+        return;
+      }
+
+      // přeskočíme hlavičku a vezmeme sloupec B (index 1)
+      let last = "";
+      for (let i = 1; i < rows.length; i++) {
+        const val = (rows[i][1] ?? "").toString().trim();
+        if (val) last = val;
+      }
+
+      lastDataBadge.textContent = `poslední data: ${last || "(nenalezeno)"}`;
+    } catch (e) {
+      lastDataBadge.textContent = "poslední data: chyba";
+    }
+  }
+
+  async function loadStandings() {
     hideError();
     setStatus("Načítám…");
     refreshBtn.disabled = true;
 
     try {
-      const u = new URL(SHEETS_CSV_URL);
-      u.searchParams.set("_", Date.now().toString()); // cache bust
+      const u = new URL(ELO_CSV_URL);
+      u.searchParams.set("_", Date.now().toString());
 
       const { res, text } = await fetchUtf8Text(u.toString());
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      // Když Google vrátí HTML, není to CSV
-      if (text.trim().startsWith("<")) {
-        throw new Error("Místo CSV přišlo HTML (tabulka není veřejná / není publikovaná).");
-      }
+      if (text.trim().startsWith("<")) throw new Error("Místo CSV přišlo HTML (tabulka není veřejná / není publikovaná).");
 
       const rows = parseCSV(text);
       if (!rows.length) throw new Error("Prázdné CSV.");
@@ -226,24 +296,40 @@
       const headers = rows[0].map(h => normalizeKey(h));
       const idx = (name) => headers.indexOf(name);
 
-      const iPlayer = idx("player");
-      const iRating = idx("rating");
-      const iGames  = idx("games");
+      // Přesně podle tvých sloupců A–G:
+      const iPlayer  = idx("player");
+      const iRating  = idx("rating");
+      const iGames   = idx("games");
+      const iWin     = idx("win");
+      const iLoss    = idx("loss");
+      const iDraw    = idx("draw");
+      // v CSV může být "winrate" nebo "Winrate" → normalizeKey to srovná
       const iWinrate = headers.findIndex(h => h === "winrate" || h.includes("winrate"));
 
-      if (iPlayer === -1 || iRating === -1) {
-        throw new Error(`Nenašel jsem sloupce 'player' a 'rating'. Hlavičky: ${headers.join(", ")}`);
+      if ([iPlayer, iRating, iGames, iWin, iLoss, iDraw].some(i => i === -1) || iWinrate === -1) {
+        throw new Error(
+          "Nenašel jsem všechny požadované sloupce A–G (player, rating, games, win, loss, draw, winrate).\n" +
+          `Hlavičky v CSV: ${headers.join(", ")}`
+        );
       }
 
-      allRows = rows.slice(1)
+      const loaded = rows.slice(1)
         .map(r => ({
-          player: (r[iPlayer] ?? "").trim(),
-          rating: toNumber(r[iRating]),
-          games: toNumber(iGames !== -1 ? r[iGames] : ""),
-          winrateText: (iWinrate !== -1 ? (r[iWinrate] ?? "").trim() : "")
+          player:  (r[iPlayer] ?? "").trim(),
+          rating:  toNumber(r[iRating]),
+          games:   toNumber(r[iGames]),
+          win:     toNumber(r[iWin]),
+          loss:    toNumber(r[iLoss]),
+          draw:    toNumber(r[iDraw]),
+          winrate: (r[iWinrate] ?? "").toString().trim()
         }))
-        .filter(x => x.player.length > 0)
-        .sort((a, b) => (b.rating || -Infinity) - (a.rating || -Infinity));
+        .filter(x => x.player.length > 0);
+
+      // seřadíme podle ratingu
+      loaded.sort((a, b) => (b.rating || -Infinity) - (a.rating || -Infinity));
+
+      // "lock" pořadí po načtení
+      allRows = loaded.map((p, i) => ({ ...p, rank: i + 1 }));
 
       setStatus(`Načteno: ${allRows.length}`);
       render(allRows);
@@ -255,10 +341,15 @@
     }
   }
 
-  searchEl.addEventListener("input", () => render(allRows));
-  refreshBtn.addEventListener("click", load);
+  async function loadAll() {
+    // oboje najednou
+    await Promise.all([loadStandings(), loadLastData()]);
+  }
 
-  load();
+  searchEl.addEventListener("input", () => render(allRows));
+  refreshBtn.addEventListener("click", loadAll);
+
+  loadAll();
 </script>
 </body>
 </html>
