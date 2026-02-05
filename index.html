@@ -37,6 +37,12 @@
     .muted{ opacity:.78; }
     .credit{ margin-top:6px; }
 
+    .container{
+      max-width:1150px;
+      margin:0 auto;
+      padding: 0 16px;
+    }
+
     main{ max-width:1150px; margin:0 auto; padding:16px; }
 
     .card{
@@ -95,10 +101,19 @@
     button:hover{ background: rgba(255,255,255,.06); }
     button:disabled{ opacity:.6; cursor:not-allowed; }
 
-    /* Info panel */
+    .btnPrimary{
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.08);
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: 10px 14px;
+    }
+    .btnPrimary:hover{ background: rgba(255,255,255,.12); }
+
+    /* Info panel (same width as table because it's in .container) */
     .infoBar{
-      max-width:1150px;
-      margin:12px auto 0;
+      margin:12px 0 6px;
       padding:10px 12px;
       border:1px solid rgba(255,255,255,.12);
       border-radius:16px;
@@ -116,6 +131,7 @@
       align-items:baseline;
       justify-content:space-between;
       gap:10px;
+      min-width:0;
     }
     .infoItem b{
       font-size:11px;
@@ -130,12 +146,27 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow: ellipsis;
-      max-width: 62%;
       text-align:right;
+      min-width: 0;
     }
     @media (max-width: 860px){
       .infoBar{ grid-template-columns: 1fr 1fr; }
-      .infoItem span{ max-width: 70%; }
+    }
+
+    .lastLine{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin: 0 0 12px;
+      color: rgba(255,255,255,.78);
+      font-size: 13px;
+    }
+    .lastLine .leftText{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      min-width:0;
     }
 
     .tableWrap{ overflow:auto; }
@@ -235,7 +266,7 @@
     /* HERO 2 columns */
     .heroGrid{
       display:grid;
-      grid-template-columns: 380px 1fr; /* 1) data 2) graf (cca 2/3) */
+      grid-template-columns: 380px 1fr;
       gap:12px;
       margin-bottom:14px;
       align-items: stretch;
@@ -277,6 +308,12 @@
       gap:8px;
       margin-top:12px;
     }
+    .statsGridRow2{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:8px;
+      margin-top:8px;
+    }
     .stat{
       border:1px solid rgba(255,255,255,.10);
       border-radius:14px;
@@ -289,14 +326,6 @@
     .statWin{ background: rgba(60, 220, 120, .10); border-color: rgba(60, 220, 120, .22); }
     .statLoss{ background: rgba(255, 90, 90, .10); border-color: rgba(255, 90, 90, .22); }
     .statDraw{ background: rgba(255, 170, 60, .10); border-color: rgba(255, 170, 60, .22); }
-
-    /* second row: 3 cols */
-    .statsGridRow2{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:8px;
-      margin-top:8px;
-    }
 
     .chartHead{
       display:flex;
@@ -356,6 +385,7 @@
 
     @media (max-width: 980px){
       .heroGrid{ grid-template-columns: 1fr; }
+      header .wrap{ flex-direction: column; }
     }
   </style>
 </head>
@@ -370,16 +400,26 @@
         Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně zpravuje:
       </div>
     </div>
-    <div class="badge" id="lastDataBadge">poslední data: načítám…</div>
+    <div class="badge" id="lastDataBadge">načteno: načítám…</div>
   </div>
 </header>
 
-<!-- Thin info panel -->
-<div class="infoBar" id="infoBar" aria-label="Souhrn">
-  <div class="infoItem"><b>průměrné ELO</b><span id="avgElo">—</span></div>
-  <div class="infoItem"><b>průměrný winrate</b><span id="avgWinrate">—</span></div>
-  <div class="infoItem"><b>celkový počet her</b><span id="totalGames">—</span></div>
-  <div class="infoItem"><b>poslední turnaj</b><span id="lastTournament">—</span></div>
+<div class="container">
+  <!-- Info panel -->
+  <div class="infoBar" id="infoBar" aria-label="Souhrn">
+    <div class="infoItem"><b>průměrné ELO</b><span id="avgElo">—</span></div>
+    <div class="infoItem"><b>průměrný winrate</b><span id="avgWinrate">—</span></div>
+    <div class="infoItem"><b>celkový počet her</b><span id="totalGames">—</span></div>
+    <div class="infoItem"><b>poslední turnaj</b><span id="lastTournament">—</span></div>
+  </div>
+
+  <!-- Line under panel: last tournament + loaded timestamp + request button -->
+  <div class="lastLine">
+    <div class="leftText" id="lastLineText">—</div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button class="btnPrimary" id="requestUploadBtn" type="button">ZAŽÁDAT O NAHRÁNÍ DAT</button>
+    </div>
+  </div>
 </div>
 
 <main>
@@ -458,6 +498,8 @@
   const avgWinrateEl = document.getElementById("avgWinrate");
   const totalGamesEl = document.getElementById("totalGames");
   const lastTournamentEl = document.getElementById("lastTournament");
+  const lastLineTextEl = document.getElementById("lastLineText");
+  const requestUploadBtn = document.getElementById("requestUploadBtn");
 
   const modalOverlay = document.getElementById("modalOverlay");
   const closeModalBtn = document.getElementById("closeModalBtn");
@@ -468,6 +510,7 @@
 
   let allRows = [];
   let lastTournamentText = "";
+  let lastLoadedAt = "";
 
   // ---- helpers ----
   function escapeHtml(str){
@@ -553,14 +596,12 @@
 
   // ---- info calculations ----
   function parseWinrateToNumber(winrateText){
-    // "77%" -> 77, "0.77" -> 77 (guess), "" -> NaN
     if (!winrateText) return NaN;
     const s = winrateText.toString().trim();
     if (!s) return NaN;
     if (s.includes("%")) return toNumber(s.replace("%",""));
     const n = toNumber(s);
     if (!Number.isFinite(n)) return NaN;
-    // if it's 0..1, treat as fraction
     if (n > 0 && n <= 1) return n * 100;
     return n;
   }
@@ -578,11 +619,18 @@
     totalGamesEl.textContent = Number.isFinite(totalGames) ? totalGames.toFixed(0) : "—";
     avgWinrateEl.textContent = Number.isFinite(avgWinrate) ? `${avgWinrate.toFixed(0)}%` : "—";
     lastTournamentEl.textContent = lastTournamentText || "—";
+
+    // line: "Duel rytíř 5.2 • načteno: 05. 02. 2026 19:38:17"
+    const left = lastTournamentText || "—";
+    const ts = lastLoadedAt || "—";
+    lastLineTextEl.textContent = `${left} • načteno: ${ts}`;
   }
 
   // ---- last data (and timestamp) ----
   async function loadLastData(){
-    const loadedAt = formatNow();
+    lastLoadedAt = formatNow();
+    lastDataBadge.textContent = `načteno: ${lastLoadedAt}`;
+
     try{
       const u = new URL(DATA_CSV_URL);
       u.searchParams.set("_", Date.now().toString());
@@ -598,13 +646,9 @@
       }
 
       lastTournamentText = last || "";
-      lastDataBadge.textContent = `poslední data: ${last || "(nenalezeno)"} • načteno: ${loadedAt}`;
-
-      // info panel uses same value
       updateInfoBar();
     } catch {
       lastTournamentText = "";
-      lastDataBadge.textContent = `poslední data: chyba • načteno: ${loadedAt}`;
       updateInfoBar();
     }
   }
@@ -701,7 +745,6 @@
   // ---- Player modal ----
   function buildHero2col(playerObj){
     const eloText = Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "";
-
     const rankRight = `<span class="rankPill">${rankCellHtml(playerObj.rank)}</span>`;
 
     return `
@@ -719,13 +762,11 @@
             <div class="heroElo">${escapeHtml(eloText)}</div>
           </div>
 
-          <!-- Row 1: GAMES + WINRATE -->
           <div class="statsGrid">
             <div class="stat"><b>games</b><span>${safeInt(playerObj.games)}</span></div>
             <div class="stat"><b>winrate</b><span>${escapeHtml(playerObj.winrate || "")}</span></div>
           </div>
 
-          <!-- Row 2: WIN LOSS DRAW -->
           <div class="statsGridRow2">
             <div class="stat statWin"><b>win</b><span>${safeInt(playerObj.win)}</span></div>
             <div class="stat statLoss"><b>loss</b><span>${safeInt(playerObj.loss)}</span></div>
@@ -885,6 +926,9 @@
   // ---- events ----
   searchEl.addEventListener("input", () => renderStandings(allRows));
   refreshBtn.addEventListener("click", loadAll);
+  requestUploadBtn.addEventListener("click", () => {
+    window.location.href = "https://www.seznam.cz/";
+  });
 
   tbody.addEventListener("click", (e) => {
     const btn = e.target.closest(".playerBtn");
