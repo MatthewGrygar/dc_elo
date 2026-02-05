@@ -47,6 +47,7 @@
       background:rgba(255,255,255,.035);
       box-shadow:0 18px 55px rgba(0,0,0,.35);
     }
+
     .toolbar{
       display:flex;
       gap:12px;
@@ -93,6 +94,49 @@
     }
     button:hover{ background: rgba(255,255,255,.06); }
     button:disabled{ opacity:.6; cursor:not-allowed; }
+
+    /* Info panel */
+    .infoBar{
+      max-width:1150px;
+      margin:12px auto 0;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:16px;
+      background: rgba(255,255,255,.03);
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:10px;
+    }
+    .infoItem{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      padding:10px 10px;
+      background: rgba(0,0,0,.12);
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .infoItem b{
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform: uppercase;
+      opacity:.72;
+      white-space:nowrap;
+    }
+    .infoItem span{
+      font-variant-numeric: tabular-nums;
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      max-width: 62%;
+      text-align:right;
+    }
+    @media (max-width: 860px){
+      .infoBar{ grid-template-columns: 1fr 1fr; }
+      .infoItem span{ max-width: 70%; }
+    }
 
     .tableWrap{ overflow:auto; }
     table{ width:100%; border-collapse:separate; border-spacing:0; }
@@ -188,10 +232,10 @@
     .modalTitle span{ font-size:12px; opacity:.75; }
     .modalBody{ padding:12px; overflow:auto; }
 
-    /* HERO 3 columns */
+    /* HERO 2 columns */
     .heroGrid{
       display:grid;
-      grid-template-columns: 86px 330px 1fr; /* 1) ultra úzký 2) úzký 3) široký */
+      grid-template-columns: 380px 1fr; /* 1) data 2) graf (cca 2/3) */
       gap:12px;
       margin-bottom:14px;
       align-items: stretch;
@@ -204,41 +248,18 @@
     }
     .boxPad{ padding:14px; }
 
-    .avatarBox{
+    .heroName{ font-size:22px; font-weight:900; margin:0 0 6px; }
+    .rankLine{
       display:flex;
       align-items:center;
-      justify-content:center;
-      padding:10px;
+      justify-content:space-between;
+      gap:10px;
     }
-    .avatarWrap{
-      width:66px;
-      height:66px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.06);
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:900;
-      letter-spacing:.5px;
-    }
-    .avatarWrap img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-
-    .heroName{ font-size:20px; font-weight:900; margin:0 0 6px; }
-    .heroEloLabel{ opacity:.75; font-size:12px; }
-    .heroElo{ font-size:40px; font-weight:900; line-height:1; margin:6px 0 0; }
-
-    .chipRow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
-    .chip{
+    .rankLine .muted{ opacity:.8; }
+    .rankPill{
       display:inline-flex;
       align-items:center;
-      justify-content:center;
+      gap:8px;
       border:1px solid rgba(255,255,255,.16);
       background: rgba(255,255,255,.06);
       padding:6px 10px;
@@ -247,11 +268,14 @@
       white-space:nowrap;
     }
 
+    .heroEloLabel{ opacity:.75; font-size:12px; }
+    .heroElo{ font-size:44px; font-weight:900; line-height:1; margin:6px 0 0; }
+
     .statsGrid{
       display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap:8px;
-      margin-top:10px;
+      margin-top:12px;
     }
     .stat{
       border:1px solid rgba(255,255,255,.10);
@@ -266,6 +290,14 @@
     .statLoss{ background: rgba(255, 90, 90, .10); border-color: rgba(255, 90, 90, .22); }
     .statDraw{ background: rgba(255, 170, 60, .10); border-color: rgba(255, 170, 60, .22); }
 
+    /* second row: 3 cols */
+    .statsGridRow2{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:8px;
+      margin-top:8px;
+    }
+
     .chartHead{
       display:flex;
       justify-content:space-between;
@@ -273,7 +305,7 @@
       gap:10px;
       margin-bottom:8px;
     }
-    .chartHead b{ font-size:13px; letter-spacing:.06em; text-transform:uppercase; opacity:.9; }
+    .chartHead b{ font-size:13px; letter-spacing:.08em; text-transform:uppercase; opacity:.9; }
     .chartHead span{ font-size:12px; opacity:.75; }
     #eloChart{ min-height: 220px; }
 
@@ -323,8 +355,7 @@
     .gridTable tr:nth-child(2n) td{ background: rgba(255,255,255,.02); }
 
     @media (max-width: 980px){
-      .heroGrid{ grid-template-columns: 86px 1fr; }
-      .heroGrid > .box:nth-child(3){ grid-column: 1 / -1; } /* chart pod tím */
+      .heroGrid{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -342,6 +373,14 @@
     <div class="badge" id="lastDataBadge">poslední data: načítám…</div>
   </div>
 </header>
+
+<!-- Thin info panel -->
+<div class="infoBar" id="infoBar" aria-label="Souhrn">
+  <div class="infoItem"><b>průměrné ELO</b><span id="avgElo">—</span></div>
+  <div class="infoItem"><b>průměrný winrate</b><span id="avgWinrate">—</span></div>
+  <div class="infoItem"><b>celkový počet her</b><span id="totalGames">—</span></div>
+  <div class="infoItem"><b>poslední turnaj</b><span id="lastTournament">—</span></div>
+</div>
 
 <main>
   <div class="card">
@@ -415,6 +454,11 @@
   const refreshBtn = document.getElementById("refresh");
   const lastDataBadge = document.getElementById("lastDataBadge");
 
+  const avgEloEl = document.getElementById("avgElo");
+  const avgWinrateEl = document.getElementById("avgWinrate");
+  const totalGamesEl = document.getElementById("totalGames");
+  const lastTournamentEl = document.getElementById("lastTournament");
+
   const modalOverlay = document.getElementById("modalOverlay");
   const closeModalBtn = document.getElementById("closeModalBtn");
   const openSheetTabBtn = document.getElementById("openSheetTabBtn");
@@ -423,6 +467,7 @@
   const modalBody = document.getElementById("modalBody");
 
   let allRows = [];
+  let lastTournamentText = "";
 
   // ---- helpers ----
   function escapeHtml(str){
@@ -506,7 +551,36 @@
     modalBody.innerHTML="";
   }
 
-  // ---- last data ----
+  // ---- info calculations ----
+  function parseWinrateToNumber(winrateText){
+    // "77%" -> 77, "0.77" -> 77 (guess), "" -> NaN
+    if (!winrateText) return NaN;
+    const s = winrateText.toString().trim();
+    if (!s) return NaN;
+    if (s.includes("%")) return toNumber(s.replace("%",""));
+    const n = toNumber(s);
+    if (!Number.isFinite(n)) return NaN;
+    // if it's 0..1, treat as fraction
+    if (n > 0 && n <= 1) return n * 100;
+    return n;
+  }
+
+  function updateInfoBar(){
+    const ratings = allRows.map(r => r.rating).filter(Number.isFinite);
+    const games = allRows.map(r => r.games).filter(Number.isFinite);
+    const winrates = allRows.map(r => parseWinrateToNumber(r.winrate)).filter(Number.isFinite);
+
+    const avgElo = ratings.length ? (ratings.reduce((a,b)=>a+b,0) / ratings.length) : NaN;
+    const totalGames = games.length ? games.reduce((a,b)=>a+b,0) : NaN;
+    const avgWinrate = winrates.length ? (winrates.reduce((a,b)=>a+b,0) / winrates.length) : NaN;
+
+    avgEloEl.textContent = Number.isFinite(avgElo) ? avgElo.toFixed(0) : "—";
+    totalGamesEl.textContent = Number.isFinite(totalGames) ? totalGames.toFixed(0) : "—";
+    avgWinrateEl.textContent = Number.isFinite(avgWinrate) ? `${avgWinrate.toFixed(0)}%` : "—";
+    lastTournamentEl.textContent = lastTournamentText || "—";
+  }
+
+  // ---- last data (and timestamp) ----
   async function loadLastData(){
     const loadedAt = formatNow();
     try{
@@ -518,14 +592,20 @@
 
       const rows = parseCSV(text);
       let last = "";
-      // sloupec B = index 1, poslední neprázdný
       for (let i=1;i<rows.length;i++){
-        const v = (rows[i][1] ?? "").toString().trim();
+        const v = (rows[i][1] ?? "").toString().trim(); // col B
         if (v) last = v;
       }
+
+      lastTournamentText = last || "";
       lastDataBadge.textContent = `poslední data: ${last || "(nenalezeno)"} • načteno: ${loadedAt}`;
+
+      // info panel uses same value
+      updateInfoBar();
     } catch {
+      lastTournamentText = "";
       lastDataBadge.textContent = `poslední data: chyba • načteno: ${loadedAt}`;
+      updateInfoBar();
     }
   }
 
@@ -605,6 +685,7 @@
 
       setStatus(`Načteno: ${allRows.length}`);
       renderStandings(allRows);
+      updateInfoBar();
     } catch(e){
       setStatus("Chyba");
       showError(String(e?.message || e));
@@ -617,31 +698,20 @@
     await Promise.all([loadStandings(), loadLastData()]);
   }
 
-  // ---- Player modal HERO (3 columns) ----
-  function initialsFromName(name){
-    const clean = (name || "").replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, "").trim();
-    const parts = clean.split(/\s+/).filter(Boolean);
-    const a = parts[0]?.[0] ?? "?";
-    const b = parts.length > 1 ? parts[parts.length-1][0] : "";
-    return (a + b).toUpperCase();
-  }
-
-  function buildHero3col(playerObj){
+  // ---- Player modal ----
+  function buildHero2col(playerObj){
     const eloText = Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "";
+
+    const rankRight = `<span class="rankPill">${rankCellHtml(playerObj.rank)}</span>`;
+
     return `
       <div class="heroGrid">
-        <div class="box avatarBox">
-          <div class="avatarWrap" id="avatarWrap">
-            <span id="avatarFallback">${escapeHtml(initialsFromName(playerObj.player))}</span>
-          </div>
-        </div>
-
         <div class="box boxPad">
           <div class="heroName">${escapeHtml(playerObj.player)}</div>
-          <div class="muted">Pořadí v žebříčku</div>
-          <div class="chipRow">
-            <span class="chip">${rankCellHtml(playerObj.rank)}</span>
-            <span class="chip">ELO</span>
+
+          <div class="rankLine">
+            <div class="muted">Pořadí v žebříčku</div>
+            ${rankRight}
           </div>
 
           <div style="margin-top:10px;">
@@ -649,12 +719,17 @@
             <div class="heroElo">${escapeHtml(eloText)}</div>
           </div>
 
+          <!-- Row 1: GAMES + WINRATE -->
           <div class="statsGrid">
             <div class="stat"><b>games</b><span>${safeInt(playerObj.games)}</span></div>
+            <div class="stat"><b>winrate</b><span>${escapeHtml(playerObj.winrate || "")}</span></div>
+          </div>
+
+          <!-- Row 2: WIN LOSS DRAW -->
+          <div class="statsGridRow2">
             <div class="stat statWin"><b>win</b><span>${safeInt(playerObj.win)}</span></div>
             <div class="stat statLoss"><b>loss</b><span>${safeInt(playerObj.loss)}</span></div>
             <div class="stat statDraw"><b>draw</b><span>${safeInt(playerObj.draw)}</span></div>
-            <div class="stat" style="grid-column: span 2;"><b>winrate</b><span>${escapeHtml(playerObj.winrate || "")}</span></div>
           </div>
         </div>
 
@@ -669,39 +744,7 @@
     `;
   }
 
-  // Try load image: image/<player>.(jpg|png|webp)
-  function attachAvatar(playerName){
-    const wrap = document.getElementById("avatarWrap");
-    if (!wrap) return;
-
-    const base = `image/${encodeURIComponent(playerName)}`;
-    const exts = [".jpg",".png",".webp"];
-    let i = 0;
-
-    const img = document.createElement("img");
-    img.alt = playerName;
-
-    img.onerror = () => {
-      i++;
-      if (i >= exts.length){
-        // keep fallback initials
-        return;
-      }
-      img.src = base + exts[i] + `?v=${Date.now()}`;
-    };
-
-    // start
-    img.src = base + exts[i] + `?v=${Date.now()}`;
-    // if loads, replace fallback text
-    img.onload = () => {
-      wrap.innerHTML = "";
-      wrap.appendChild(img);
-    };
-  }
-
-  // ---- Raw grid table (player sheet) ----
   function buildRawGridTable(grid){
-    // trim trailing empty columns per row, keep up to 16 cols max
     const trimmed = grid.map(r => {
       let last = -1;
       for (let c=0;c<r.length;c++){
@@ -729,7 +772,6 @@
     `;
   }
 
-  // ---- Extract ELO series robustly from any match tables ----
   function extractEloSeriesFromGrid(grid){
     const series = [];
     const norm = (s) => normalizeKey((s ?? "").toString()).replace(/\s+/g," ").trim();
@@ -742,11 +784,9 @@
       const iMatch = rowN.indexOf("matchid");
 
       if (iRound !== -1 && iElo !== -1 && iMatch !== -1){
-        // read following rows until round stops being number
         for (let k=r+1;k<grid.length;k++){
           const rr = grid[k] || [];
-          const roundVal = rr[iRound];
-          if (!isRound(roundVal)) break;
+          if (!isRound(rr[iRound])) break;
           const eloVal = toNumber(rr[iElo] ?? "");
           if (Number.isFinite(eloVal)) series.push(eloVal);
         }
@@ -797,9 +837,8 @@
   async function loadPlayerDetail(playerObj){
     modalName.textContent = playerObj.player;
     modalSub.textContent = "Načítám detail…";
-    modalBody.innerHTML = buildHero3col(playerObj) + `<div class="muted">Načítám data listu…</div>`;
+    modalBody.innerHTML = buildHero2col(playerObj) + `<div class="muted">Načítám data listu…</div>`;
     openModal();
-    attachAvatar(playerObj.player);
 
     openSheetTabBtn.onclick = () => {
       window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
@@ -819,7 +858,6 @@
       const grid = parseCSV(text);
       if (!grid.length) throw new Error("EMPTY");
 
-      // chart
       const series = extractEloSeriesFromGrid(grid);
       const chartEl = document.getElementById("eloChart");
       const chartMeta = document.getElementById("chartMeta");
@@ -831,23 +869,16 @@
         chartMeta.textContent = `ELO sloupec nenalezen`;
       }
 
-      // raw grid bottom
-      const rawHtml = buildRawGridTable(grid);
-
       modalSub.textContent = "Detail hráče";
-      modalBody.innerHTML = buildHero3col(playerObj) +
+      modalBody.innerHTML = buildHero2col(playerObj) +
         `<div class="sectionTitle">Data z listu hráče</div>` +
-        rawHtml;
-
-      // re-attach avatar after re-render
-      attachAvatar(playerObj.player);
+        buildRawGridTable(grid);
 
     } catch {
       modalSub.textContent = "Detail hráče";
-      modalBody.innerHTML = buildHero3col(playerObj) +
+      modalBody.innerHTML = buildHero2col(playerObj) +
         `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>` +
         `<div class="muted" style="margin-top:10px;">(Nenalezen list se stejným názvem jako hráč.)</div>`;
-      attachAvatar(playerObj.player);
     }
   }
 
