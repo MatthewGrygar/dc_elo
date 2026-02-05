@@ -7,389 +7,397 @@
 
   <style>
     :root { color-scheme: light dark; }
-    body {
+    body{
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      margin: 0;
+      margin:0;
       background: radial-gradient(1200px 600px at 20% -10%, rgba(255,255,255,.10), transparent 60%),
                   radial-gradient(900px 500px at 80% 0%, rgba(255,215,0,.08), transparent 60%),
                   #0f1115;
-      color: #eef2ff;
+      color:#eef2ff;
     }
 
-    header {
-      padding: 18px 18px 14px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      background: rgba(15,17,21,.6);
+    header{
+      padding:18px 18px 14px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background:rgba(15,17,21,.6);
       backdrop-filter: blur(10px);
       position: sticky;
-      top: 0;
-      z-index: 5;
+      top:0;
+      z-index:5;
     }
-
-    header .wrap {
-      max-width: 1150px;
-      margin: 0 auto;
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      justify-content: space-between;
-    }
-
-    h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: .2px; }
-    .muted { opacity: .78; }
-    .credit { margin-top: 6px; }
-
-    main { max-width: 1150px; margin: 0 auto; padding: 16px; }
-
-    .card {
-      margin-top: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 20px;
-      overflow: hidden;
-      background: rgba(255,255,255,.035);
-      box-shadow: 0 18px 55px rgba(0,0,0,.35);
-    }
-
-    .toolbar {
+    header .wrap{
+      max-width:1150px;
+      margin:0 auto;
       display:flex;
-      gap: 12px;
-      align-items:center;
-      justify-content: space-between;
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.02);
+      gap:16px;
+      align-items:flex-start;
+      justify-content:space-between;
     }
+    h1{ margin:0 0 6px; font-size:26px; letter-spacing:.2px; }
+    .muted{ opacity:.78; }
+    .credit{ margin-top:6px; }
 
-    .left { display:flex; gap: 12px; align-items:center; flex-wrap: wrap; }
-    .right { display:flex; gap: 10px; align-items:center; }
+    main{ max-width:1150px; margin:0 auto; padding:16px; }
 
-    .badge {
-      font-size: 12px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.06);
-      white-space: nowrap;
+    .card{
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:20px;
+      overflow:hidden;
+      background:rgba(255,255,255,.035);
+      box-shadow:0 18px 55px rgba(0,0,0,.35);
+    }
+    .toolbar{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.02);
+    }
+    .left{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .right{ display:flex; gap:10px; align-items:center; }
+
+    .badge{
+      font-size:12px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.06);
+      white-space:nowrap;
     }
 
     input[type="search"]{
-      width: min(380px, 70vw);
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.18);
-      color: inherit;
-      outline: none;
+      width:min(380px, 70vw);
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.18);
+      color:inherit;
+      outline:none;
     }
     input[type="search"]:focus{
-      border-color: rgba(255,255,255,.28);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
+      border-color:rgba(255,255,255,.28);
+      box-shadow:0 0 0 4px rgba(255,255,255,.06);
     }
 
     button{
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.18);
-      color: inherit;
-      cursor: pointer;
-      white-space: nowrap;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.18);
+      color:inherit;
+      cursor:pointer;
+      white-space:nowrap;
     }
-    button:hover { background: rgba(255,255,255,.06); }
-    button:disabled { opacity: .6; cursor: not-allowed; }
+    button:hover{ background: rgba(255,255,255,.06); }
+    button:disabled{ opacity:.6; cursor:not-allowed; }
 
-    .tableWrap { overflow:auto; }
-    table { width: 100%; border-collapse: separate; border-spacing: 0; }
-    thead th {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background: rgba(15,17,21,.92);
+    .tableWrap{ overflow:auto; }
+    table{ width:100%; border-collapse:separate; border-spacing:0; }
+    thead th{
+      position:sticky;
+      top:0;
+      z-index:2;
+      background:rgba(15,17,21,.92);
       backdrop-filter: blur(6px);
-      border-bottom: 1px solid rgba(255,255,255,.12);
-      font-size: 12px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      opacity: .85;
+      border-bottom:1px solid rgba(255,255,255,.12);
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      opacity:.85;
     }
+    th, td{ text-align:left; padding:12px 12px; }
+    tbody tr:nth-child(2n){ background: rgba(255,255,255,.02); }
+    tbody tr:hover{ background: rgba(255,255,255,.055); }
+    .num{ text-align:right; font-variant-numeric: tabular-nums; }
+    .rank{ width:90px; font-variant-numeric: tabular-nums; }
 
-    th, td { text-align: left; padding: 12px 12px; }
-    tbody tr:nth-child(2n) { background: rgba(255,255,255,.02); }
-    tbody tr:hover { background: rgba(255,255,255,.055); }
-
-    .num { text-align: right; font-variant-numeric: tabular-nums; }
-    .rank { width: 90px; font-variant-numeric: tabular-nums; }
-    .playerBtn {
-      border: none;
-      background: none;
-      color: inherit;
-      cursor: pointer;
-      padding: 0;
-      font: inherit;
+    .playerBtn{
+      border:none;
+      background:none;
+      color:inherit;
+      cursor:pointer;
+      padding:0;
+      font:inherit;
       text-decoration: underline;
       text-decoration-color: rgba(255,255,255,.25);
-      text-underline-offset: 3px;
+      text-underline-offset:3px;
     }
-    .playerBtn:hover { text-decoration-color: rgba(255,255,255,.6); }
+    .playerBtn:hover{ text-decoration-color: rgba(255,255,255,.6); }
 
-    .r1 { color: #ffd54a; font-weight: 900; }
-    .r2 { color: #d6dbe6; font-weight: 900; }
-    .r3 { color: #d29a6a; font-weight: 900; }
+    .r1{ color:#ffd54a; font-weight:900; }
+    .r2{ color:#d6dbe6; font-weight:900; }
+    .r3{ color:#d29a6a; font-weight:900; }
 
-    #error { display:none; margin-top: 12px; white-space: pre-wrap; color: #ff7a7a; }
+    #error{ display:none; margin-top:12px; white-space:pre-wrap; color:#ff7a7a; }
 
-    footer {
-      padding: 12px;
-      opacity: .75;
-      font-size: 12px;
-      border-top: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.02);
+    footer{
+      padding:12px;
+      opacity:.75;
+      font-size:12px;
+      border-top:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.02);
     }
 
     /* Modal */
-    .modalOverlay {
-      display: none;
-      position: fixed;
-      inset: 0;
+    .modalOverlay{
+      display:none;
+      position:fixed;
+      inset:0;
       background: rgba(0,0,0,.65);
       backdrop-filter: blur(6px);
-      z-index: 50;
-      padding: 18px;
+      z-index:50;
+      padding:18px;
     }
-    .modal {
-      max-width: 1100px;
-      margin: 0 auto;
+    .modal{
+      max-width:1100px;
+      margin:0 auto;
       height: calc(100vh - 36px);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.14);
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.14);
       background: rgba(15,17,21,.92);
-      box-shadow: 0 30px 90px rgba(0,0,0,.6);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      box-shadow:0 30px 90px rgba(0,0,0,.6);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
     }
     .modalHeader{
       display:flex;
       align-items:center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 12px 12px;
-      border-bottom: 1px solid rgba(255,255,255,.12);
+      justify-content:space-between;
+      gap:10px;
+      padding:12px;
+      border-bottom:1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.02);
     }
     .modalTitle{
       display:flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
     }
     .modalTitle b{
-      font-size: 16px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size:16px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
       max-width: 70vw;
     }
-    .modalTitle span{
-      font-size: 12px;
-      opacity: .75;
-    }
+    .modalTitle span{ font-size:12px; opacity:.75; }
+    .modalBody{ padding:12px; overflow:auto; }
 
-    .modalBody{
-      padding: 12px;
-      overflow: auto;
+    /* HERO 3 columns */
+    .heroGrid{
+      display:grid;
+      grid-template-columns: 86px 330px 1fr; /* 1) ultra úzký 2) úzký 3) široký */
+      gap:12px;
+      margin-bottom:14px;
+      align-items: stretch;
     }
-
-    .playerHero{
-      display: grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .heroCard{
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 18px;
-      padding: 14px;
+    .box{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
       background: rgba(255,255,255,.03);
+      overflow:hidden;
     }
-    .heroTop{
+    .boxPad{ padding:14px; }
+
+    .avatarBox{
       display:flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-    }
-    .heroName{
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: .2px;
-      margin: 0 0 6px;
-    }
-    .heroElo{
-      font-size: 42px;
-      font-weight: 900;
-      line-height: 1;
-      margin: 0;
-    }
-    .heroRank{
-      display:inline-flex;
       align-items:center;
-      gap: 8px;
-      margin-top: 10px;
+      justify-content:center;
+      padding:10px;
     }
+    .avatarWrap{
+      width:66px;
+      height:66px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      letter-spacing:.5px;
+    }
+    .avatarWrap img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .heroName{ font-size:20px; font-weight:900; margin:0 0 6px; }
+    .heroEloLabel{ opacity:.75; font-size:12px; }
+    .heroElo{ font-size:40px; font-weight:900; line-height:1; margin:6px 0 0; }
+
+    .chipRow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
     .chip{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      border: 1px solid rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.16);
       background: rgba(255,255,255,.06);
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      white-space: nowrap;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      white-space:nowrap;
     }
 
-    .heroMetaRow{
-      display:flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .statsRow{
+    .statsGrid{
       display:grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-top: 10px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:8px;
+      margin-top:10px;
     }
     .stat{
-      border: 1px solid rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      padding:10px;
       background: rgba(255,255,255,.02);
-      border-radius: 14px;
-      padding: 10px 10px;
     }
-    .stat b{ display:block; font-size: 12px; opacity:.75; letter-spacing:.06em; text-transform: uppercase; }
-    .stat span{ display:block; margin-top: 4px; font-size: 16px; font-weight: 800; }
+    .stat b{ display:block; font-size:12px; opacity:.75; letter-spacing:.06em; text-transform:uppercase; }
+    .stat span{ display:block; margin-top:4px; font-size:16px; font-weight:900; }
 
-    .sectionTitle{
+    .statWin{ background: rgba(60, 220, 120, .10); border-color: rgba(60, 220, 120, .22); }
+    .statLoss{ background: rgba(255, 90, 90, .10); border-color: rgba(255, 90, 90, .22); }
+    .statDraw{ background: rgba(255, 170, 60, .10); border-color: rgba(255, 170, 60, .22); }
+
+    .chartHead{
       display:flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 10px;
-      margin: 18px 0 10px;
-      font-size: 14px;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      opacity: .92;
+      justify-content:space-between;
+      align-items:baseline;
+      gap:10px;
+      margin-bottom:8px;
     }
-    .sectionTitle .sub { font-size: 12px; opacity:.75; text-transform: none; letter-spacing: 0; }
-
-    .miniTableWrap{ overflow:auto; border: 1px solid rgba(255,255,255,.10); border-radius: 16px; }
-    .miniTable{ width:100%; border-collapse: separate; border-spacing:0; }
-    .miniTable th, .miniTable td { padding: 10px 10px; border-top: 1px solid rgba(255,255,255,.08); }
-    .miniTable thead th { position: sticky; top: 0; background: rgba(15,17,21,.96); border-top: none; }
-    .miniTable tbody tr:nth-child(2n) { background: rgba(255,255,255,.02); }
-    .miniTable .num { text-align:right; }
-
-    .chartCard{
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 18px;
-      padding: 12px;
-      background: rgba(255,255,255,.03);
-    }
+    .chartHead b{ font-size:13px; letter-spacing:.06em; text-transform:uppercase; opacity:.9; }
+    .chartHead span{ font-size:12px; opacity:.75; }
+    #eloChart{ min-height: 220px; }
 
     .bigError{
       display:flex;
       align-items:center;
-      gap: 12px;
-      border: 1px solid rgba(255,122,122,.35);
+      gap:12px;
+      border:1px solid rgba(255,122,122,.35);
       background: rgba(255,122,122,.08);
-      color: #ffd0d0;
-      border-radius: 18px;
-      padding: 14px;
-      margin-top: 10px;
-      font-weight: 900;
+      color:#ffd0d0;
+      border-radius:18px;
+      padding:14px;
+      margin-top:10px;
+      font-weight:900;
     }
-    .bigError .icon{ font-size: 22px; }
+    .bigError .icon{ font-size:22px; }
 
-    @media (max-width: 860px) {
-      .playerHero { grid-template-columns: 1fr; }
-      .statsRow { grid-template-columns: 1fr 1fr; }
+    .sectionTitle{
+      margin: 18px 0 10px;
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      opacity: .9;
+    }
+
+    .gridTableWrap{
+      overflow:auto;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px;
+      background: rgba(255,255,255,.02);
+    }
+    .gridTable{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+    }
+    .gridTable td{
+      border-top:1px solid rgba(255,255,255,.08);
+      border-right:1px solid rgba(255,255,255,.08);
+      padding:8px 10px;
+      vertical-align:top;
+      white-space:pre-wrap;
+      font-size: 13px;
+    }
+    .gridTable tr:first-child td{ border-top:none; }
+    .gridTable td:last-child{ border-right:none; }
+    .gridTable tr:nth-child(2n) td{ background: rgba(255,255,255,.02); }
+
+    @media (max-width: 980px){
+      .heroGrid{ grid-template-columns: 86px 1fr; }
+      .heroGrid > .box:nth-child(3){ grid-column: 1 / -1; } /* chart pod tím */
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <div class="wrap">
-      <div>
-        <h1>ELO žebříček</h1>
-        <div class="muted">Načítáno z Google Sheets (list: “Elo standings”).</div>
-        <div class="credit muted">
-          Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně zpravuje:
-        </div>
+<header>
+  <div class="wrap">
+    <div>
+      <h1>ELO žebříček</h1>
+      <div class="muted">Načítáno z Google Sheets (list: “Elo standings”).</div>
+      <div class="credit muted">
+        Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně zpravuje:
       </div>
-
-      <div class="badge" id="lastDataBadge">poslední data: načítám…</div>
     </div>
-  </header>
+    <div class="badge" id="lastDataBadge">poslední data: načítám…</div>
+  </div>
+</header>
 
-  <main>
-    <div class="card">
-      <div class="toolbar">
-        <div class="left">
-          <span id="status" class="badge">Načítám…</span>
-          <input id="search" type="search" placeholder="Hledat hráče…" autocomplete="off" />
-        </div>
-
-        <div class="right">
-          <button id="refresh" type="button">Znovu načíst</button>
-        </div>
+<main>
+  <div class="card">
+    <div class="toolbar">
+      <div class="left">
+        <span id="status" class="badge">Načítám…</span>
+        <input id="search" type="search" placeholder="Hledat hráče…" autocomplete="off" />
       </div>
-
-      <div class="tableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th class="rank">Pořadí</th>
-              <th>Player</th>
-              <th class="num">Rating</th>
-              <th class="num">Games</th>
-              <th class="num">Win</th>
-              <th class="num">Loss</th>
-              <th class="num">Draw</th>
-              <th class="num">Winrate</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
+      <div class="right">
+        <button id="refresh" type="button">Znovu načíst</button>
       </div>
-
-      <footer>
-        Tip: Klikni na jméno hráče pro detail (list se stejným názvem). Pořadí je „locknuté“ po načtení dat.
-      </footer>
     </div>
 
-    <div id="error"></div>
-  </main>
-
-  <!-- Modal -->
-  <div id="modalOverlay" class="modalOverlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modalHeader">
-        <div class="modalTitle">
-          <b id="modalName">Hráč</b>
-          <span id="modalSub">Načítám…</span>
-        </div>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <button id="openSheetTabBtn" type="button" title="Otevřít Google Sheet dokument">Otevřít Sheets</button>
-          <button id="closeModalBtn" type="button">Zavřít</button>
-        </div>
-      </div>
-      <div class="modalBody" id="modalBody"></div>
+    <div class="tableWrap">
+      <table>
+        <thead>
+        <tr>
+          <th class="rank">Pořadí</th>
+          <th>Player</th>
+          <th class="num">Rating</th>
+          <th class="num">Games</th>
+          <th class="num">Win</th>
+          <th class="num">Loss</th>
+          <th class="num">Draw</th>
+          <th class="num">Winrate</th>
+        </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
     </div>
+
+    <footer>Tip: Klikni na jméno hráče pro detail. Pořadí je „locknuté“ po načtení dat.</footer>
   </div>
 
+  <div id="error"></div>
+</main>
+
+<!-- Modal -->
+<div id="modalOverlay" class="modalOverlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modalHeader">
+      <div class="modalTitle">
+        <b id="modalName">Hráč</b>
+        <span id="modalSub">Načítám…</span>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <button id="openSheetTabBtn" type="button">Otevřít Sheets</button>
+        <button id="closeModalBtn" type="button">Zavřít</button>
+      </div>
+    </div>
+    <div class="modalBody" id="modalBody"></div>
+  </div>
+</div>
+
 <script>
+  // ---- SHEETS ----
   const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
   const ELO_SHEET_NAME = "Elo standings";
   const DATA_SHEET_NAME = "Data";
@@ -399,6 +407,7 @@
   const DATA_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(DATA_SHEET_NAME)}`;
 
+  // ---- DOM ----
   const statusEl = document.getElementById("status");
   const tbody = document.getElementById("tbody");
   const errorEl = document.getElementById("error");
@@ -415,150 +424,126 @@
 
   let allRows = [];
 
-  function setStatus(text) { statusEl.textContent = text; }
-  function showError(msg) { errorEl.style.display = "block"; errorEl.textContent = msg; }
-  function hideError() { errorEl.style.display = "none"; errorEl.textContent = ""; }
-
-  function escapeHtml(str) {
+  // ---- helpers ----
+  function escapeHtml(str){
     return (str ?? "").toString()
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
-
-  function normalizeKey(s) {
+  function normalizeKey(s){
     return (s || "")
       .toString()
       .trim()
       .toLowerCase()
-      .normalize("NFD").replace(/\p{Diacritic}/gu, "");
+      .normalize("NFD").replace(/\p{Diacritic}/gu,"");
   }
-
-  function parseCSV(csvText) {
-    const rows = [];
-    let row = [];
-    let cur = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < csvText.length; i++) {
-      const c = csvText[i];
-      const next = csvText[i + 1];
-
-      if (c === '"' && inQuotes && next === '"') { cur += '"'; i++; }
-      else if (c === '"') inQuotes = !inQuotes;
-      else if (c === "," && !inQuotes) { row.push(cur); cur = ""; }
-      else if ((c === "\n" || c === "\r") && !inQuotes) {
-        if (c === "\r" && next === "\n") i++;
-        row.push(cur); cur = "";
-        if (row.some(x => x.trim() !== "")) rows.push(row);
-        row = [];
-      } else {
-        cur += c;
-      }
-    }
-    if (cur.length || row.length) {
-      row.push(cur);
-      if (row.some(x => x.trim() !== "")) rows.push(row);
-    }
-    return rows;
-  }
-
-  function toNumber(x) {
+  function setStatus(text){ statusEl.textContent = text; }
+  function showError(msg){ errorEl.style.display="block"; errorEl.textContent = msg; }
+  function hideError(){ errorEl.style.display="none"; errorEl.textContent=""; }
+  function toNumber(x){
     if (x == null) return NaN;
-    const s = x.toString().replace(/\s/g, "").replace(",", ".");
+    const s = x.toString().replace(/\s/g,"").replace(",",".");
     const n = Number(s);
     return Number.isFinite(n) ? n : NaN;
   }
+  function safeInt(x){ return Number.isFinite(x) ? x.toFixed(0) : ""; }
 
-  async function fetchUtf8Text(url) {
+  function formatNow(){
+    return new Intl.DateTimeFormat("cs-CZ", {
+      year:"numeric", month:"2-digit", day:"2-digit",
+      hour:"2-digit", minute:"2-digit", second:"2-digit"
+    }).format(new Date());
+  }
+
+  async function fetchUtf8Text(url){
     const res = await fetch(url, { cache: "no-store" });
     const buf = await res.arrayBuffer();
     const text = new TextDecoder("utf-8").decode(buf);
     return { res, text };
   }
 
-  function rankCellHtml(rank) {
+  // CSV parser (quotes)
+  function parseCSV(csvText){
+    const rows = [];
+    let row = [];
+    let cur = "";
+    let inQuotes = false;
+
+    for (let i=0;i<csvText.length;i++){
+      const c = csvText[i];
+      const next = csvText[i+1];
+      if (c === '"' && inQuotes && next === '"'){ cur += '"'; i++; }
+      else if (c === '"'){ inQuotes = !inQuotes; }
+      else if (c === "," && !inQuotes){ row.push(cur); cur=""; }
+      else if ((c === "\n" || c === "\r") && !inQuotes){
+        if (c === "\r" && next === "\n") i++;
+        row.push(cur); cur="";
+        if (row.some(x => x.trim() !== "")) rows.push(row);
+        row = [];
+      } else cur += c;
+    }
+    if (cur.length || row.length){
+      row.push(cur);
+      if (row.some(x => x.trim() !== "")) rows.push(row);
+    }
+    return rows;
+  }
+
+  function rankCellHtml(rank){
     if (rank === 1) return `<span class="r1">👑 ${rank}</span>`;
     if (rank === 2) return `<span class="r2">${rank}</span>`;
     if (rank === 3) return `<span class="r3">${rank}</span>`;
     return `${rank}`;
   }
 
-  function openModal() {
-    modalOverlay.style.display = "block";
-    document.body.style.overflow = "hidden";
+  function openModal(){
+    modalOverlay.style.display="block";
+    document.body.style.overflow="hidden";
   }
-  function closeModal() {
-    modalOverlay.style.display = "none";
-    document.body.style.overflow = "";
-    modalBody.innerHTML = "";
-  }
-
-  function safeInt(x) { return Number.isFinite(x) ? x.toFixed(0) : ""; }
-
-  function buildHero(playerObj, parsedMeta = null) {
-    // preferuj "Current rating" z player listu, pokud existuje
-    const currentFromList = parsedMeta?.currentRating;
-    const elo = Number.isFinite(currentFromList) ? currentFromList.toFixed(0)
-              : (Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "");
-
-    const recordText = parsedMeta?.recordText ? `Record (W-L-D): ${parsedMeta.recordText}` : null;
-
-    return `
-      <div class="playerHero">
-        <div class="heroCard">
-          <div class="heroTop">
-            <div style="min-width:0;">
-              <div class="heroName">${escapeHtml(playerObj.player)}</div>
-              <div class="muted">Pořadí v žebříčku</div>
-              <div class="heroRank">
-                <span class="chip">${rankCellHtml(playerObj.rank)}</span>
-                <span class="chip">ELO</span>
-              </div>
-              <div class="heroMetaRow">
-                ${recordText ? `<span class="chip">${escapeHtml(recordText)}</span>` : ``}
-              </div>
-            </div>
-            <div style="text-align:right;">
-              <div class="muted">aktuální rating</div>
-              <div class="heroElo">${escapeHtml(elo)}</div>
-            </div>
-          </div>
-
-          <div class="statsRow">
-            <div class="stat"><b>games</b><span>${safeInt(playerObj.games)}</span></div>
-            <div class="stat"><b>win</b><span>${safeInt(playerObj.win)}</span></div>
-            <div class="stat"><b>loss</b><span>${safeInt(playerObj.loss)}</span></div>
-            <div class="stat"><b>draw</b><span>${safeInt(playerObj.draw)}</span></div>
-            <div class="stat"><b>winrate</b><span>${escapeHtml(playerObj.winrate || "")}</span></div>
-          </div>
-        </div>
-
-        <div class="chartCard">
-          <div class="muted" style="margin-bottom:8px;">Vývoj ELO</div>
-          <div id="eloChart" class="muted">Načítám data hráče…</div>
-        </div>
-      </div>
-    `;
+  function closeModal(){
+    modalOverlay.style.display="none";
+    document.body.style.overflow="";
+    modalBody.innerHTML="";
   }
 
-  function render(rows) {
+  // ---- last data ----
+  async function loadLastData(){
+    const loadedAt = formatNow();
+    try{
+      const u = new URL(DATA_CSV_URL);
+      u.searchParams.set("_", Date.now().toString());
+      const { res, text } = await fetchUtf8Text(u.toString());
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (text.trim().startsWith("<")) throw new Error("HTML místo CSV");
+
+      const rows = parseCSV(text);
+      let last = "";
+      // sloupec B = index 1, poslední neprázdný
+      for (let i=1;i<rows.length;i++){
+        const v = (rows[i][1] ?? "").toString().trim();
+        if (v) last = v;
+      }
+      lastDataBadge.textContent = `poslední data: ${last || "(nenalezeno)"} • načteno: ${loadedAt}`;
+    } catch {
+      lastDataBadge.textContent = `poslední data: chyba • načteno: ${loadedAt}`;
+    }
+  }
+
+  // ---- standings ----
+  function renderStandings(rows){
     const q = normalizeKey(searchEl.value);
     const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q));
-    filtered.sort((a, b) => a.rank - b.rank);
+    filtered.sort((a,b) => a.rank - b.rank);
 
     tbody.innerHTML = "";
-
-    if (!filtered.length) {
+    if (!filtered.length){
       const tr = document.createElement("tr");
       tr.innerHTML = `<td colspan="8" class="muted">Nic nenalezeno.</td>`;
       tbody.appendChild(tr);
       return;
     }
 
-    filtered.forEach((r) => {
+    for (const r of filtered){
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="rank">${rankCellHtml(r.rank)}</td>
@@ -572,44 +557,17 @@
       `;
       tr.querySelector(".playerBtn")._playerObj = r;
       tbody.appendChild(tr);
-    });
-  }
-
-  async function loadLastData() {
-    try {
-      const u = new URL(DATA_CSV_URL);
-      u.searchParams.set("_", Date.now().toString());
-
-      const { res, text } = await fetchUtf8Text(u.toString());
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      if (text.trim().startsWith("<")) throw new Error("HTML místo CSV");
-
-      const rows = parseCSV(text);
-      if (rows.length < 2) {
-        lastDataBadge.textContent = "poslední data: (nenalezeno)";
-        return;
-      }
-
-      let last = "";
-      for (let i = 1; i < rows.length; i++) {
-        const val = (rows[i][1] ?? "").toString().trim(); // sloupec B
-        if (val) last = val;
-      }
-      lastDataBadge.textContent = `poslední data: ${last || "(nenalezeno)"}`;
-    } catch {
-      lastDataBadge.textContent = "poslední data: chyba";
     }
   }
 
-  async function loadStandings() {
+  async function loadStandings(){
     hideError();
     setStatus("Načítám…");
     refreshBtn.disabled = true;
 
-    try {
+    try{
       const u = new URL(ELO_CSV_URL);
       u.searchParams.set("_", Date.now().toString());
-
       const { res, text } = await fetchUtf8Text(u.toString());
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       if (text.trim().startsWith("<")) throw new Error("Místo CSV přišlo HTML.");
@@ -628,28 +586,26 @@
       const iDraw    = idx("draw");
       const iWinrate = headers.findIndex(h => h === "winrate" || h.includes("winrate"));
 
-      if ([iPlayer, iRating, iGames, iWin, iLoss, iDraw].some(i => i === -1) || iWinrate === -1) {
-        throw new Error("Nenašel jsem sloupce A–G (player,rating,games,win,loss,draw,winrate).");
+      if ([iPlayer,iRating,iGames,iWin,iLoss,iDraw].some(i => i === -1) || iWinrate === -1){
+        throw new Error(`Nenašel jsem sloupce player,rating,games,win,loss,draw,winrate. Hlavičky: ${headers.join(", ")}`);
       }
 
-      const loaded = rows.slice(1)
-        .map(r => ({
-          player:  (r[iPlayer] ?? "").trim(),
-          rating:  toNumber(r[iRating]),
-          games:   toNumber(r[iGames]),
-          win:     toNumber(r[iWin]),
-          loss:    toNumber(r[iLoss]),
-          draw:    toNumber(r[iDraw]),
-          winrate: (r[iWinrate] ?? "").toString().trim()
-        }))
-        .filter(x => x.player.length > 0);
+      const loaded = rows.slice(1).map(r => ({
+        player: (r[iPlayer] ?? "").trim(),
+        rating: toNumber(r[iRating]),
+        games:  toNumber(r[iGames]),
+        win:    toNumber(r[iWin]),
+        loss:   toNumber(r[iLoss]),
+        draw:   toNumber(r[iDraw]),
+        winrate:(r[iWinrate] ?? "").toString().trim()
+      })).filter(x => x.player.length > 0);
 
-      loaded.sort((a, b) => (b.rating || -Infinity) - (a.rating || -Infinity));
-      allRows = loaded.map((p, i) => ({ ...p, rank: i + 1 }));
+      loaded.sort((a,b) => (b.rating || -Infinity) - (a.rating || -Infinity));
+      allRows = loaded.map((p,i) => ({ ...p, rank: i + 1 }));
 
       setStatus(`Načteno: ${allRows.length}`);
-      render(allRows);
-    } catch (e) {
+      renderStandings(allRows);
+    } catch(e){
       setStatus("Chyba");
       showError(String(e?.message || e));
     } finally {
@@ -657,19 +613,155 @@
     }
   }
 
-  async function loadAll() {
+  async function loadAll(){
     await Promise.all([loadStandings(), loadLastData()]);
   }
 
-  // -------- Detail parsing (tailored) --------
-  function buildSvgLineChart(values, opts = {}) {
-    const w = opts.width ?? 960;
-    const h = opts.height ?? 220;
-    const padX = 18, padY = 16;
+  // ---- Player modal HERO (3 columns) ----
+  function initialsFromName(name){
+    const clean = (name || "").replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, "").trim();
+    const parts = clean.split(/\s+/).filter(Boolean);
+    const a = parts[0]?.[0] ?? "?";
+    const b = parts.length > 1 ? parts[parts.length-1][0] : "";
+    return (a + b).toUpperCase();
+  }
 
+  function buildHero3col(playerObj){
+    const eloText = Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "";
+    return `
+      <div class="heroGrid">
+        <div class="box avatarBox">
+          <div class="avatarWrap" id="avatarWrap">
+            <span id="avatarFallback">${escapeHtml(initialsFromName(playerObj.player))}</span>
+          </div>
+        </div>
+
+        <div class="box boxPad">
+          <div class="heroName">${escapeHtml(playerObj.player)}</div>
+          <div class="muted">Pořadí v žebříčku</div>
+          <div class="chipRow">
+            <span class="chip">${rankCellHtml(playerObj.rank)}</span>
+            <span class="chip">ELO</span>
+          </div>
+
+          <div style="margin-top:10px;">
+            <div class="heroEloLabel">aktuální rating</div>
+            <div class="heroElo">${escapeHtml(eloText)}</div>
+          </div>
+
+          <div class="statsGrid">
+            <div class="stat"><b>games</b><span>${safeInt(playerObj.games)}</span></div>
+            <div class="stat statWin"><b>win</b><span>${safeInt(playerObj.win)}</span></div>
+            <div class="stat statLoss"><b>loss</b><span>${safeInt(playerObj.loss)}</span></div>
+            <div class="stat statDraw"><b>draw</b><span>${safeInt(playerObj.draw)}</span></div>
+            <div class="stat" style="grid-column: span 2;"><b>winrate</b><span>${escapeHtml(playerObj.winrate || "")}</span></div>
+          </div>
+        </div>
+
+        <div class="box boxPad">
+          <div class="chartHead">
+            <b>Vývoj ELO</b>
+            <span id="chartMeta" class="muted">Načítám data hráče…</span>
+          </div>
+          <div id="eloChart" class="muted">Načítám data hráče…</div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Try load image: image/<player>.(jpg|png|webp)
+  function attachAvatar(playerName){
+    const wrap = document.getElementById("avatarWrap");
+    if (!wrap) return;
+
+    const base = `image/${encodeURIComponent(playerName)}`;
+    const exts = [".jpg",".png",".webp"];
+    let i = 0;
+
+    const img = document.createElement("img");
+    img.alt = playerName;
+
+    img.onerror = () => {
+      i++;
+      if (i >= exts.length){
+        // keep fallback initials
+        return;
+      }
+      img.src = base + exts[i] + `?v=${Date.now()}`;
+    };
+
+    // start
+    img.src = base + exts[i] + `?v=${Date.now()}`;
+    // if loads, replace fallback text
+    img.onload = () => {
+      wrap.innerHTML = "";
+      wrap.appendChild(img);
+    };
+  }
+
+  // ---- Raw grid table (player sheet) ----
+  function buildRawGridTable(grid){
+    // trim trailing empty columns per row, keep up to 16 cols max
+    const trimmed = grid.map(r => {
+      let last = -1;
+      for (let c=0;c<r.length;c++){
+        if ((r[c] ?? "").toString().trim() !== "") last = c;
+      }
+      return r.slice(0, Math.max(0, last + 1));
+    }).filter(r => r.some(cell => (cell ?? "").toString().trim() !== ""));
+
+    if (!trimmed.length) return `<div class="muted">Žádná data.</div>`;
+
+    const maxCols = Math.min(16, Math.max(...trimmed.map(r => r.length)));
+    const rowsHtml = trimmed.map(r => {
+      let cells = "";
+      for (let c=0;c<maxCols;c++){
+        const v = (r[c] ?? "").toString();
+        cells += `<td>${escapeHtml(v)}</td>`;
+      }
+      return `<tr>${cells}</tr>`;
+    }).join("");
+
+    return `
+      <div class="gridTableWrap">
+        <table class="gridTable">${rowsHtml}</table>
+      </div>
+    `;
+  }
+
+  // ---- Extract ELO series robustly from any match tables ----
+  function extractEloSeriesFromGrid(grid){
+    const series = [];
+    const norm = (s) => normalizeKey((s ?? "").toString()).replace(/\s+/g," ").trim();
+    const isRound = (s) => /^\s*\d+\s*$/.test((s ?? "").toString());
+
+    for (let r=0;r<grid.length;r++){
+      const rowN = (grid[r] || []).map(norm);
+      const iRound = rowN.indexOf("round");
+      const iElo = rowN.indexOf("elo");
+      const iMatch = rowN.indexOf("matchid");
+
+      if (iRound !== -1 && iElo !== -1 && iMatch !== -1){
+        // read following rows until round stops being number
+        for (let k=r+1;k<grid.length;k++){
+          const rr = grid[k] || [];
+          const roundVal = rr[iRound];
+          if (!isRound(roundVal)) break;
+          const eloVal = toNumber(rr[iElo] ?? "");
+          if (Number.isFinite(eloVal)) series.push(eloVal);
+        }
+      }
+    }
+    return series;
+  }
+
+  function buildSvgLineChart(values){
     const clean = values.filter(v => Number.isFinite(v));
-    if (clean.length < 2) return `<div class="muted">Graf nelze vykreslit (málo dat).</div>`;
+    if (clean.length < 2){
+      return `<div class="muted">Graf nelze vykreslit (málo dat).</div>`;
+    }
 
+    const w = 960, h = 220, padX = 18, padY = 16;
     const min = Math.min(...clean);
     const max = Math.max(...clean);
     const span = Math.max(1, max - min);
@@ -680,11 +772,10 @@
 
     let d = "";
     let started = false;
-    for (let i = 0; i < values.length; i++) {
+    for (let i=0;i<values.length;i++){
       const v = values[i];
       if (!Number.isFinite(v)) continue;
-      const px = x(i), py = y(v);
-      d += (started ? " L " : " M ") + px.toFixed(2) + " " + py.toFixed(2);
+      d += (started ? " L " : " M ") + x(i).toFixed(2) + " " + y(v).toFixed(2);
       started = true;
     }
 
@@ -693,219 +784,22 @@
       return `<line x1="${padX}" y1="${yy}" x2="${w-padX}" y2="${yy}" stroke="rgba(255,255,255,.10)" />`;
     }).join("");
 
-    const last = clean[clean.length - 1];
-
     return `
       <svg viewBox="0 0 ${w} ${h}" width="100%" height="220" role="img" aria-label="ELO chart">
         ${grid}
         <path d="${d}" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.5" />
         <text x="${padX}" y="${padY-2}" fill="rgba(255,255,255,.65)" font-size="11">min ${min}</text>
         <text x="${w-padX}" y="${padY-2}" text-anchor="end" fill="rgba(255,255,255,.65)" font-size="11">max ${max}</text>
-        <text x="${w-padX}" y="${h-6}" text-anchor="end" fill="rgba(255,255,255,.70)" font-size="11">last ${last}</text>
       </svg>
     `;
   }
 
-  function parseMetaFromGrid(grid) {
-    // očekáváme:
-    // A1: jméno
-    // A2: "Current rating:"  B2: číslo
-    // A3: "Record (W-L-D):"  B3: "25-7-1_"
-    let currentRating = NaN;
-    let recordText = "";
-
-    for (let r = 0; r < Math.min(grid.length, 10); r++) {
-      const a = (grid[r][0] ?? "").toString().trim();
-      const b = (grid[r][1] ?? "").toString().trim();
-      const aN = normalizeKey(a);
-
-      if (aN.startsWith("current rating")) {
-        currentRating = toNumber(b);
-      }
-      if (aN.startsWith("record")) {
-        recordText = b.replace(/_+$/g, ""); // odstraní trailing _
-      }
-    }
-
-    return { currentRating, recordText };
-  }
-
-  function parseSectionsFromGrid(grid) {
-    // Sekce = řádek kde je A: název (např. "Grail 17.1.2026" nebo "FNM")
-    // a někde na tom řádku je text "starting rating:" a číslo.
-    // Následuje hlavička: round matchID opponent (rating) result (+-) Elo
-    // a datové řádky 1..N; po nich řádek TOP s meta informacemi.
-    const sections = [];
-    const norm = (s) => normalizeKey((s ?? "").toString()).replace(/\s+/g, " ").trim();
-    const isInt = (s) => /^\s*\d+\s*$/.test((s ?? "").toString());
-
-    const findInRow = (row, needleNorm) => row.findIndex(c => norm(c).includes(needleNorm));
-    const getCell = (r, c) => (grid[r] && grid[r][c] != null) ? grid[r][c].toString().trim() : "";
-
-    for (let r = 0; r < grid.length; r++) {
-      const name = getCell(r, 0);
-      if (!name) continue;
-
-      // sekci bereme, pokud na tom řádku existuje "starting rating"
-      const row = grid[r] || [];
-      const srIdx = findInRow(row, "starting rating");
-      if (srIdx === -1) continue;
-
-      // starting rating hodnota bývá o 1–2 sloupce vpravo
-      let startingRating = NaN;
-      for (let k = srIdx + 1; k < Math.min(row.length, srIdx + 4); k++) {
-        const v = toNumber(row[k]);
-        if (Number.isFinite(v)) { startingRating = v; break; }
-      }
-
-      // najdi hlavičku tabulky
-      let headerRow = -1;
-      for (let k = r + 1; k < Math.min(grid.length, r + 10); k++) {
-        const rowN = (grid[k] || []).map(norm);
-        if (rowN.includes("round") && rowN.includes("matchid") && rowN.includes("result") && rowN.includes("elo")) {
-          headerRow = k;
-          break;
-        }
-      }
-      if (headerRow === -1) continue;
-
-      const hdrN = (grid[headerRow] || []).map(norm);
-      const col = (key) => hdrN.indexOf(key);
-      const iRound = col("round");
-      const iMatch = col("matchid");
-      const iOpp = hdrN.findIndex(x => x.startsWith("opponent"));
-      const iRes = col("result");
-      const iDelta = hdrN.findIndex(x => x.includes("(+-") || x === "(+-)" || x === "(+ -)" || x === "(+)" || x === "(+-)" || x.includes("(+"));
-      const iElo = col("elo");
-
-      const rows = [];
-      let topRowIndex = -1;
-
-      for (let k = headerRow + 1; k < grid.length; k++) {
-        const first = getCell(k, iRound >= 0 ? iRound : 0);
-        if (isInt(first)) {
-          rows.push({
-            round: first,
-            matchID: getCell(k, iMatch),
-            opponent: getCell(k, iOpp),
-            result: getCell(k, iRes),
-            delta: getCell(k, iDelta),
-            elo: toNumber(getCell(k, iElo))
-          });
-          continue;
-        }
-
-        // TOP řádek
-        const a0 = norm(getCell(k, 0));
-        if (a0 === "top") {
-          topRowIndex = k;
-        }
-        break;
-      }
-
-      let topMeta = null;
-      if (topRowIndex !== -1) {
-        // Příklad: "TOP", "", "average opponent: 1503", "record: 4-3-0", "new rating:", "1518"
-        const rowTop = grid[topRowIndex] || [];
-        const avIdx = findInRow(rowTop, "average opponent");
-        const recIdx = findInRow(rowTop, "record:");
-        const newIdx = findInRow(rowTop, "new rating");
-
-        const parseAfterColon = (s) => {
-          const m = (s ?? "").toString().split(":");
-          return (m.length > 1 ? m.slice(1).join(":").trim() : (s ?? "").toString().trim());
-        };
-
-        const averageOpponent = avIdx !== -1 ? toNumber(parseAfterColon(rowTop[avIdx])) : NaN;
-        const record = recIdx !== -1 ? parseAfterColon(rowTop[recIdx]).replace(/_+$/g, "") : "";
-        let newRating = NaN;
-        if (newIdx !== -1) {
-          // někdy je "new rating:" v jedné buňce a číslo v další
-          const maybe = toNumber(parseAfterColon(rowTop[newIdx]));
-          if (Number.isFinite(maybe)) newRating = maybe;
-          else {
-            for (let k = newIdx + 1; k < Math.min(rowTop.length, newIdx + 4); k++) {
-              const v = toNumber(rowTop[k]);
-              if (Number.isFinite(v)) { newRating = v; break; }
-            }
-          }
-        }
-
-        topMeta = { averageOpponent, record, newRating };
-      }
-
-      if (rows.length) {
-        sections.push({
-          name,
-          startingRating,
-          rows,
-          topMeta
-        });
-      }
-    }
-
-    // ELO series = postupně přes všechny sekce a zápasy
-    const eloSeries = [];
-    for (const s of sections) {
-      for (const m of s.rows) if (Number.isFinite(m.elo)) eloSeries.push(m.elo);
-    }
-
-    return { sections, eloSeries };
-  }
-
-  function renderMatchesTable(section) {
-    const rowsHtml = section.rows.map(m => `
-      <tr>
-        <td class="num">${escapeHtml(m.round)}</td>
-        <td class="num">${escapeHtml(m.matchID)}</td>
-        <td>${escapeHtml(m.opponent)}</td>
-        <td>${escapeHtml(m.result)}</td>
-        <td class="num">${escapeHtml(m.delta)}</td>
-        <td class="num">${Number.isFinite(m.elo) ? m.elo.toFixed(0) : ""}</td>
-      </tr>
-    `).join("");
-
-    const top = section.topMeta;
-    const topLine = top ? `
-      <div class="muted" style="margin-top:8px;">
-        TOP • average opponent: ${Number.isFinite(top.averageOpponent) ? top.averageOpponent.toFixed(0) : "?"}
-        • record: ${escapeHtml(top.record || "?")}
-        • new rating: ${Number.isFinite(top.newRating) ? top.newRating.toFixed(0) : "?"}
-      </div>
-    ` : ``;
-
-    return `
-      <div class="sectionTitle">
-        <div>${escapeHtml(section.name)}</div>
-        <div class="sub">
-          starting rating: ${Number.isFinite(section.startingRating) ? section.startingRating.toFixed(0) : "?"}
-        </div>
-      </div>
-
-      <div class="miniTableWrap">
-        <table class="miniTable">
-          <thead>
-            <tr>
-              <th class="num">round</th>
-              <th class="num">matchID</th>
-              <th>opponent (rating)</th>
-              <th>result</th>
-              <th class="num">(+/-)</th>
-              <th class="num">Elo</th>
-            </tr>
-          </thead>
-          <tbody>${rowsHtml}</tbody>
-        </table>
-      </div>
-      ${topLine}
-    `;
-  }
-
-  async function loadPlayerDetail(playerObj) {
+  async function loadPlayerDetail(playerObj){
     modalName.textContent = playerObj.player;
-    modalSub.textContent = "Načítám podrobnosti…";
-    modalBody.innerHTML = buildHero(playerObj, null);
+    modalSub.textContent = "Načítám detail…";
+    modalBody.innerHTML = buildHero3col(playerObj) + `<div class="muted">Načítám data listu…</div>`;
     openModal();
+    attachAvatar(playerObj.player);
 
     openSheetTabBtn.onclick = () => {
       window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
@@ -914,7 +808,7 @@
     const playerSheetUrl =
       `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(playerObj.player)}`;
 
-    try {
+    try{
       const u = new URL(playerSheetUrl);
       u.searchParams.set("_", Date.now().toString());
 
@@ -925,37 +819,40 @@
       const grid = parseCSV(text);
       if (!grid.length) throw new Error("EMPTY");
 
-      const meta = parseMetaFromGrid(grid);
-      const { sections, eloSeries } = parseSectionsFromGrid(grid);
-
-      // Vykresli hero znovu s meta daty (current rating + record)
-      modalBody.innerHTML = buildHero(playerObj, meta);
-
-      // Graf
+      // chart
+      const series = extractEloSeriesFromGrid(grid);
       const chartEl = document.getElementById("eloChart");
-      chartEl.innerHTML = buildSvgLineChart(eloSeries);
+      const chartMeta = document.getElementById("chartMeta");
 
-      // Sekce
-      if (!sections.length) {
-        modalSub.textContent = "Detail hráče • sekce nenalezeny";
-        modalBody.innerHTML += `<div class="muted">Nenašel jsem sekce (Grail/FNM). Zkontroluj strukturu listu.</div>`;
-        return;
+      chartEl.innerHTML = buildSvgLineChart(series);
+      if (series.length){
+        chartMeta.textContent = `zápasů: ${series.length} • poslední ELO: ${series[series.length-1].toFixed(0)}`;
+      } else {
+        chartMeta.textContent = `ELO sloupec nenalezen`;
       }
 
-      modalSub.textContent = `Detail hráče • sekcí: ${sections.length}`;
-      modalBody.innerHTML += sections.map(renderMatchesTable).join("");
+      // raw grid bottom
+      const rawHtml = buildRawGridTable(grid);
+
+      modalSub.textContent = "Detail hráče";
+      modalBody.innerHTML = buildHero3col(playerObj) +
+        `<div class="sectionTitle">Data z listu hráče</div>` +
+        rawHtml;
+
+      // re-attach avatar after re-render
+      attachAvatar(playerObj.player);
 
     } catch {
       modalSub.textContent = "Detail hráče";
-      modalBody.innerHTML =
-        buildHero(playerObj, null) +
+      modalBody.innerHTML = buildHero3col(playerObj) +
         `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>` +
         `<div class="muted" style="margin-top:10px;">(Nenalezen list se stejným názvem jako hráč.)</div>`;
+      attachAvatar(playerObj.player);
     }
   }
 
-  // ---------- Events ----------
-  searchEl.addEventListener("input", () => render(allRows));
+  // ---- events ----
+  searchEl.addEventListener("input", () => renderStandings(allRows));
   refreshBtn.addEventListener("click", loadAll);
 
   tbody.addEventListener("click", (e) => {
@@ -970,12 +867,8 @@
   modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) closeModal(); });
   window.addEventListener("keydown", (e) => { if (e.key === "Escape" && modalOverlay.style.display === "block") closeModal(); });
 
-  // ---------- Init ----------
+  // init
   loadAll();
-
-  async function loadAll() {
-    await Promise.all([loadStandings(), loadLastData()]);
-  }
 </script>
 </body>
 </html>
