@@ -111,9 +111,18 @@
     }
     .btnPrimary:hover{ background: rgba(255,255,255,.12); }
 
-    /* Info panel (same width as table because it's in .container) */
+    /* Header right group */
+    .headerRight{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+
+    /* Info panel */
     .infoBar{
-      margin:12px 0 6px;
+      margin:12px 0 12px;
       padding:10px 12px;
       border:1px solid rgba(255,255,255,.12);
       border-radius:16px;
@@ -151,22 +160,6 @@
     }
     @media (max-width: 860px){
       .infoBar{ grid-template-columns: 1fr 1fr; }
-    }
-
-    .lastLine{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      margin: 0 0 12px;
-      color: rgba(255,255,255,.78);
-      font-size: 13px;
-    }
-    .lastLine .leftText{
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      min-width:0;
     }
 
     .tableWrap{ overflow:auto; }
@@ -386,6 +379,7 @@
     @media (max-width: 980px){
       .heroGrid{ grid-template-columns: 1fr; }
       header .wrap{ flex-direction: column; }
+      .headerRight{ justify-content:flex-start; }
     }
   </style>
 </head>
@@ -400,25 +394,20 @@
         Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně zpravuje:
       </div>
     </div>
-    <div class="badge" id="lastDataBadge">načteno: načítám…</div>
+
+    <div class="headerRight">
+      <button class="btnPrimary" id="requestUploadBtn" type="button">ZAŽÁDAT O NAHRÁNÍ DAT</button>
+      <div class="badge" id="lastDataBadge">načteno: načítám…</div>
+    </div>
   </div>
 </header>
 
 <div class="container">
-  <!-- Info panel -->
   <div class="infoBar" id="infoBar" aria-label="Souhrn">
     <div class="infoItem"><b>průměrné ELO</b><span id="avgElo">—</span></div>
     <div class="infoItem"><b>průměrný winrate</b><span id="avgWinrate">—</span></div>
     <div class="infoItem"><b>celkový počet her</b><span id="totalGames">—</span></div>
     <div class="infoItem"><b>poslední turnaj</b><span id="lastTournament">—</span></div>
-  </div>
-
-  <!-- Line under panel: last tournament + loaded timestamp + request button -->
-  <div class="lastLine">
-    <div class="leftText" id="lastLineText">—</div>
-    <div style="display:flex; gap:10px; align-items:center;">
-      <button class="btnPrimary" id="requestUploadBtn" type="button">ZAŽÁDAT O NAHRÁNÍ DAT</button>
-    </div>
   </div>
 </div>
 
@@ -476,7 +465,6 @@
 </div>
 
 <script>
-  // ---- SHEETS ----
   const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
   const ELO_SHEET_NAME = "Elo standings";
   const DATA_SHEET_NAME = "Data";
@@ -486,7 +474,6 @@
   const DATA_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(DATA_SHEET_NAME)}`;
 
-  // ---- DOM ----
   const statusEl = document.getElementById("status");
   const tbody = document.getElementById("tbody");
   const errorEl = document.getElementById("error");
@@ -498,7 +485,6 @@
   const avgWinrateEl = document.getElementById("avgWinrate");
   const totalGamesEl = document.getElementById("totalGames");
   const lastTournamentEl = document.getElementById("lastTournament");
-  const lastLineTextEl = document.getElementById("lastLineText");
   const requestUploadBtn = document.getElementById("requestUploadBtn");
 
   const modalOverlay = document.getElementById("modalOverlay");
@@ -512,7 +498,6 @@
   let lastTournamentText = "";
   let lastLoadedAt = "";
 
-  // ---- helpers ----
   function escapeHtml(str){
     return (str ?? "").toString()
       .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
@@ -550,7 +535,6 @@
     return { res, text };
   }
 
-  // CSV parser (quotes)
   function parseCSV(csvText){
     const rows = [];
     let row = [];
@@ -594,7 +578,6 @@
     modalBody.innerHTML="";
   }
 
-  // ---- info calculations ----
   function parseWinrateToNumber(winrateText){
     if (!winrateText) return NaN;
     const s = winrateText.toString().trim();
@@ -619,14 +602,8 @@
     totalGamesEl.textContent = Number.isFinite(totalGames) ? totalGames.toFixed(0) : "—";
     avgWinrateEl.textContent = Number.isFinite(avgWinrate) ? `${avgWinrate.toFixed(0)}%` : "—";
     lastTournamentEl.textContent = lastTournamentText || "—";
-
-    // line: "Duel rytíř 5.2 • načteno: 05. 02. 2026 19:38:17"
-    const left = lastTournamentText || "—";
-    const ts = lastLoadedAt || "—";
-    lastLineTextEl.textContent = `${left} • načteno: ${ts}`;
   }
 
-  // ---- last data (and timestamp) ----
   async function loadLastData(){
     lastLoadedAt = formatNow();
     lastDataBadge.textContent = `načteno: ${lastLoadedAt}`;
@@ -641,10 +618,9 @@
       const rows = parseCSV(text);
       let last = "";
       for (let i=1;i<rows.length;i++){
-        const v = (rows[i][1] ?? "").toString().trim(); // col B
+        const v = (rows[i][1] ?? "").toString().trim();
         if (v) last = v;
       }
-
       lastTournamentText = last || "";
       updateInfoBar();
     } catch {
@@ -653,7 +629,6 @@
     }
   }
 
-  // ---- standings ----
   function renderStandings(rows){
     const q = normalizeKey(searchEl.value);
     const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q));
@@ -742,7 +717,6 @@
     await Promise.all([loadStandings(), loadLastData()]);
   }
 
-  // ---- Player modal ----
   function buildHero2col(playerObj){
     const eloText = Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "";
     const rankRight = `<span class="rankPill">${rankCellHtml(playerObj.rank)}</span>`;
@@ -923,7 +897,7 @@
     }
   }
 
-  // ---- events ----
+  // events
   searchEl.addEventListener("input", () => renderStandings(allRows));
   refreshBtn.addEventListener("click", loadAll);
   requestUploadBtn.addEventListener("click", () => {
