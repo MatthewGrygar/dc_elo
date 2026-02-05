@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELO žebříček</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background:#111; color:#eee; }
+    header { padding: 28px 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
+    header .wrap { max-width: 900px; margin: 0 auto; }
+    h1 { margin: 0 0 6px; font-size: 26px; }
+    .muted { opacity: .75; }
+
+    main { max-width: 900px; margin: 0 auto; padding: 16px; }
+    .card { margin-top: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 18px; overflow: hidden; background: rgba(255,255,255,.03); }
+    .toolbar { display:flex; gap: 12px; align-items:center; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(255,255,255,.10); }
+    .left { display:flex; gap: 12px; align-items:center; }
+    .badge { font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); }
+    input[type="search"]{
+      width: min(360px, 60vw);
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: transparent;
+      color: inherit;
+    }
+    button{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 12px; }
+    thead th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
+    tbody tr { border-top: 1px solid rgba(255,255,255,.08); }
+    tbody tr:hover { background: rgba(255,255,255,.05); }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .rank { width: 64px; opacity: .8; }
+    .gold { color: gold; font-weight: 700; }
+    .silver { color: silver; font-weight: 700; }
+    .bronze { color: #cd7f32; font-weight: 700; }
+
+    #error { display:none; margin-top: 12px; white-space: pre-wrap; color: #ff6b6b; }
+    footer { padding: 12px; opacity: .7; font-size: 12px; border-top: 1px solid rgba(255,255,255,.10); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>ELO žebříček</h1>
+      <div class="muted">Načítáno z Google Sheets (list: “Elo standings”).</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="toolbar">
+        <div class="left">
+          <span id="status" class="badge">Načítám…</span>
+          <input id="search" type="search" placeholder="Hledat hráče…" autocomplete="off" />
+        </div>
+        <button id="refresh" type="button">Obnovit</button>
+      </div>
+
+      <div style="overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th class="rank">#</th>
+              <th>Hráč</th>
+              <th class="num">ELO</th>
+              <th class="num">Games</th>
+              <th class="num">Winrate</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <footer>
+        Sloupce: <b>player</b>, <b>rating</b>, <b>games</b>, <b>winrate</b> (podle CSV exportu).
+      </footer>
+    </div>
+
+    <div id="error"></div>
+  </main>
+
+<script>
+  // Tvůj CSV endpoint
+  const SHEETS_CSV_URL =
+    "https://docs.google.com/spreadsheets/d/1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA/gviz/tq?tqx=out:csv&sheet=Elo%20standings";
+
+  const statusEl = document.getElementById("status");
+  const tbody = document.getElementById("tbody");
+  const errorEl = document.getElementById("error");
+  const searchEl = document.getElementById("search");
+  const refreshBtn = document.getElementById("refresh");
+
+  let allRows = [];
+
+  function setStatus(text) { statusEl.textContent = text; }
+  function showError(msg) { errorEl.style.display = "block"; errorEl.textContent = msg; }
+  function hideError() { errorEl.style.display = "none"; errorEl.textContent = ""; }
+
+  function escapeHtml(str) {
+    return (str ?? "").toString()
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function normalizeKey(s) {
+    return (s || "")
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize("NFD").replace(/\p{Diacritic}/gu, "");
+  }
+
+  // CSV parser s podporou uvozovek
+  function parseCSV(csvText) {
+    const rows = [];
+    let row = [];
+    let cur = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < csvText.length; i++) {
+      const c = csvText[i];
+      const next = csvText[i + 1];
+
+      if (c === '"' && inQuotes && next === '"') { cur += '"'; i++; }
+      else if (c === '"') inQuotes = !inQuotes;
+      else if (c === "," && !inQuotes) { row.push(cur); cur = ""; }
+      else if ((c === "\n" || c === "\r") && !inQuotes) {
+        if (c === "\r" && next === "\n") i++;
+        row.push(cur); cur = "";
+        if (row.some(x => x.trim() !== "")) rows.push(row);
+        row = [];
+      } else {
+        cur += c;
+      }
+    }
+    if (cur.length || row.length) {
+      row.push(cur);
+      if (row.some(x => x.trim() !== "")) rows.push(row);
+    }
+    return rows;
+  }
+
+  function toNumber(x) {
+    if (x == null) return NaN;
+    const s = x.toString().replace(/\s/g, "").replace(",", ".");
+    const n = Number(s);
+    return Number.isFinite(n) ? n : NaN;
+  }
+
+  function render(rows) {
+    const q = normalizeKey(searchEl.value);
+    const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q));
+
+    tbody.innerHTML = "";
+
+    if (!filtered.length) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="5" class="muted">Nic nenalezeno.</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+
+    filtered.forEach((r, idx) => {
+      let medal = "";
+      if (idx === 0) medal = "gold";
+      else if (idx === 1) medal = "silver";
+      else if (idx === 2) medal = "bronze";
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="rank ${medal}">${idx + 1}</td>
+        <td>${escapeHtml(r.player)}</td>
+        <td class="num">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
+        <td class="num">${Number.isFinite(r.games) ? r.games.toFixed(0) : ""}</td>
+        <td class="num">${escapeHtml(r.winrateText || "")}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function fetchUtf8Text(url) {
+    // Důležité: čteme bytes a dekódujeme jako UTF-8,
+    // aby se nerozbila diakritika.
+    const res = await fetch(url, { cache: "no-store" });
+    const buf = await res.arrayBuffer();
+    const text = new TextDecoder("utf-8").decode(buf);
+    return { res, text };
+  }
+
+  async function load() {
+    hideError();
+    setStatus("Načítám…");
+    refreshBtn.disabled = true;
+
+    try {
+      const u = new URL(SHEETS_CSV_URL);
+      u.searchParams.set("_", Date.now().toString()); // cache bust
+
+      const { res, text } = await fetchUtf8Text(u.toString());
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // Když Google vrátí HTML, není to CSV
+      if (text.trim().startsWith("<")) {
+        throw new Error("Místo CSV přišlo HTML (tabulka není veřejná / není publikovaná).");
+      }
+
+      const rows = parseCSV(text);
+      if (!rows.length) throw new Error("Prázdné CSV.");
+
+      const headers = rows[0].map(h => normalizeKey(h));
+      const idx = (name) => headers.indexOf(name);
+
+      const iPlayer = idx("player");
+      const iRating = idx("rating");
+      const iGames  = idx("games");
+      const iWinrate = headers.findIndex(h => h === "winrate" || h.includes("winrate"));
+
+      if (iPlayer === -1 || iRating === -1) {
+        throw new Error(`Nenašel jsem sloupce 'player' a 'rating'. Hlavičky: ${headers.join(", ")}`);
+      }
+
+      allRows = rows.slice(1)
+        .map(r => ({
+          player: (r[iPlayer] ?? "").trim(),
+          rating: toNumber(r[iRating]),
+          games: toNumber(iGames !== -1 ? r[iGames] : ""),
+          winrateText: (iWinrate !== -1 ? (r[iWinrate] ?? "").trim() : "")
+        }))
+        .filter(x => x.player.length > 0)
+        .sort((a, b) => (b.rating || -Infinity) - (a.rating || -Infinity));
+
+      setStatus(`Načteno: ${allRows.length}`);
+      render(allRows);
+    } catch (e) {
+      setStatus("Chyba");
+      showError(String(e?.message || e));
+    } finally {
+      refreshBtn.disabled = false;
+    }
+  }
+
+  searchEl.addEventListener("input", () => render(allRows));
+  refreshBtn.addEventListener("click", load);
+
+  load();
+</script>
+</body>
+</html>
