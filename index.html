@@ -33,6 +33,7 @@
       align-items:flex-start;
       justify-content:space-between;
     }
+
     h1{ margin:0 0 6px; font-size:26px; letter-spacing:.2px; }
     .muted{ opacity:.78; }
     .credit{ margin-top:6px; }
@@ -111,29 +112,27 @@
     }
     .btnPrimary:hover{ background: rgba(255,255,255,.12); }
 
-    /* Header left (logo + text) */
+    /* Header left: BIG logo (no panel) + texts */
     .headerLeft{
       display:flex;
-      gap:14px;
+      gap:16px;
       align-items:flex-start;
     }
     .logo{
-      width:64px;
-      height:64px;
-      flex: 0 0 46px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      overflow:hidden;
+      width:92px;   /* výrazně větší */
+      height:92px;  /* výrazně větší */
+      flex: 0 0 92px;
       display:flex;
       align-items:center;
       justify-content:center;
+      overflow:hidden; /* bez pozadí/rámečku */
     }
     .logo img{
       width:100%;
       height:100%;
       object-fit:contain;
       display:block;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.35));
     }
 
     /* Header right group */
@@ -405,6 +404,7 @@
       .heroGrid{ grid-template-columns: 1fr; }
       header .wrap{ flex-direction: column; }
       .headerRight{ justify-content:flex-start; }
+      .logo{ width:74px; height:74px; flex-basis:74px; }
     }
   </style>
 </head>
@@ -619,13 +619,12 @@
     return n;
   }
 
-  // ✅ MEDIÁN ELO + total games / 2
+  // MEDIÁN ELO + total games / 2
   function updateInfoBar(){
     const ratings = allRows.map(r => r.rating).filter(Number.isFinite).sort((a,b)=>a-b);
     const gamesArr = allRows.map(r => r.games).filter(Number.isFinite);
     const winrates = allRows.map(r => parseWinrateToNumber(r.winrate)).filter(Number.isFinite);
 
-    // Median ELO
     let medianElo = NaN;
     if (ratings.length){
       const mid = Math.floor(ratings.length / 2);
@@ -634,11 +633,9 @@
         : (ratings[mid - 1] + ratings[mid]) / 2;
     }
 
-    // Total games / 2
     const totalGamesRaw = gamesArr.length ? gamesArr.reduce((a,b)=>a+b,0) : NaN;
     const totalGames = Number.isFinite(totalGamesRaw) ? (totalGamesRaw / 2) : NaN;
 
-    // Avg winrate
     const avgWinrate = winrates.length ? (winrates.reduce((a,b)=>a+b,0) / winrates.length) : NaN;
 
     avgEloEl.textContent = Number.isFinite(medianElo) ? medianElo.toFixed(0) : "—";
@@ -661,7 +658,7 @@
       const rows = parseCSV(text);
       let last = "";
       for (let i=1;i<rows.length;i++){
-        const v = (rows[i][1] ?? "").toString().trim(); // col B
+        const v = (rows[i][1] ?? "").toString().trim();
         if (v) last = v;
       }
       lastTournamentText = last || "";
