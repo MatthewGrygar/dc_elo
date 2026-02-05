@@ -590,19 +590,31 @@
   }
 
   function updateInfoBar(){
-    const ratings = allRows.map(r => r.rating).filter(Number.isFinite);
-    const games = allRows.map(r => r.games).filter(Number.isFinite);
-    const winrates = allRows.map(r => parseWinrateToNumber(r.winrate)).filter(Number.isFinite);
+  const ratings = allRows.map(r => r.rating).filter(Number.isFinite).sort((a,b)=>a-b);
+  const gamesArr = allRows.map(r => r.games).filter(Number.isFinite);
+  const winrates = allRows.map(r => parseWinrateToNumber(r.winrate)).filter(Number.isFinite);
 
-    const avgElo = ratings.length ? (ratings.reduce((a,b)=>a+b,0) / ratings.length) : NaN;
-    const totalGames = games.length ? games.reduce((a,b)=>a+b,0) : NaN;
-    const avgWinrate = winrates.length ? (winrates.reduce((a,b)=>a+b,0) / winrates.length) : NaN;
-
-    avgEloEl.textContent = Number.isFinite(avgElo) ? avgElo.toFixed(0) : "—";
-    totalGamesEl.textContent = Number.isFinite(totalGames) ? totalGames.toFixed(0) : "—";
-    avgWinrateEl.textContent = Number.isFinite(avgWinrate) ? `${avgWinrate.toFixed(0)}%` : "—";
-    lastTournamentEl.textContent = lastTournamentText || "—";
+  // MEDIÁN ELO
+  let medianElo = NaN;
+  if (ratings.length){
+    const mid = Math.floor(ratings.length / 2);
+    medianElo = (ratings.length % 2 === 1)
+      ? ratings[mid]
+      : (ratings[mid - 1] + ratings[mid]) / 2;
   }
+
+  // Celkový počet her = součet games / 2
+  const totalGamesRaw = gamesArr.length ? gamesArr.reduce((a,b)=>a+b,0) : NaN;
+  const totalGames = Number.isFinite(totalGamesRaw) ? (totalGamesRaw / 2) : NaN;
+
+  // průměrný winrate (zůstává průměr %)
+  const avgWinrate = winrates.length ? (winrates.reduce((a,b)=>a+b,0) / winrates.length) : NaN;
+
+  avgEloEl.textContent = Number.isFinite(medianElo) ? medianElo.toFixed(0) : "—";
+  totalGamesEl.textContent = Number.isFinite(totalGames) ? totalGames.toFixed(0) : "—";
+  avgWinrateEl.textContent = Number.isFinite(avgWinrate) ? `${avgWinrate.toFixed(0)}%` : "—";
+  lastTournamentEl.textContent = lastTournamentText || "—";
+}
 
   async function loadLastData(){
     lastLoadedAt = formatNow();
