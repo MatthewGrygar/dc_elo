@@ -7,66 +7,240 @@
 
   <style>
     :root { color-scheme: light dark; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background:#111; color:#eee; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      margin: 0;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(255,255,255,.10), transparent 60%),
+                  radial-gradient(900px 500px at 80% 0%, rgba(255,215,0,.08), transparent 60%),
+                  #0f1115;
+      color: #eef2ff;
+    }
 
-    header { padding: 22px 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
-    header .wrap { max-width: 1100px; margin: 0 auto; display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; }
-    h1 { margin: 0 0 6px; font-size: 26px; }
-    .muted { opacity: .75; }
+    a { color: inherit; }
+
+    header {
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(15,17,21,.6);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    header .wrap {
+      max-width: 1150px;
+      margin: 0 auto;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: .2px; }
+    .muted { opacity: .78; }
     .credit { margin-top: 6px; }
 
-    main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+    main { max-width: 1150px; margin: 0 auto; padding: 16px; }
 
-    .card { margin-top: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 18px; overflow: hidden; background: rgba(255,255,255,.03); }
+    .card {
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(255,255,255,.035);
+      box-shadow: 0 18px 55px rgba(0,0,0,.35);
+    }
 
-    .toolbar { display:flex; gap: 12px; align-items:center; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(255,255,255,.10); }
-    .left { display:flex; gap: 12px; align-items:center; }
+    .toolbar {
+      display:flex;
+      gap: 12px;
+      align-items:center;
+      justify-content: space-between;
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+    }
+
+    .left { display:flex; gap: 12px; align-items:center; flex-wrap: wrap; }
     .right { display:flex; gap: 10px; align-items:center; }
 
     .badge {
       font-size: 12px;
-      padding: 6px 10px;
+      padding: 7px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.16);
       background: rgba(255,255,255,.06);
       white-space: nowrap;
     }
 
     input[type="search"]{
-      width: min(360px, 60vw);
+      width: min(380px, 70vw);
       padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: transparent;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
       color: inherit;
+      outline: none;
+    }
+    input[type="search"]:focus{
+      border-color: rgba(255,255,255,.28);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
     }
 
     button{
       padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: transparent;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
       color: inherit;
       cursor: pointer;
       white-space: nowrap;
     }
+    button:hover { background: rgba(255,255,255,.06); }
     button:disabled { opacity: .6; cursor: not-allowed; }
 
-    table { width: 100%; border-collapse: collapse; }
-    th, td { text-align: left; padding: 12px; }
-    thead th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
-    tbody tr { border-top: 1px solid rgba(255,255,255,.08); }
-    tbody tr:hover { background: rgba(255,255,255,.05); }
+    .tableWrap { overflow:auto; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: rgba(15,17,21,.92);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      opacity: .85;
+    }
+
+    th, td { text-align: left; padding: 12px 12px; }
+    tbody tr { border-top: 1px solid rgba(255,255,255,.06); }
+    tbody tr:nth-child(2n) { background: rgba(255,255,255,.02); }
+    tbody tr:hover { background: rgba(255,255,255,.055); }
+
     .num { text-align: right; font-variant-numeric: tabular-nums; }
-    .rank { width: 80px; opacity: .85; }
+    .rank { width: 90px; font-variant-numeric: tabular-nums; }
+    .playerBtn {
+      border: none;
+      background: none;
+      color: inherit;
+      cursor: pointer;
+      padding: 0;
+      font: inherit;
+      text-decoration: underline;
+      text-decoration-color: rgba(255,255,255,.25);
+      text-underline-offset: 3px;
+    }
+    .playerBtn:hover { text-decoration-color: rgba(255,255,255,.6); }
 
-    #error { display:none; margin-top: 12px; white-space: pre-wrap; color: #ff6b6b; }
+    .r1 { color: #ffd54a; font-weight: 800; }
+    .r2 { color: #d6dbe6; font-weight: 800; }
+    .r3 { color: #d29a6a; font-weight: 800; }
 
-    footer { padding: 12px; opacity: .7; font-size: 12px; border-top: 1px solid rgba(255,255,255,.10); }
+    #error { display:none; margin-top: 12px; white-space: pre-wrap; color: #ff7a7a; }
+
+    footer {
+      padding: 12px;
+      opacity: .75;
+      font-size: 12px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+    }
+
+    /* Modal */
+    .modalOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(6px);
+      z-index: 50;
+      padding: 18px;
+    }
+    .modal {
+      max-width: 1100px;
+      margin: 0 auto;
+      height: calc(100vh - 36px);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(15,17,21,.92);
+      box-shadow: 0 30px 90px rgba(0,0,0,.6);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .modalHeader{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.02);
+    }
+    .modalTitle{
+      display:flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .modalTitle b{
+      font-size: 16px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 70vw;
+    }
+    .modalTitle span{
+      font-size: 12px;
+      opacity: .75;
+    }
+    .modalBody{
+      padding: 10px 12px 14px;
+      overflow: auto;
+    }
+    .gridTable{
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255,255,255,.02);
+    }
+    .gridTable td{
+      border-top: 1px solid rgba(255,255,255,.08);
+      border-right: 1px solid rgba(255,255,255,.08);
+      padding: 8px 10px;
+      vertical-align: top;
+      white-space: pre-wrap;
+    }
+    .gridTable tr:first-child td { border-top: none; }
+    .gridTable td:last-child { border-right: none; }
+    .gridTable tr:nth-child(2n) td { background: rgba(255,255,255,.02); }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(15,17,21,.95);
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 18px 55px rgba(0,0,0,.45);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      display:none;
+      z-index: 60;
+      max-width: min(680px, calc(100vw - 36px));
+    }
 
     @media (max-width: 740px) {
       header .wrap { flex-direction: column; }
       .right { width: 100%; justify-content: space-between; }
+      .rank { width: 80px; }
     }
   </style>
 </head>
@@ -99,7 +273,7 @@
         </div>
       </div>
 
-      <div style="overflow:auto;">
+      <div class="tableWrap">
         <table>
           <thead>
             <tr>
@@ -118,15 +292,36 @@
       </div>
 
       <footer>
-        Pořadí je „locknuté“ po načtení dat (vyhledávání ho nemění).
+        Tip: Klikni na jméno hráče pro detail (list se stejným názvem). Pořadí je „locknuté“ po načtení dat.
       </footer>
     </div>
 
     <div id="error"></div>
   </main>
 
+  <!-- Modal -->
+  <div id="modalOverlay" class="modalOverlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modalHeader">
+        <div class="modalTitle">
+          <b id="modalName">Hráč</b>
+          <span id="modalSub">Načítám…</span>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button id="openSheetTabBtn" type="button" title="Otevřít Google Sheet dokument">Otevřít Sheets</button>
+          <button id="closeModalBtn" type="button">Zavřít</button>
+        </div>
+      </div>
+      <div class="modalBody" id="modalBody">
+        <!-- grid -->
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
 <script>
-  // --- CSV endpointy ---
+  // --- ZDROJOVÝ SHEET ---
   const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
   const ELO_SHEET_NAME = "Elo standings";
   const DATA_SHEET_NAME = "Data";
@@ -145,11 +340,28 @@
   const refreshBtn = document.getElementById("refresh");
   const lastDataBadge = document.getElementById("lastDataBadge");
 
+  const modalOverlay = document.getElementById("modalOverlay");
+  const closeModalBtn = document.getElementById("closeModalBtn");
+  const openSheetTabBtn = document.getElementById("openSheetTabBtn");
+  const modalName = document.getElementById("modalName");
+  const modalSub = document.getElementById("modalSub");
+  const modalBody = document.getElementById("modalBody");
+
+  const toastEl = document.getElementById("toast");
+
   let allRows = [];
 
+  // --- Helpers ---
   function setStatus(text) { statusEl.textContent = text; }
   function showError(msg) { errorEl.style.display = "block"; errorEl.textContent = msg; }
   function hideError() { errorEl.style.display = "none"; errorEl.textContent = ""; }
+
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.style.display = "block";
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(() => toastEl.style.display = "none", 2600);
+  }
 
   function escapeHtml(str) {
     return (str ?? "").toString()
@@ -214,10 +426,17 @@
     return { res, text };
   }
 
+  function rankCellHtml(rank) {
+    if (rank === 1) return `<span class="r1">👑 ${rank}</span>`;
+    if (rank === 2) return `<span class="r2">${rank}</span>`;
+    if (rank === 3) return `<span class="r3">${rank}</span>`;
+    return `${rank}`;
+  }
+
   function render(rows) {
     const q = normalizeKey(searchEl.value);
 
-    // filtrujeme, ale rank necháváme původní ("locknutý")
+    // filtrujeme, ale rank necháváme "locknutý"
     const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q));
     filtered.sort((a, b) => a.rank - b.rank);
 
@@ -230,11 +449,15 @@
       return;
     }
 
-    filtered.forEach((r) => {
+    for (const r of filtered) {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td class="rank">${r.rank}</td>
-        <td>${escapeHtml(r.player)}</td>
+        <td class="rank">${rankCellHtml(r.rank)}</td>
+        <td>
+          <button class="playerBtn" data-player="${escapeHtml(r.player)}" type="button">
+            ${escapeHtml(r.player)}
+          </button>
+        </td>
         <td class="num">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
         <td class="num">${Number.isFinite(r.games) ? r.games.toFixed(0) : ""}</td>
         <td class="num">${Number.isFinite(r.win) ? r.win.toFixed(0) : ""}</td>
@@ -243,19 +466,18 @@
         <td class="num">${escapeHtml(r.winrate || "")}</td>
       `;
       tbody.appendChild(tr);
-    });
+    }
   }
 
+  // --- "poslední data" z listu Data, sloupec B ---
   async function loadLastData() {
-    // Bere poslední neprázdnou hodnotu ze sloupce B na listu "Data"
     try {
       const u = new URL(DATA_CSV_URL);
       u.searchParams.set("_", Date.now().toString());
 
       const { res, text } = await fetchUtf8Text(u.toString());
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      if (text.trim().startsWith("<")) throw new Error("List Data není dostupný (HTML místo CSV).");
+      if (text.trim().startsWith("<")) throw new Error("HTML místo CSV");
 
       const rows = parseCSV(text);
       if (rows.length < 2) {
@@ -263,19 +485,18 @@
         return;
       }
 
-      // přeskočíme hlavičku a vezmeme sloupec B (index 1)
       let last = "";
       for (let i = 1; i < rows.length; i++) {
-        const val = (rows[i][1] ?? "").toString().trim();
+        const val = (rows[i][1] ?? "").toString().trim(); // sloupec B
         if (val) last = val;
       }
-
       lastDataBadge.textContent = `poslední data: ${last || "(nenalezeno)"}`;
-    } catch (e) {
+    } catch {
       lastDataBadge.textContent = "poslední data: chyba";
     }
   }
 
+  // --- standings ---
   async function loadStandings() {
     hideError();
     setStatus("Načítám…");
@@ -286,9 +507,8 @@
       u.searchParams.set("_", Date.now().toString());
 
       const { res, text } = await fetchUtf8Text(u.toString());
-
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      if (text.trim().startsWith("<")) throw new Error("Místo CSV přišlo HTML (tabulka není veřejná / není publikovaná).");
+      if (text.trim().startsWith("<")) throw new Error("Místo CSV přišlo HTML (sheet není veřejný / není publikovaný).");
 
       const rows = parseCSV(text);
       if (!rows.length) throw new Error("Prázdné CSV.");
@@ -296,14 +516,12 @@
       const headers = rows[0].map(h => normalizeKey(h));
       const idx = (name) => headers.indexOf(name);
 
-      // Přesně podle tvých sloupců A–G:
       const iPlayer  = idx("player");
       const iRating  = idx("rating");
       const iGames   = idx("games");
       const iWin     = idx("win");
       const iLoss    = idx("loss");
       const iDraw    = idx("draw");
-      // v CSV může být "winrate" nebo "Winrate" → normalizeKey to srovná
       const iWinrate = headers.findIndex(h => h === "winrate" || h.includes("winrate"));
 
       if ([iPlayer, iRating, iGames, iWin, iLoss, iDraw].some(i => i === -1) || iWinrate === -1) {
@@ -325,10 +543,10 @@
         }))
         .filter(x => x.player.length > 0);
 
-      // seřadíme podle ratingu
+      // Žebříček podle ratingu
       loaded.sort((a, b) => (b.rating || -Infinity) - (a.rating || -Infinity));
 
-      // "lock" pořadí po načtení
+      // LOCK pořadí
       allRows = loaded.map((p, i) => ({ ...p, rank: i + 1 }));
 
       setStatus(`Načteno: ${allRows.length}`);
@@ -342,12 +560,102 @@
   }
 
   async function loadAll() {
-    // oboje najednou
     await Promise.all([loadStandings(), loadLastData()]);
   }
 
+  // --- Player detail modal ---
+  function openModal() {
+    modalOverlay.style.display = "block";
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal() {
+    modalOverlay.style.display = "none";
+    document.body.style.overflow = "";
+    modalBody.innerHTML = "";
+  }
+
+  function buildGridTable(rows) {
+    // ořízneme trailing prázdné sloupce, a necháme rozumný počet
+    const trimmed = rows
+      .map(r => {
+        let lastNonEmpty = -1;
+        for (let i = 0; i < r.length; i++) {
+          if ((r[i] ?? "").toString().trim() !== "") lastNonEmpty = i;
+        }
+        return r.slice(0, Math.max(0, lastNonEmpty + 1));
+      })
+      .filter(r => r.some(cell => (cell ?? "").toString().trim() !== ""));
+
+    if (!trimmed.length) return `<div class="muted">Žádná data.</div>`;
+
+    const maxCols = Math.min(12, Math.max(...trimmed.map(r => r.length)));
+    const htmlRows = trimmed.map(r => {
+      const cells = [];
+      for (let i = 0; i < maxCols; i++) {
+        const v = (r[i] ?? "").toString();
+        cells.push(`<td>${escapeHtml(v)}</td>`);
+      }
+      return `<tr>${cells.join("")}</tr>`;
+    });
+
+    return `<table class="gridTable">${htmlRows.join("")}</table>`;
+  }
+
+  async function loadPlayerSheet(playerName) {
+    // list se jmenuje stejně jako hráč
+    const url =
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(playerName)}`;
+
+    modalName.textContent = playerName;
+    modalSub.textContent = "Načítám detail…";
+    modalBody.innerHTML = `<div class="muted">Načítám…</div>`;
+    openModal();
+
+    // tlačítko otevřít celý dokument (tab konkrétní neumíme bez gid)
+    openSheetTabBtn.onclick = () => {
+      window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
+    };
+
+    try {
+      const u = new URL(url);
+      u.searchParams.set("_", Date.now().toString());
+
+      const { res, text } = await fetchUtf8Text(u.toString());
+
+      // Neexistující sheet často vrátí HTML nebo prázdno
+      if (!res.ok) throw new Error("HTTP");
+      if (text.trim().startsWith("<")) throw new Error("HTML");
+
+      const rows = parseCSV(text);
+      if (!rows.length) throw new Error("EMPTY");
+
+      modalSub.textContent = "Detail z listu se stejným názvem";
+      modalBody.innerHTML = buildGridTable(rows);
+    } catch {
+      closeModal();
+      toast("Podrobná data hráče nenalezena");
+    }
+  }
+
+  // --- events ---
   searchEl.addEventListener("input", () => render(allRows));
   refreshBtn.addEventListener("click", loadAll);
+
+  tbody.addEventListener("click", (e) => {
+    const btn = e.target.closest(".playerBtn");
+    if (!btn) return;
+    const player = btn.getAttribute("data-player");
+    if (!player) return;
+    loadPlayerSheet(player);
+  });
+
+  closeModalBtn.addEventListener("click", closeModal);
+  modalOverlay.addEventListener("click", (e) => {
+    if (e.target === modalOverlay) closeModal();
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modalOverlay.style.display === "block") closeModal();
+  });
 
   loadAll();
 </script>
