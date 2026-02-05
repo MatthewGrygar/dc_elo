@@ -111,6 +111,31 @@
     }
     .btnPrimary:hover{ background: rgba(255,255,255,.12); }
 
+    /* Header left (logo + text) */
+    .headerLeft{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+    }
+    .logo{
+      width:46px;
+      height:46px;
+      flex: 0 0 46px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+    }
+
     /* Header right group */
     .headerRight{
       display:flex;
@@ -387,17 +412,22 @@
 <body>
 <header>
   <div class="wrap">
-    <div>
-      <h1>ELO žebříček</h1>
-      <div class="muted">Načítáno z Google Sheets (list: “Elo standings”).</div>
-      <div class="credit muted">
-        Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně zpravuje:
+    <div class="headerLeft">
+      <div class="logo">
+        <img src="image/logo.png" alt="Logo" onerror="this.onerror=null;this.src='image/logo.jpg';" />
+      </div>
+      <div>
+        <h1>ELO žebříček</h1>
+        <div class="muted">Načítáno z Google Sheets (list: “Elo standings”).</div>
+        <div class="credit muted">
+          Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně zpravuje:
+        </div>
       </div>
     </div>
 
     <div class="headerRight">
-      <button class="btnPrimary" id="requestUploadBtn" type="button">ZAŽÁDAT O NAHRÁNÍ DAT</button>
       <div class="badge" id="lastDataBadge">načteno: načítám…</div>
+      <button class="btnPrimary" id="requestUploadBtn" type="button">ZAŽÁDAT O NAHRÁNÍ DAT</button>
     </div>
   </div>
 </header>
@@ -589,32 +619,33 @@
     return n;
   }
 
+  // ✅ MEDIÁN ELO + total games / 2
   function updateInfoBar(){
-  const ratings = allRows.map(r => r.rating).filter(Number.isFinite).sort((a,b)=>a-b);
-  const gamesArr = allRows.map(r => r.games).filter(Number.isFinite);
-  const winrates = allRows.map(r => parseWinrateToNumber(r.winrate)).filter(Number.isFinite);
+    const ratings = allRows.map(r => r.rating).filter(Number.isFinite).sort((a,b)=>a-b);
+    const gamesArr = allRows.map(r => r.games).filter(Number.isFinite);
+    const winrates = allRows.map(r => parseWinrateToNumber(r.winrate)).filter(Number.isFinite);
 
-  // MEDIÁN ELO
-  let medianElo = NaN;
-  if (ratings.length){
-    const mid = Math.floor(ratings.length / 2);
-    medianElo = (ratings.length % 2 === 1)
-      ? ratings[mid]
-      : (ratings[mid - 1] + ratings[mid]) / 2;
+    // Median ELO
+    let medianElo = NaN;
+    if (ratings.length){
+      const mid = Math.floor(ratings.length / 2);
+      medianElo = (ratings.length % 2 === 1)
+        ? ratings[mid]
+        : (ratings[mid - 1] + ratings[mid]) / 2;
+    }
+
+    // Total games / 2
+    const totalGamesRaw = gamesArr.length ? gamesArr.reduce((a,b)=>a+b,0) : NaN;
+    const totalGames = Number.isFinite(totalGamesRaw) ? (totalGamesRaw / 2) : NaN;
+
+    // Avg winrate
+    const avgWinrate = winrates.length ? (winrates.reduce((a,b)=>a+b,0) / winrates.length) : NaN;
+
+    avgEloEl.textContent = Number.isFinite(medianElo) ? medianElo.toFixed(0) : "—";
+    totalGamesEl.textContent = Number.isFinite(totalGames) ? totalGames.toFixed(0) : "—";
+    avgWinrateEl.textContent = Number.isFinite(avgWinrate) ? `${avgWinrate.toFixed(0)}%` : "—";
+    lastTournamentEl.textContent = lastTournamentText || "—";
   }
-
-  // Celkový počet her = součet games / 2
-  const totalGamesRaw = gamesArr.length ? gamesArr.reduce((a,b)=>a+b,0) : NaN;
-  const totalGames = Number.isFinite(totalGamesRaw) ? (totalGamesRaw / 2) : NaN;
-
-  // průměrný winrate (zůstává průměr %)
-  const avgWinrate = winrates.length ? (winrates.reduce((a,b)=>a+b,0) / winrates.length) : NaN;
-
-  avgEloEl.textContent = Number.isFinite(medianElo) ? medianElo.toFixed(0) : "—";
-  totalGamesEl.textContent = Number.isFinite(totalGames) ? totalGames.toFixed(0) : "—";
-  avgWinrateEl.textContent = Number.isFinite(avgWinrate) ? `${avgWinrate.toFixed(0)}%` : "—";
-  lastTournamentEl.textContent = lastTournamentText || "—";
-}
 
   async function loadLastData(){
     lastLoadedAt = formatNow();
@@ -630,7 +661,7 @@
       const rows = parseCSV(text);
       let last = "";
       for (let i=1;i<rows.length;i++){
-        const v = (rows[i][1] ?? "").toString().trim();
+        const v = (rows[i][1] ?? "").toString().trim(); // col B
         if (v) last = v;
       }
       lastTournamentText = last || "";
