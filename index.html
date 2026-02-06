@@ -1,25 +1,97 @@
 <!doctype html>
-<html lang="cs">
+<html lang="cs" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ELO žebříček</title>
 
   <style>
+    /* =========================
+       THEME TOKENS (CSS VARS)
+       ========================= */
+    html[data-theme="dark"]{
+      --bg0: #0f1115;
+      --bg1: rgba(15,17,21,.60);
+      --text: #eef2ff;
+      --muted: rgba(238,242,255,.78);
+      --border: rgba(255,255,255,.12);
+      --border2: rgba(255,255,255,.10);
+      --panel: rgba(255,255,255,.035);
+      --panel2: rgba(255,255,255,.03);
+      --chip: rgba(255,255,255,.06);
+      --chip2: rgba(0,0,0,.18);
+      --shadow: 0 18px 55px rgba(0,0,0,.35);
+      --thead: rgba(15,17,21,.92);
+      --hover: rgba(255,255,255,.055);
+      --altrow: rgba(255,255,255,.02);
+      --glow: rgba(255,255,255,.06);
+      --btnPrimaryBg: rgba(255,255,255,.08);
+      --btnPrimaryBd: rgba(255,255,255,.22);
+
+      --winBg: rgba(60, 220, 120, .10);
+      --winBd: rgba(60, 220, 120, .22);
+      --lossBg: rgba(255, 90, 90, .10);
+      --lossBd: rgba(255, 90, 90, .22);
+      --drawBg: rgba(255, 170, 60, .10);
+      --drawBd: rgba(255, 170, 60, .22);
+    }
+
+    html[data-theme="light"]{
+      /* béžově mramorové pozadí */
+      --bg0: #f3efe6;
+      --bg1: rgba(243,239,230,.70);
+      --text: #151515;
+      --muted: rgba(21,21,21,.70);
+      --border: rgba(0,0,0,.10);
+      --border2: rgba(0,0,0,.08);
+      --panel: rgba(255,255,255,.70);
+      --panel2: rgba(255,255,255,.55);
+      --chip: rgba(255,255,255,.70);
+      --chip2: rgba(255,255,255,.72);
+      --shadow: 0 18px 50px rgba(0,0,0,.12);
+      --thead: rgba(255,255,255,.92);
+      --hover: rgba(0,0,0,.035);
+      --altrow: rgba(0,0,0,.018);
+      --glow: rgba(0,0,0,.05);
+      --btnPrimaryBg: rgba(255,255,255,.75);
+      --btnPrimaryBd: rgba(0,0,0,.14);
+
+      --winBg: rgba(60, 220, 120, .14);
+      --winBd: rgba(20, 150, 70, .22);
+      --lossBg: rgba(255, 90, 90, .14);
+      --lossBd: rgba(190, 40, 40, .22);
+      --drawBg: rgba(255, 170, 60, .16);
+      --drawBd: rgba(180, 110, 20, .22);
+    }
+
     :root { color-scheme: light dark; }
+
     body{
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       margin:0;
-      background: radial-gradient(1200px 600px at 20% -10%, rgba(255,255,255,.10), transparent 60%),
-                  radial-gradient(900px 500px at 80% 0%, rgba(255,215,0,.08), transparent 60%),
-                  #0f1115;
-      color:#eef2ff;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(900px 500px at 80% 0%, rgba(255,215,0,.08), transparent 60%),
+        radial-gradient(900px 500px at 20% 80%, rgba(80,120,255,.06), transparent 60%),
+        var(--bg0);
+    }
+
+    /* marble feel for light theme */
+    html[data-theme="light"] body{
+      background:
+        radial-gradient(900px 420px at 10% 0%, rgba(255,255,255,.80), transparent 55%),
+        radial-gradient(800px 380px at 90% 10%, rgba(255,255,255,.55), transparent 60%),
+        radial-gradient(900px 500px at 25% 95%, rgba(210,190,160,.35), transparent 60%),
+        linear-gradient(120deg, rgba(230,220,205,.55), transparent 45%),
+        linear-gradient(25deg, rgba(255,255,255,.65), transparent 55%),
+        var(--bg0);
     }
 
     header{
       padding:18px 18px 14px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background:rgba(15,17,21,.6);
+      border-bottom:1px solid var(--border2);
+      background: var(--bg1);
       backdrop-filter: blur(10px);
       position: sticky;
       top:0;
@@ -35,7 +107,7 @@
     }
 
     h1{ margin:0 0 6px; font-size:26px; letter-spacing:.2px; }
-    .muted{ opacity:.78; }
+    .muted{ opacity:1; color: var(--muted); }
     .credit{ margin-top:6px; }
 
     .container{
@@ -48,11 +120,11 @@
 
     .card{
       margin-top:12px;
-      border:1px solid rgba(255,255,255,.12);
+      border:1px solid var(--border);
       border-radius:20px;
       overflow:hidden;
-      background:rgba(255,255,255,.035);
-      box-shadow:0 18px 55px rgba(0,0,0,.35);
+      background: var(--panel);
+      box-shadow: var(--shadow);
     }
 
     .toolbar{
@@ -61,8 +133,8 @@
       align-items:center;
       justify-content:space-between;
       padding:12px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.02);
+      border-bottom:1px solid var(--border2);
+      background: var(--panel2);
     }
     .left{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
     .right{ display:flex; gap:10px; align-items:center; }
@@ -71,8 +143,8 @@
       font-size:12px;
       padding:7px 10px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      background: var(--chip);
       white-space:nowrap;
     }
 
@@ -80,37 +152,35 @@
       width:min(380px, 70vw);
       padding:10px 12px;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(0,0,0,.18);
+      border:1px solid var(--border);
+      background: var(--chip2);
       color:inherit;
       outline:none;
     }
     input[type="search"]:focus{
-      border-color:rgba(255,255,255,.28);
-      box-shadow:0 0 0 4px rgba(255,255,255,.06);
+      border-color: rgba(120,120,120,.35);
+      box-shadow:0 0 0 4px var(--glow);
     }
 
     button{
       padding:10px 12px;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(0,0,0,.18);
+      border:1px solid var(--border);
+      background: var(--chip2);
       color:inherit;
       cursor:pointer;
       white-space:nowrap;
     }
-    button:hover{ background: rgba(255,255,255,.06); }
-    button:disabled{ opacity:.6; cursor:not-allowed; }
+    button:hover{ filter: brightness(1.06); }
 
     .btnPrimary{
-      border-color: rgba(255,255,255,.22);
-      background: rgba(255,255,255,.08);
+      border-color: var(--btnPrimaryBd);
+      background: var(--btnPrimaryBg);
       font-weight: 900;
       letter-spacing: .04em;
       text-transform: uppercase;
       padding: 10px 14px;
     }
-    .btnPrimary:hover{ background: rgba(255,255,255,.12); }
 
     /* Header left: BIG logo (no panel) + texts */
     .headerLeft{
@@ -119,13 +189,13 @@
       align-items:flex-start;
     }
     .logo{
-      width:118px;   /* výrazně větší */
-      height:118px;  /* výrazně větší */
-      flex: 0 0 118x;
+      width:118px;
+      height:118px;
+      flex: 0 0 118px;
       display:flex;
       align-items:center;
       justify-content:center;
-      overflow:hidden; /* bez pozadí/rámečku */
+      overflow:hidden;
       margin-top:-4px;
     }
     .logo img{
@@ -133,45 +203,78 @@
       height:100%;
       object-fit:contain;
       display:block;
-      filter: drop-shadow(0 10px 22px rgba(0,0,0,.35));
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.22));
     }
 
-    /* Header right group */
+    /* Header right group (badge + request + theme) */
     .headerRight{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:flex-end;
+    }
+    .headerRightTop{
       display:flex;
       gap:10px;
       align-items:center;
       justify-content:flex-end;
       flex-wrap:wrap;
     }
+    .themeRow{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      justify-content:flex-end;
+      width:100%;
+    }
+    .themeToggle{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:13px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--border);
+      background: var(--chip);
+      cursor:pointer;
+      user-select:none;
+    }
+    .themeToggle .dot{
+      width:8px; height:8px; border-radius:50%;
+      background: rgba(120,120,120,.6);
+      display:inline-block;
+    }
+    .themeHint{ font-size:12px; color: var(--muted); }
 
     /* Info panel */
     .infoBar{
       margin:12px 0 12px;
       padding:10px 12px;
-      border:1px solid rgba(255,255,255,.12);
+      border:1px solid var(--border);
       border-radius:16px;
-      background: rgba(255,255,255,.03);
+      background: var(--panel2);
       display:grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap:10px;
     }
     .infoItem{
-      border:1px solid rgba(255,255,255,.10);
+      border:1px solid var(--border2);
       border-radius:14px;
       padding:10px 10px;
-      background: rgba(0,0,0,.12);
+      background: rgba(0,0,0,.06);
       display:flex;
       align-items:baseline;
       justify-content:space-between;
       gap:10px;
       min-width:0;
     }
+    html[data-theme="light"] .infoItem{ background: rgba(255,255,255,.50); }
+
     .infoItem b{
       font-size:11px;
       letter-spacing:.08em;
       text-transform: uppercase;
-      opacity:.72;
+      opacity:.85;
       white-space:nowrap;
     }
     .infoItem span{
@@ -183,9 +286,6 @@
       text-align:right;
       min-width: 0;
     }
-    @media (max-width: 860px){
-      .infoBar{ grid-template-columns: 1fr 1fr; }
-    }
 
     .tableWrap{ overflow:auto; }
     table{ width:100%; border-collapse:separate; border-spacing:0; }
@@ -193,17 +293,17 @@
       position:sticky;
       top:0;
       z-index:2;
-      background:rgba(15,17,21,.92);
+      background: var(--thead);
       backdrop-filter: blur(6px);
-      border-bottom:1px solid rgba(255,255,255,.12);
+      border-bottom:1px solid var(--border2);
       font-size:12px;
       letter-spacing:.08em;
       text-transform:uppercase;
       opacity:.85;
     }
     th, td{ text-align:left; padding:12px 12px; }
-    tbody tr:nth-child(2n){ background: rgba(255,255,255,.02); }
-    tbody tr:hover{ background: rgba(255,255,255,.055); }
+    tbody tr:nth-child(2n){ background: var(--altrow); }
+    tbody tr:hover{ background: var(--hover); }
     .num{ text-align:right; font-variant-numeric: tabular-nums; }
     .rank{ width:90px; font-variant-numeric: tabular-nums; }
 
@@ -215,23 +315,24 @@
       padding:0;
       font:inherit;
       text-decoration: underline;
-      text-decoration-color: rgba(255,255,255,.25);
+      text-decoration-color: rgba(120,120,120,.35);
       text-underline-offset:3px;
     }
-    .playerBtn:hover{ text-decoration-color: rgba(255,255,255,.6); }
 
     .r1{ color:#ffd54a; font-weight:900; }
-    .r2{ color:#d6dbe6; font-weight:900; }
+    .r2{ color:#b6bcc8; font-weight:900; }
+    html[data-theme="light"] .r2{ color:#6b6f77; }
     .r3{ color:#d29a6a; font-weight:900; }
 
-    #error{ display:none; margin-top:12px; white-space:pre-wrap; color:#ff7a7a; }
+    #error{ display:none; margin-top:12px; white-space:pre-wrap; color:#ff4d4d; }
 
     footer{
       padding:12px;
       opacity:.75;
       font-size:12px;
-      border-top:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.02);
+      border-top:1px solid var(--border2);
+      background: var(--panel2);
+      color: var(--muted);
     }
 
     /* Modal */
@@ -249,12 +350,13 @@
       margin:0 auto;
       height: calc(100vh - 36px);
       border-radius:20px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(15,17,21,.92);
-      box-shadow:0 30px 90px rgba(0,0,0,.6);
+      border:1px solid var(--border);
+      background: var(--thead);
+      box-shadow:0 30px 90px rgba(0,0,0,.35);
       overflow:hidden;
       display:flex;
       flex-direction:column;
+      color: var(--text);
     }
     .modalHeader{
       display:flex;
@@ -262,8 +364,8 @@
       justify-content:space-between;
       gap:10px;
       padding:12px;
-      border-bottom:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.02);
+      border-bottom:1px solid var(--border2);
+      background: var(--panel2);
     }
     .modalTitle{
       display:flex;
@@ -278,7 +380,7 @@
       white-space:nowrap;
       max-width: 70vw;
     }
-    .modalTitle span{ font-size:12px; opacity:.75; }
+    .modalTitle span{ font-size:12px; color: var(--muted); }
     .modalBody{ padding:12px; overflow:auto; }
 
     /* HERO 2 columns */
@@ -290,9 +392,9 @@
       align-items: stretch;
     }
     .box{
-      border:1px solid rgba(255,255,255,.12);
+      border:1px solid var(--border);
       border-radius:18px;
-      background: rgba(255,255,255,.03);
+      background: var(--panel);
       overflow:hidden;
     }
     .boxPad{ padding:14px; }
@@ -304,20 +406,20 @@
       justify-content:space-between;
       gap:10px;
     }
-    .rankLine .muted{ opacity:.8; }
+    .rankLine .muted{ color: var(--muted); }
     .rankPill{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      background: var(--chip);
       padding:6px 10px;
       border-radius:999px;
       font-size:12px;
       white-space:nowrap;
     }
 
-    .heroEloLabel{ opacity:.75; font-size:12px; }
+    .heroEloLabel{ color: var(--muted); font-size:12px; }
     .heroElo{ font-size:44px; font-weight:900; line-height:1; margin:6px 0 0; }
 
     .statsGrid{
@@ -333,17 +435,17 @@
       margin-top:8px;
     }
     .stat{
-      border:1px solid rgba(255,255,255,.10);
+      border:1px solid var(--border2);
       border-radius:14px;
       padding:10px;
-      background: rgba(255,255,255,.02);
+      background: var(--panel2);
     }
-    .stat b{ display:block; font-size:12px; opacity:.75; letter-spacing:.06em; text-transform:uppercase; }
+    .stat b{ display:block; font-size:12px; color: var(--muted); letter-spacing:.06em; text-transform:uppercase; }
     .stat span{ display:block; margin-top:4px; font-size:16px; font-weight:900; }
 
-    .statWin{ background: rgba(60, 220, 120, .10); border-color: rgba(60, 220, 120, .22); }
-    .statLoss{ background: rgba(255, 90, 90, .10); border-color: rgba(255, 90, 90, .22); }
-    .statDraw{ background: rgba(255, 170, 60, .10); border-color: rgba(255, 170, 60, .22); }
+    .statWin{ background: var(--winBg); border-color: var(--winBd); }
+    .statLoss{ background: var(--lossBg); border-color: var(--lossBd); }
+    .statDraw{ background: var(--drawBg); border-color: var(--drawBd); }
 
     .chartHead{
       display:flex;
@@ -353,21 +455,22 @@
       margin-bottom:8px;
     }
     .chartHead b{ font-size:13px; letter-spacing:.08em; text-transform:uppercase; opacity:.9; }
-    .chartHead span{ font-size:12px; opacity:.75; }
-    #eloChart{ min-height: 220px; }
+    .chartHead span{ font-size:12px; color: var(--muted); }
+    #eloChart{ min-height: 220px; color: var(--muted); }
 
     .bigError{
       display:flex;
       align-items:center;
       gap:12px;
       border:1px solid rgba(255,122,122,.35);
-      background: rgba(255,122,122,.08);
-      color:#ffd0d0;
+      background: rgba(255,122,122,.12);
+      color:#7a1f1f;
       border-radius:18px;
       padding:14px;
       margin-top:10px;
       font-weight:900;
     }
+    html[data-theme="dark"] .bigError{ color:#ffd0d0; }
     .bigError .icon{ font-size:22px; }
 
     .sectionTitle{
@@ -380,9 +483,9 @@
 
     .gridTableWrap{
       overflow:auto;
-      border:1px solid rgba(255,255,255,.10);
+      border:1px solid var(--border2);
       border-radius:16px;
-      background: rgba(255,255,255,.02);
+      background: var(--panel2);
     }
     .gridTable{
       width:100%;
@@ -390,8 +493,8 @@
       border-spacing:0;
     }
     .gridTable td{
-      border-top:1px solid rgba(255,255,255,.08);
-      border-right:1px solid rgba(255,255,255,.08);
+      border-top:1px solid var(--border2);
+      border-right:1px solid var(--border2);
       padding:8px 10px;
       vertical-align:top;
       white-space:pre-wrap;
@@ -399,13 +502,75 @@
     }
     .gridTable tr:first-child td{ border-top:none; }
     .gridTable td:last-child{ border-right:none; }
-    .gridTable tr:nth-child(2n) td{ background: rgba(255,255,255,.02); }
+    .gridTable tr:nth-child(2n) td{ background: var(--altrow); }
 
-    @media (max-width: 980px){
+    /* =========================
+       MOBILE LAYOUT IMPROVEMENTS
+       ========================= */
+    @media (max-width: 560px){
+      header{ padding:14px 14px 12px; }
+      header .wrap{ flex-direction: column; gap:12px; }
+
+      .logo{
+        width:84px;
+        height:84px;
+        flex-basis:84px;
+        margin-top:0;
+      }
+
+      h1{
+        font-size:20px;       /* menší nadpis */
+        margin-bottom:4px;
+      }
+      .muted{
+        font-size:13px;       /* menší texty */
+        line-height:1.25;
+      }
+      .credit{ margin-top:4px; }
+
+      .headerLeft{ gap:12px; align-items:flex-start; }
+      .headerRight{ align-items:flex-start; }
+      .headerRightTop{ justify-content:flex-start; width:100%; }
+      .themeRow{ justify-content:flex-start; }
+
+      .infoBar{
+        grid-template-columns: 1fr 1fr;
+        gap:8px;
+        padding:10px;
+      }
+      .infoItem{
+        padding:10px;
+        min-height:52px;
+      }
+      .infoItem b{ font-size:10px; }
+      .infoItem span{
+        font-size:14px;
+        white-space:nowrap;
+        max-width: 140px;
+      }
+
+      /* Toolbar stack */
+      .toolbar{
+        flex-direction: column;
+        align-items: stretch;
+        gap:10px;
+      }
+      .left{ width:100%; justify-content:space-between; }
+      input[type="search"]{ width:100%; }
+      .right{ width:100%; justify-content:flex-end; }
+
+      /* MOBILE TABLE: only Rank / Player / Rating */
+      .colGames, .colWin, .colLoss, .colDraw, .colWinrate{
+        display:none;
+      }
+      th.colGames, th.colWin, th.colLoss, th.colDraw, th.colWinrate,
+      td.colGames, td.colWin, td.colLoss, td.colDraw, td.colWinrate{
+        display:none;
+      }
+      .rank{ width:64px; }
+
+      /* Modal hero stack */
       .heroGrid{ grid-template-columns: 1fr; }
-      header .wrap{ flex-direction: column; }
-      .headerRight{ justify-content:flex-start; }
-      .logo{ width:92px; height:92px; flex-basis:92px; }
     }
   </style>
 </head>
@@ -415,7 +580,7 @@
   <div class="wrap">
     <div class="headerLeft">
       <div class="logo">
-        <img src="logo.png" alt="Logo" onerror="this.onerror=null;this.src='logo.jpg';" />
+        <img src="image/logo.png" alt="Logo" onerror="this.onerror=null;this.src='image/logo.jpg';" />
       </div>
       <div>
         <h1>ELO žebříček</h1>
@@ -427,8 +592,19 @@
     </div>
 
     <div class="headerRight">
-      <div class="badge" id="lastDataBadge">načteno: načítám…</div>
-      <button class="btnPrimary" id="requestUploadBtn" type="button">ZAŽÁDAT O NAHRÁNÍ DAT</button>
+      <div class="headerRightTop">
+        <div class="badge" id="lastDataBadge">načteno: načítám…</div>
+        <button class="btnPrimary" id="requestUploadBtn" type="button">ZAŽÁDAT O NAHRÁNÍ DAT</button>
+      </div>
+
+      <div class="themeRow">
+        <div class="themeToggle" id="themeToggle" title="Přepnout režim">
+          <span id="themeIcon">🌙</span>
+          <span class="dot"></span>
+          <span id="themeLabel">Tmavý</span>
+        </div>
+        <div class="themeHint">režim</div>
+      </div>
     </div>
   </div>
 </header>
@@ -461,18 +637,18 @@
           <th class="rank">Pořadí</th>
           <th>Player</th>
           <th class="num">Rating</th>
-          <th class="num">Games</th>
-          <th class="num">Win</th>
-          <th class="num">Loss</th>
-          <th class="num">Draw</th>
-          <th class="num">Winrate</th>
+          <th class="num colGames">Games</th>
+          <th class="num colWin">Win</th>
+          <th class="num colLoss">Loss</th>
+          <th class="num colDraw">Draw</th>
+          <th class="num colWinrate">Winrate</th>
         </tr>
         </thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
 
-    <footer>Tip: Klikni na jméno hráče pro detail. Pořadí je „locknuté“ po načtení dat.</footer>
+    <footer>Tip: Klikni na jméno hráče pro detail. Na mobilu se zobrazuje jen Player + Rating, zbytek v detailu.</footer>
   </div>
 
   <div id="error"></div>
@@ -496,6 +672,43 @@
 </div>
 
 <script>
+  /* =========================
+     THEME TOGGLE
+     ========================= */
+  const htmlEl = document.documentElement;
+  const themeToggle = document.getElementById("themeToggle");
+  const themeIcon = document.getElementById("themeIcon");
+  const themeLabel = document.getElementById("themeLabel");
+
+  function applyTheme(theme){
+    htmlEl.setAttribute("data-theme", theme);
+    const isLight = theme === "light";
+    themeIcon.textContent = isLight ? "☀️" : "🌙";
+    themeLabel.textContent = isLight ? "Světlý" : "Tmavý";
+  }
+
+  function initTheme(){
+    const saved = localStorage.getItem("theme");
+    if (saved === "light" || saved === "dark"){
+      applyTheme(saved);
+      return;
+    }
+    const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+    applyTheme(prefersLight ? "light" : "dark");
+  }
+
+  themeToggle.addEventListener("click", () => {
+    const cur = htmlEl.getAttribute("data-theme") || "dark";
+    const next = cur === "dark" ? "light" : "dark";
+    applyTheme(next);
+    localStorage.setItem("theme", next);
+  });
+
+  initTheme();
+
+  /* =========================
+     SHEETS + APP
+     ========================= */
   const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
   const ELO_SHEET_NAME = "Elo standings";
   const DATA_SHEET_NAME = "Data";
@@ -527,7 +740,6 @@
 
   let allRows = [];
   let lastTournamentText = "";
-  let lastLoadedAt = "";
 
   function escapeHtml(str){
     return (str ?? "").toString()
@@ -646,8 +858,8 @@
   }
 
   async function loadLastData(){
-    lastLoadedAt = formatNow();
-    lastDataBadge.textContent = `načteno: ${lastLoadedAt}`;
+    const ts = formatNow();
+    lastDataBadge.textContent = `načteno: ${ts}`;
 
     try{
       const u = new URL(DATA_CSV_URL);
@@ -659,7 +871,7 @@
       const rows = parseCSV(text);
       let last = "";
       for (let i=1;i<rows.length;i++){
-        const v = (rows[i][1] ?? "").toString().trim();
+        const v = (rows[i][1] ?? "").toString().trim(); // col B
         if (v) last = v;
       }
       lastTournamentText = last || "";
@@ -689,11 +901,11 @@
         <td class="rank">${rankCellHtml(r.rank)}</td>
         <td><button class="playerBtn" type="button">${escapeHtml(r.player)}</button></td>
         <td class="num">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
-        <td class="num">${safeInt(r.games)}</td>
-        <td class="num">${safeInt(r.win)}</td>
-        <td class="num">${safeInt(r.loss)}</td>
-        <td class="num">${safeInt(r.draw)}</td>
-        <td class="num">${escapeHtml(r.winrate || "")}</td>
+        <td class="num colGames">${safeInt(r.games)}</td>
+        <td class="num colWin">${safeInt(r.win)}</td>
+        <td class="num colLoss">${safeInt(r.loss)}</td>
+        <td class="num colDraw">${safeInt(r.draw)}</td>
+        <td class="num colWinrate">${escapeHtml(r.winrate || "")}</td>
       `;
       tr.querySelector(".playerBtn")._playerObj = r;
       tbody.appendChild(tr);
@@ -877,15 +1089,15 @@
 
     const grid = [0, .5, 1].map(t => {
       const yy = padY + (1 - t) * (h - padY*2);
-      return `<line x1="${padX}" y1="${yy}" x2="${w-padX}" y2="${yy}" stroke="rgba(255,255,255,.10)" />`;
+      return `<line x1="${padX}" y1="${yy}" x2="${w-padX}" y2="${yy}" stroke="rgba(120,120,120,.18)" />`;
     }).join("");
 
     return `
       <svg viewBox="0 0 ${w} ${h}" width="100%" height="220" role="img" aria-label="ELO chart">
         ${grid}
-        <path d="${d}" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.5" />
-        <text x="${padX}" y="${padY-2}" fill="rgba(255,255,255,.65)" font-size="11">min ${min}</text>
-        <text x="${w-padX}" y="${padY-2}" text-anchor="end" fill="rgba(255,255,255,.65)" font-size="11">max ${max}</text>
+        <path d="${d}" fill="none" stroke="rgba(120,120,120,.90)" stroke-width="2.5" />
+        <text x="${padX}" y="${padY-2}" fill="rgba(120,120,120,.75)" font-size="11">min ${min}</text>
+        <text x="${w-padX}" y="${padY-2}" text-anchor="end" fill="rgba(120,120,120,.75)" font-size="11">max ${max}</text>
       </svg>
     `;
   }
@@ -942,7 +1154,7 @@
   searchEl.addEventListener("input", () => renderStandings(allRows));
   refreshBtn.addEventListener("click", loadAll);
   requestUploadBtn.addEventListener("click", () => {
-    window.location.href = "https://www.seznam.cz/";
+    window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSd4HR8geopBrbxNWZEXo2IV9SFjLhKZS5I-AcM-13XqNJ2fjg/viewform?usp=dialog";
   });
 
   tbody.addEventListener("click", (e) => {
