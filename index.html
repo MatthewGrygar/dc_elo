@@ -293,7 +293,7 @@
     .chartHead{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px; }
     .chartHead b{ font-size:13px; letter-spacing:.08em; text-transform:uppercase; opacity:.9; }
     .chartHead span{ font-size:12px; color:var(--muted); }
-    #eloChart{ min-height:220px; color:var(--muted); }
+    #eloChart{ min-height:240px; color:var(--muted); }
 
     .sectionTitle{
       margin:18px 0 10px;
@@ -343,7 +343,6 @@
     html[data-theme="light"] .bigError{ color:#7a1f1f; }
     .bigError .icon{ font-size:22px; }
 
-    /* Mobile: info under each other + table no horizontal scroll */
     @media (max-width: 560px){
       header{ padding:14px 14px 12px; }
       header .wrap{ flex-direction:column; gap:12px; }
@@ -449,10 +448,8 @@
       </table>
     </div>
 
-    <footer>Tip: Klikni na jméno hráče pro detail. Detail se načítá z listu „Player cards (SCV)“.</footer>
+    <footer>Tip: Klikni na jméno hráče pro detail. Detail se načítá z listu „Player cards (CSV)“.</footer>
   </div>
-
-  <div id="error" style="display:none;"></div>
 </main>
 
 <!-- Modal -->
@@ -473,7 +470,7 @@
 </div>
 
 <script>
-  // Theme
+  /* THEME */
   const htmlEl = document.documentElement;
   const themeToggle = document.getElementById("themeToggle");
   const themeIcon = document.getElementById("themeIcon");
@@ -498,11 +495,11 @@
   });
   initTheme();
 
-  // Sheets
+  /* CONFIG */
   const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
   const ELO_SHEET_NAME = "Elo standings";
   const DATA_SHEET_NAME = "Data";
-  const PLAYER_CARDS_SHEET_NAME = "Player cards (SCV)";
+  const PLAYER_CARDS_SHEET_NAME = "Player cards (CSV)";
 
   const ELO_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(ELO_SHEET_NAME)}`;
@@ -511,7 +508,7 @@
   const PLAYER_CARDS_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(PLAYER_CARDS_SHEET_NAME)}`;
 
-  // UI elements
+  /* UI */
   const statusEl = document.getElementById("status");
   const tbody = document.getElementById("tbody");
   const searchEl = document.getElementById("search");
@@ -599,16 +596,6 @@
     return `${rank}`;
   }
 
-  function openModal(){
-    modalOverlay.style.display="block";
-    document.body.style.overflow="hidden";
-  }
-  function closeModal(){
-    modalOverlay.style.display="none";
-    document.body.style.overflow="";
-    modalBody.innerHTML="";
-  }
-
   function parseWinrateToNumber(winrateText){
     if (!winrateText) return NaN;
     const s = winrateText.toString().trim();
@@ -620,7 +607,7 @@
     return n;
   }
 
-  // Info bar: median ELO + total games /2 + avg winrate
+  /* INFO BAR */
   function updateInfoBar(){
     const ratings = allRows.map(r => r.rating).filter(Number.isFinite).sort((a,b)=>a-b);
     const gamesArr = allRows.map(r => r.games).filter(Number.isFinite);
@@ -664,6 +651,7 @@
     }
   }
 
+  /* STANDINGS */
   function renderStandings(rows){
     const q = normalizeKey(searchEl.value);
     const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q)).sort((a,b)=>a.rank-b.rank);
@@ -710,7 +698,7 @@
       const iPlayer=idx("player"), iRating=idx("rating"), iGames=idx("games"), iWin=idx("win"), iLoss=idx("loss"), iDraw=idx("draw");
       const iWinrate = headers.findIndex(h => h==="winrate" || h.includes("winrate"));
       if ([iPlayer,iRating,iGames,iWin,iLoss,iDraw].some(i=>i===-1) || iWinrate===-1){
-        throw new Error("Neplatná hlavička v Elo standings (player/rating/games/win/loss/draw/winrate).");
+        throw new Error("Neplatná hlavička v Elo standings.");
       }
 
       const loaded = rows.slice(1).map(r => ({
@@ -736,10 +724,10 @@
 
   async function loadAll(){
     await Promise.all([loadStandings(), loadLastData()]);
-    playerCardsCache = null; // force refresh
+    playerCardsCache = null;
   }
 
-  // ========= PLAYER CARDS (SCV) - FIXED COLUMN MAPPING A..I =========
+  /* PLAYER CARDS (CSV): fixed A..I mapping */
   async function loadPlayerCards(){
     if (playerCardsCache) return playerCardsCache;
 
@@ -750,28 +738,25 @@
     if (text.trim().startsWith("<")) throw new Error("HTML místo CSV");
 
     const rows = parseCSV(text);
-    if (rows.length < 2) throw new Error("Player cards (SCV): prázdné CSV");
+    if (rows.length < 2) throw new Error("Player cards (CSV): prázdné CSV");
 
-    // Row 0 is header -> ignore. Columns fixed:
-    // A0 Player, B1 Match ID, C2 tournament, D3 tournament_detail, E4 date,
-    // F5 Opponent (rating), G6 result, H7 (+-), I8 elo
     const items = rows.slice(1).map(r => ({
-      player: (r[0] ?? "").toString().trim(),
-      matchId: toNumber((r[1] ?? "").toString().trim()),
-      tournament: (r[2] ?? "").toString().trim(),
-      tournamentDetail: (r[3] ?? "").toString().trim(),
-      date: (r[4] ?? "").toString().trim(),
-      opponent: (r[5] ?? "").toString().trim(),
-      result: (r[6] ?? "").toString().trim(),
-      delta: (r[7] ?? "").toString().trim(),
-      elo: toNumber((r[8] ?? "").toString().trim())
+      player: (r[0] ?? "").toString().trim(),              // A
+      matchId: toNumber((r[1] ?? "").toString().trim()),   // B
+      tournament: (r[2] ?? "").toString().trim(),          // C (nepoužíváme pro grouping)
+      tournamentDetail: (r[3] ?? "").toString().trim(),    // D  ✅ grouping
+      date: (r[4] ?? "").toString().trim(),                // E
+      opponent: (r[5] ?? "").toString().trim(),            // F
+      result: (r[6] ?? "").toString().trim(),              // G
+      delta: (r[7] ?? "").toString().trim(),               // H
+      elo: toNumber((r[8] ?? "").toString().trim())        // I ✅ chart Y
     })).filter(x => x.player);
 
     playerCardsCache = items;
     return items;
   }
 
-  // Chart x=MatchID, y=ELO
+  /* CHART: X=MatchID, Y=ELO */
   function buildSvgLineChartXY(points){
     const clean = points.filter(p => Number.isFinite(p.x) && Number.isFinite(p.y));
     if (clean.length < 2) return `<div class="muted">Graf nelze vykreslit (málo dat).</div>`;
@@ -806,6 +791,7 @@
     `;
   }
 
+  /* HERO */
   function buildHero(playerObj){
     const eloText = Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "";
     return `
@@ -851,26 +837,28 @@
       <thead>
         <tr>
           <th class="num">Match ID</th>
-          <th>tournament_detail</th>
-          <th>date</th>
           <th>Opponent (rating)</th>
-          <th>result</th>
+          <th>Result</th>
           <th class="num">(+/-)</th>
-          <th class="num">elo</th>
+          <th class="num">ELO</th>
+          <th>Date</th>
+          <th>Tournament</th>
         </tr>
       </thead>
     `;
+
     const body = rows.map(r => `
       <tr>
         <td class="num">${Number.isFinite(r.matchId) ? r.matchId.toFixed(0) : ""}</td>
-        <td>${escapeHtml(r.tournamentDetail)}</td>
-        <td>${escapeHtml(r.date)}</td>
         <td>${escapeHtml(r.opponent)}</td>
         <td>${escapeHtml(r.result)}</td>
         <td class="num">${escapeHtml(r.delta)}</td>
         <td class="num">${Number.isFinite(r.elo) ? r.elo.toFixed(0) : ""}</td>
+        <td>${escapeHtml(r.date)}</td>
+        <td>${escapeHtml(r.tournament)}</td>
       </tr>
     `).join("");
+
     return `<table class="tbl">${head}<tbody>${body}</tbody></table>`;
   }
 
@@ -878,7 +866,8 @@
     modalName.textContent = playerObj.player;
     modalSub.textContent = "Načítám detail…";
     modalBody.innerHTML = buildHero(playerObj);
-    openModal();
+    modalOverlay.style.display = "block";
+    document.body.style.overflow = "hidden";
 
     openSheetTabBtn.onclick = () => {
       window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
@@ -886,9 +875,9 @@
 
     try{
       const allCards = await loadPlayerCards();
-
-      // exact match (trim), but robust vs extra spaces:
       const wanted = playerObj.player.trim();
+
+      // filter by A Player
       const cards = allCards.filter(r => r.player.trim() === wanted);
 
       if (!cards.length){
@@ -898,36 +887,43 @@
         return;
       }
 
-      // sort by Match ID for chart + keep only valid points
-      const sorted = cards
+      // sort by Match ID (B)
+      const sortedAll = cards.slice().sort((a,b) => (a.matchId||0) - (b.matchId||0));
+
+      // chart points: X=matchId, Y=elo
+      const points = sortedAll
         .filter(r => Number.isFinite(r.matchId) && Number.isFinite(r.elo))
-        .sort((a,b) => a.matchId - b.matchId);
+        .map(r => ({ x:r.matchId, y:r.elo }));
 
       const chartEl = document.getElementById("eloChart");
       const chartMeta = document.getElementById("chartMeta");
 
-      chartEl.innerHTML = buildSvgLineChartXY(sorted.map(r => ({ x:r.matchId, y:r.elo })));
-      if (sorted.length){
-        const last = sorted[sorted.length-1];
-        chartMeta.textContent = `zápasů: ${sorted.length} • poslední Match ID: ${last.matchId.toFixed(0)} • poslední ELO: ${last.elo.toFixed(0)}`;
+      chartEl.innerHTML = buildSvgLineChartXY(points);
+      if (points.length){
+        const last = points[points.length-1];
+        chartMeta.textContent = `zápasů: ${points.length} • poslední Match ID: ${last.x.toFixed(0)} • poslední ELO: ${last.y.toFixed(0)}`;
       } else {
         chartMeta.textContent = "Nelze vykreslit (chybí Match ID/ELO)";
       }
 
-      // group by tournament (C)
+      // group by D tournament_detail (unique)
       const groups = new Map();
-      for (const r of cards){
-        const key = (r.tournament || "Neznámý turnaj").trim();
+      for (const r of sortedAll){
+        const key = (r.tournamentDetail || "Neznámé").trim();
         if (!groups.has(key)) groups.set(key, []);
         groups.get(key).push(r);
       }
 
-      // order tournaments by name
-      const tournamentNames = Array.from(groups.keys()).sort((a,b)=>a.localeCompare(b,"cs"));
+      // keep groups in order of first appearance in sortedAll (more natural)
+      const groupOrder = [];
+      for (const r of sortedAll){
+        const k = (r.tournamentDetail || "Neznámé").trim();
+        if (!groupOrder.includes(k)) groupOrder.push(k);
+      }
 
-      const sectionsHtml = tournamentNames.map(name => {
-        const rows = groups.get(name).slice().sort((a,b)=>(a.matchId||0)-(b.matchId||0));
-        return `<div class="sectionTitle">${escapeHtml(name)}</div>${buildTournamentTable(rows)}`;
+      const sectionsHtml = groupOrder.map(key => {
+        const rows = groups.get(key).slice().sort((a,b)=>(a.matchId||0)-(b.matchId||0));
+        return `<div class="sectionTitle">${escapeHtml(key)}</div>${buildTournamentTable(rows)}`;
       }).join("");
 
       modalSub.textContent = "Detail hráče";
@@ -941,7 +937,7 @@
     }
   }
 
-  // Controls
+  /* EVENTS */
   requestUploadBtn.addEventListener("click", () => { window.location.href = "https://www.seznam.cz/"; });
   refreshBtn.addEventListener("click", loadAll);
   searchEl.addEventListener("input", () => renderStandings(allRows));
@@ -952,11 +948,27 @@
     loadPlayerDetail(btn._playerObj);
   });
 
-  closeModalBtn.addEventListener("click", closeModal);
-  modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) closeModal(); });
-  window.addEventListener("keydown", (e) => { if (e.key === "Escape" && modalOverlay.style.display === "block") closeModal(); });
+  closeModalBtn.addEventListener("click", () => {
+    modalOverlay.style.display="none";
+    document.body.style.overflow="";
+    modalBody.innerHTML="";
+  });
+  modalOverlay.addEventListener("click", (e) => {
+    if (e.target === modalOverlay){
+      modalOverlay.style.display="none";
+      document.body.style.overflow="";
+      modalBody.innerHTML="";
+    }
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modalOverlay.style.display === "block"){
+      modalOverlay.style.display="none";
+      document.body.style.overflow="";
+      modalBody.innerHTML="";
+    }
+  });
 
-  // Init
+  /* INIT */
   loadAll();
 </script>
 </body>
