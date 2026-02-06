@@ -6,77 +6,47 @@
   <title>ELO žebříček</title>
 
   <style>
-    /* =========================
-       THEME TOKENS (CSS VARS)
-       ========================= */
     html[data-theme="dark"]{
-      --bg0: #0f1115;
-      --bg1: rgba(15,17,21,.60);
-      --text: #eef2ff;
-      --muted: rgba(238,242,255,.78);
-      --border: rgba(255,255,255,.12);
-      --border2: rgba(255,255,255,.10);
-      --panel: rgba(255,255,255,.035);
-      --panel2: rgba(255,255,255,.03);
-      --chip: rgba(255,255,255,.06);
-      --chip2: rgba(0,0,0,.18);
-      --shadow: 0 18px 55px rgba(0,0,0,.35);
-      --thead: rgba(15,17,21,.92);
-      --hover: rgba(255,255,255,.055);
-      --altrow: rgba(255,255,255,.02);
-      --glow: rgba(255,255,255,.06);
-      --btnPrimaryBg: rgba(255,255,255,.08);
-      --btnPrimaryBd: rgba(255,255,255,.22);
-
-      --winBg: rgba(60, 220, 120, .10);
-      --winBd: rgba(60, 220, 120, .22);
-      --lossBg: rgba(255, 90, 90, .10);
-      --lossBd: rgba(255, 90, 90, .22);
-      --drawBg: rgba(255, 170, 60, .10);
-      --drawBd: rgba(255, 170, 60, .22);
+      --bg0:#0f1115; --bg1:rgba(15,17,21,.60);
+      --text:#eef2ff; --muted:rgba(238,242,255,.78);
+      --border:rgba(255,255,255,.12); --border2:rgba(255,255,255,.10);
+      --panel:rgba(255,255,255,.035); --panel2:rgba(255,255,255,.03);
+      --chip:rgba(255,255,255,.06); --chip2:rgba(0,0,0,.18);
+      --shadow:0 18px 55px rgba(0,0,0,.35);
+      --thead:rgba(15,17,21,.92);
+      --hover:rgba(255,255,255,.055); --altrow:rgba(255,255,255,.02);
+      --glow:rgba(255,255,255,.06);
+      --btnPrimaryBg:rgba(255,255,255,.08); --btnPrimaryBd:rgba(255,255,255,.22);
+      --winBg:rgba(60,220,120,.10); --winBd:rgba(60,220,120,.22);
+      --lossBg:rgba(255,90,90,.10); --lossBd:rgba(255,90,90,.22);
+      --drawBg:rgba(255,170,60,.10); --drawBd:rgba(255,170,60,.22);
     }
-
     html[data-theme="light"]{
-      /* béžově mramorové pozadí */
-      --bg0: #f3efe6;
-      --bg1: rgba(243,239,230,.70);
-      --text: #151515;
-      --muted: rgba(21,21,21,.70);
-      --border: rgba(0,0,0,.10);
-      --border2: rgba(0,0,0,.08);
-      --panel: rgba(255,255,255,.70);
-      --panel2: rgba(255,255,255,.55);
-      --chip: rgba(255,255,255,.70);
-      --chip2: rgba(255,255,255,.72);
-      --shadow: 0 18px 50px rgba(0,0,0,.12);
-      --thead: rgba(255,255,255,.92);
-      --hover: rgba(0,0,0,.035);
-      --altrow: rgba(0,0,0,.018);
-      --glow: rgba(0,0,0,.05);
-      --btnPrimaryBg: rgba(255,255,255,.75);
-      --btnPrimaryBd: rgba(0,0,0,.14);
-
-      --winBg: rgba(60, 220, 120, .14);
-      --winBd: rgba(20, 150, 70, .22);
-      --lossBg: rgba(255, 90, 90, .14);
-      --lossBd: rgba(190, 40, 40, .22);
-      --drawBg: rgba(255, 170, 60, .16);
-      --drawBd: rgba(180, 110, 20, .22);
+      --bg0:#f3efe6; --bg1:rgba(243,239,230,.70);
+      --text:#151515; --muted:rgba(21,21,21,.70);
+      --border:rgba(0,0,0,.10); --border2:rgba(0,0,0,.08);
+      --panel:rgba(255,255,255,.70); --panel2:rgba(255,255,255,.55);
+      --chip:rgba(255,255,255,.70); --chip2:rgba(255,255,255,.72);
+      --shadow:0 18px 50px rgba(0,0,0,.12);
+      --thead:rgba(255,255,255,.92);
+      --hover:rgba(0,0,0,.035); --altrow:rgba(0,0,0,.018);
+      --glow:rgba(0,0,0,.05);
+      --btnPrimaryBg:rgba(255,255,255,.75); --btnPrimaryBd:rgba(0,0,0,.14);
+      --winBg:rgba(60,220,120,.14); --winBd:rgba(20,150,70,.22);
+      --lossBg:rgba(255,90,90,.14); --lossBd:rgba(190,40,40,.22);
+      --drawBg:rgba(255,170,60,.16); --drawBd:rgba(180,110,20,.22);
     }
-
-    :root { color-scheme: light dark; }
+    :root{ color-scheme: light dark; }
 
     body{
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      margin:0;
-      color: var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      margin:0; color:var(--text);
       background:
         radial-gradient(1200px 600px at 20% -10%, rgba(255,255,255,.10), transparent 60%),
         radial-gradient(900px 500px at 80% 0%, rgba(255,215,0,.08), transparent 60%),
         radial-gradient(900px 500px at 20% 80%, rgba(80,120,255,.06), transparent 60%),
         var(--bg0);
     }
-
     html[data-theme="light"] body{
       background:
         radial-gradient(900px 420px at 10% 0%, rgba(255,255,255,.80), transparent 55%),
@@ -90,168 +60,65 @@
     header{
       padding:18px 18px 14px;
       border-bottom:1px solid var(--border2);
-      background: var(--bg1);
+      background:var(--bg1);
       backdrop-filter: blur(10px);
-      position: sticky;
-      top:0;
-      z-index:5;
+      position:sticky; top:0; z-index:5;
     }
     header .wrap{
-      max-width:1150px;
-      margin:0 auto;
-      display:flex;
-      gap:16px;
-      align-items:flex-start;
-      justify-content:space-between;
+      max-width:1150px; margin:0 auto;
+      display:flex; gap:16px; align-items:flex-start; justify-content:space-between;
     }
 
     h1{ margin:0 0 6px; font-size:26px; letter-spacing:.2px; }
-    .muted{ opacity:1; color: var(--muted); }
+    .muted{ opacity:1; color:var(--muted); }
     .credit{ margin-top:6px; }
 
-    .container{
-      max-width:1150px;
-      margin:0 auto;
-      padding: 0 16px;
+    .headerLeft{ display:flex; gap:16px; align-items:flex-start; }
+    .logo{
+      width:118px; height:118px; flex:0 0 118px;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden; margin-top:-4px;
     }
+    .logo img{ width:100%; height:100%; object-fit:contain; display:block; filter: drop-shadow(0 10px 22px rgba(0,0,0,.22)); }
 
-    main{ max-width:1150px; margin:0 auto; padding:16px; }
-
-    .card{
-      margin-top:12px;
-      border:1px solid var(--border);
-      border-radius:20px;
-      overflow:hidden;
-      background: var(--panel);
-      box-shadow: var(--shadow);
-    }
-
-    .toolbar{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      padding:12px;
-      border-bottom:1px solid var(--border2);
-      background: var(--panel2);
-    }
-    .left{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-    .right{ display:flex; gap:10px; align-items:center; }
+    .headerRight{ display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
+    .headerRightTop{ display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
 
     .badge{
-      font-size:12px;
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background: var(--chip);
-      white-space:nowrap;
+      font-size:12px; padding:7px 10px; border-radius:999px;
+      border:1px solid var(--border); background:var(--chip); white-space:nowrap;
     }
-
-    input[type="search"]{
-      width:min(380px, 70vw);
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: var(--chip2);
-      color:inherit;
-      outline:none;
-    }
-    input[type="search"]:focus{
-      border-color: rgba(120,120,120,.35);
-      box-shadow:0 0 0 4px var(--glow);
-    }
-
     button{
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: var(--chip2);
-      color:inherit;
-      cursor:pointer;
-      white-space:nowrap;
+      padding:10px 12px; border-radius:14px;
+      border:1px solid var(--border); background:var(--chip2);
+      color:inherit; cursor:pointer; white-space:nowrap;
     }
     button:hover{ filter: brightness(1.06); }
-
     .btnPrimary{
-      border-color: var(--btnPrimaryBd);
-      background: var(--btnPrimaryBg);
-      font-weight: 900;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      padding: 10px 14px;
+      border-color:var(--btnPrimaryBd); background:var(--btnPrimaryBg);
+      font-weight:900; letter-spacing:.04em; text-transform:uppercase;
+      padding:10px 14px;
     }
 
-    /* Header left: BIG logo (no panel) + texts */
-    .headerLeft{
-      display:flex;
-      gap:16px;
-      align-items:flex-start;
-    }
-    .logo{
-      width:118px;
-      height:118px;
-      flex: 0 0 118px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-      margin-top:-4px;
-    }
-    .logo img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      display:block;
-      filter: drop-shadow(0 10px 22px rgba(0,0,0,.22));
-    }
-
-    /* Header right group (badge + request + theme) */
-    .headerRight{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      align-items:flex-end;
-    }
-    .headerRightTop{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:flex-end;
-      flex-wrap:wrap;
-    }
-    .themeRow{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      justify-content:flex-end;
-      width:100%;
-    }
+    .themeRow{ display:flex; align-items:center; gap:8px; justify-content:flex-end; width:100%; }
     .themeToggle{
-      padding:7px 10px;
-      border-radius:999px;
-      font-size:13px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      border:1px solid var(--border);
-      background: var(--chip);
-      cursor:pointer;
-      user-select:none;
+      padding:7px 10px; border-radius:999px; font-size:13px;
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid var(--border); background:var(--chip);
+      cursor:pointer; user-select:none;
     }
-    .themeToggle .dot{
-      width:8px; height:8px; border-radius:50%;
-      background: rgba(120,120,120,.6);
-      display:inline-block;
-    }
-    .themeHint{ font-size:12px; color: var(--muted); }
+    .themeToggle .dot{ width:8px; height:8px; border-radius:50%; background:rgba(120,120,120,.6); display:inline-block; }
+    .themeHint{ font-size:12px; color:var(--muted); }
 
-    /* Info panel */
+    .container{ max-width:1150px; margin:0 auto; padding:0 16px; }
+    main{ max-width:1150px; margin:0 auto; padding:16px; }
+
     .infoBar{
       margin:12px 0 12px;
       padding:10px 12px;
       border:1px solid var(--border);
       border-radius:16px;
-      background: var(--panel2);
+      background:var(--panel2);
       display:grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap:10px;
@@ -260,19 +127,18 @@
       border:1px solid var(--border2);
       border-radius:14px;
       padding:10px 10px;
-      background: rgba(0,0,0,.06);
+      background:rgba(0,0,0,.06);
       display:flex;
       align-items:baseline;
       justify-content:space-between;
       gap:10px;
       min-width:0;
     }
-    html[data-theme="light"] .infoItem{ background: rgba(255,255,255,.50); }
-
+    html[data-theme="light"] .infoItem{ background:rgba(255,255,255,.50); }
     .infoItem b{
       font-size:11px;
       letter-spacing:.08em;
-      text-transform: uppercase;
+      text-transform:uppercase;
       opacity:.85;
       white-space:nowrap;
     }
@@ -281,18 +147,46 @@
       font-weight:900;
       white-space:nowrap;
       overflow:hidden;
-      text-overflow: ellipsis;
+      text-overflow:ellipsis;
       text-align:right;
-      min-width: 0;
+      min-width:0;
+    }
+
+    .card{
+      margin-top:12px;
+      border:1px solid var(--border);
+      border-radius:20px;
+      overflow:hidden;
+      background:var(--panel);
+      box-shadow:var(--shadow);
+    }
+    .toolbar{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      padding:12px;
+      border-bottom:1px solid var(--border2);
+      background:var(--panel2);
+    }
+    .left{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .right{ display:flex; gap:10px; align-items:center; }
+    input[type="search"]{
+      width:min(380px, 70vw);
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--chip2);
+      color:inherit;
+      outline:none;
+    }
+    input[type="search"]:focus{
+      border-color:rgba(120,120,120,.35);
+      box-shadow:0 0 0 4px var(--glow);
     }
 
     .tableWrap{ overflow:auto; }
     table{ width:100%; border-collapse:separate; border-spacing:0; }
     thead th{
-      position:sticky;
-      top:0;
-      z-index:2;
-      background: var(--thead);
+      position:sticky; top:0; z-index:2;
+      background:var(--thead);
       backdrop-filter: blur(6px);
       border-bottom:1px solid var(--border2);
       font-size:12px;
@@ -301,185 +195,113 @@
       opacity:.85;
     }
     th, td{ text-align:left; padding:12px 12px; }
-    tbody tr:nth-child(2n){ background: var(--altrow); }
-    tbody tr:hover{ background: var(--hover); }
+    tbody tr:nth-child(2n){ background:var(--altrow); }
+    tbody tr:hover{ background:var(--hover); }
     .num{ text-align:right; font-variant-numeric: tabular-nums; }
     .rank{ width:90px; font-variant-numeric: tabular-nums; }
-
     .playerBtn{
-      border:none;
-      background:none;
-      color:inherit;
-      cursor:pointer;
-      padding:0;
-      font:inherit;
-      text-decoration: underline;
-      text-decoration-color: rgba(120,120,120,.35);
-      text-underline-offset:3px;
+      border:none; background:none; color:inherit; cursor:pointer; padding:0; font:inherit;
+      text-decoration:underline; text-decoration-color:rgba(120,120,120,.35); text-underline-offset:3px;
     }
-
     .r1{ color:#ffd54a; font-weight:900; }
     .r2{ color:#b6bcc8; font-weight:900; }
     html[data-theme="light"] .r2{ color:#6b6f77; }
     .r3{ color:#d29a6a; font-weight:900; }
-
-    #error{ display:none; margin-top:12px; white-space:pre-wrap; color:#ff4d4d; }
 
     footer{
       padding:12px;
       opacity:.75;
       font-size:12px;
       border-top:1px solid var(--border2);
-      background: var(--panel2);
-      color: var(--muted);
+      background:var(--panel2);
+      color:var(--muted);
     }
 
     /* Modal */
     .modalOverlay{
-      display:none;
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,.65);
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,.65);
       backdrop-filter: blur(6px);
-      z-index:50;
-      padding:18px;
+      z-index:50; padding:18px;
     }
     .modal{
-      max-width:1100px;
-      margin:0 auto;
-      height: calc(100vh - 36px);
+      max-width:1100px; margin:0 auto;
+      height:calc(100vh - 36px);
       border-radius:20px;
       border:1px solid var(--border);
-      background: var(--thead);
+      background:var(--thead);
       box-shadow:0 30px 90px rgba(0,0,0,.35);
       overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      color: var(--text);
+      display:flex; flex-direction:column;
     }
     .modalHeader{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
       padding:12px;
       border-bottom:1px solid var(--border2);
-      background: var(--panel2);
+      background:var(--panel2);
     }
-    .modalTitle{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      min-width:0;
-    }
-    .modalTitle b{
-      font-size:16px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      max-width: 70vw;
-    }
-    .modalTitle span{ font-size:12px; color: var(--muted); }
+    .modalTitle{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+    .modalTitle b{ font-size:16px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70vw; }
+    .modalTitle span{ font-size:12px; color:var(--muted); }
     .modalBody{ padding:12px; overflow:auto; }
 
-    /* HERO 2 columns */
+    /* Player hero */
     .heroGrid{
       display:grid;
-      grid-template-columns: 380px 1fr;
+      grid-template-columns: 420px 1fr;
       gap:12px;
       margin-bottom:14px;
-      align-items: stretch;
+      align-items:stretch;
     }
     .box{
       border:1px solid var(--border);
       border-radius:18px;
-      background: var(--panel);
+      background:var(--panel);
       overflow:hidden;
     }
     .boxPad{ padding:14px; }
 
-    .heroName{ font-size:22px; font-weight:900; margin:0 0 6px; }
-    .rankLine{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .rankLine .muted{ color: var(--muted); }
+    .heroName{ font-size:30px; font-weight:900; margin:0 0 8px; }
+    .rankLine{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
     .rankPill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
+      display:inline-flex; align-items:center; gap:8px;
       border:1px solid var(--border);
-      background: var(--chip);
+      background:var(--chip);
       padding:6px 10px;
       border-radius:999px;
       font-size:12px;
       white-space:nowrap;
     }
+    .heroEloLabel{ color:var(--muted); font-size:12px; }
+    .heroElo{ font-size:52px; font-weight:900; line-height:1; margin:6px 0 0; }
 
-    .heroEloLabel{ color: var(--muted); font-size:12px; }
-    .heroElo{ font-size:44px; font-weight:900; line-height:1; margin:6px 0 0; }
-
-    .statsGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:8px;
-      margin-top:12px;
-    }
-    .statsGridRow2{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:8px;
-      margin-top:8px;
-    }
+    .statsGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+    .statsGridRow2{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; }
     .stat{
       border:1px solid var(--border2);
       border-radius:14px;
-      padding:10px;
-      background: var(--panel2);
+      padding:12px;
+      background:var(--panel2);
     }
-    .stat b{ display:block; font-size:12px; color: var(--muted); letter-spacing:.06em; text-transform:uppercase; }
-    .stat span{ display:block; margin-top:4px; font-size:16px; font-weight:900; }
+    .stat b{ display:block; font-size:12px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+    .stat span{ display:block; margin-top:6px; font-size:18px; font-weight:900; }
 
-    .statWin{ background: var(--winBg); border-color: var(--winBd); }
-    .statLoss{ background: var(--lossBg); border-color: var(--lossBd); }
-    .statDraw{ background: var(--drawBg); border-color: var(--drawBd); }
+    .statWin{ background:var(--winBg); border-color:var(--winBd); }
+    .statLoss{ background:var(--lossBg); border-color:var(--lossBd); }
+    .statDraw{ background:var(--drawBg); border-color:var(--drawBd); }
 
-    .chartHead{
-      display:flex;
-      justify-content:space-between;
-      align-items:baseline;
-      gap:10px;
-      margin-bottom:8px;
-    }
+    .chartHead{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px; }
     .chartHead b{ font-size:13px; letter-spacing:.08em; text-transform:uppercase; opacity:.9; }
-    .chartHead span{ font-size:12px; color: var(--muted); }
-    #eloChart{ min-height: 220px; color: var(--muted); }
-
-    .bigError{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      border:1px solid rgba(255,122,122,.35);
-      background: rgba(255,122,122,.12);
-      color:#7a1f1f;
-      border-radius:18px;
-      padding:14px;
-      margin-top:10px;
-      font-weight:900;
-    }
-    html[data-theme="dark"] .bigError{ color:#ffd0d0; }
-    .bigError .icon{ font-size:22px; }
+    .chartHead span{ font-size:12px; color:var(--muted); }
+    #eloChart{ min-height:220px; color:var(--muted); }
 
     .sectionTitle{
-      margin: 18px 0 10px;
-      font-size: 13px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      opacity: .9;
+      margin:18px 0 10px;
+      font-size:13px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      opacity:.9;
     }
-
     .tbl{
       width:100%;
       border-collapse:separate;
@@ -487,7 +309,8 @@
       overflow:hidden;
       border:1px solid var(--border2);
       border-radius:16px;
-      background: var(--panel2);
+      background:var(--panel2);
+      margin-bottom:12px;
     }
     .tbl th, .tbl td{
       padding:10px 10px;
@@ -496,96 +319,59 @@
       vertical-align:top;
     }
     .tbl thead th{
-      background: var(--thead);
-      position: sticky;
+      background:var(--thead);
+      position:sticky;
       top:0;
       z-index:1;
-      text-transform: uppercase;
+      text-transform:uppercase;
       letter-spacing:.08em;
       font-size:11px;
       opacity:.85;
     }
     .tbl tr:last-child td{ border-bottom:none; }
-    .tbl td.num{ text-align:right; font-variant-numeric: tabular-nums; }
 
-    /* =========================
-       MOBILE IMPROVEMENTS
-       ========================= */
+    .bigError{
+      display:flex; align-items:center; gap:12px;
+      border:1px solid rgba(255,122,122,.35);
+      background: rgba(255,122,122,.12);
+      border-radius:18px;
+      padding:14px;
+      margin-top:10px;
+      font-weight:900;
+    }
+    html[data-theme="dark"] .bigError{ color:#ffd0d0; }
+    html[data-theme="light"] .bigError{ color:#7a1f1f; }
+    .bigError .icon{ font-size:22px; }
+
+    /* Mobile: info under each other + table no horizontal scroll */
     @media (max-width: 560px){
       header{ padding:14px 14px 12px; }
-      header .wrap{ flex-direction: column; gap:12px; }
+      header .wrap{ flex-direction:column; gap:12px; }
+      .logo{ width:84px; height:84px; flex-basis:84px; margin-top:0; }
+      h1{ font-size:20px; margin-bottom:4px; }
+      .muted{ font-size:13px; line-height:1.25; }
 
-      .logo{
-        width:84px;
-        height:84px;
-        flex-basis:84px;
-        margin-top:0;
-      }
-
-      h1{
-        font-size:20px;
-        margin-bottom:4px;
-      }
-      .muted{
-        font-size:13px;
-        line-height:1.25;
-      }
-      .credit{ margin-top:4px; }
-
-      .headerLeft{ gap:12px; align-items:flex-start; }
       .headerRight{ align-items:flex-start; }
       .headerRightTop{ justify-content:flex-start; width:100%; }
       .themeRow{ justify-content:flex-start; }
 
-      /* ✅ info panel pod sebe */
-      .infoBar{
-        grid-template-columns: 1fr;  /* místo 2 sloupců -> 1 sloupec */
-        gap:8px;
-        padding:10px;
-      }
-      .infoItem{
-        padding:12px 12px;
-        min-height:54px;
-      }
+      .infoBar{ grid-template-columns:1fr; gap:8px; padding:10px; }
+      .infoItem{ padding:12px; min-height:54px; }
       .infoItem b{ font-size:10px; }
-      .infoItem span{
-        font-size:15px;
-        white-space:nowrap;
-      }
+      .infoItem span{ font-size:15px; }
 
-      /* Toolbar stack */
-      .toolbar{
-        flex-direction: column;
-        align-items: stretch;
-        gap:10px;
-      }
+      .toolbar{ flex-direction:column; align-items:stretch; gap:10px; }
       .left{ width:100%; }
       input[type="search"]{ width:100%; }
       .right{ width:100%; justify-content:flex-end; }
 
-      /* ✅ Table on mobile: NO horizontal scroll, show only Player + Rating */
-      .tableWrap{
-        overflow-x:hidden; /* žádný scroll doprava */
-      }
-      table{
-        table-layout: fixed;
-      }
-      th, td{
-        padding:10px 10px;
-      }
-      .rank{ width:0; }
-      .colRank, .colGames, .colWin, .colLoss, .colDraw, .colWinrate{
-        display:none !important;
-      }
-      .playerCol{
-        width: 70%;
-      }
-      .ratingCol{
-        width: 30%;
-      }
-
-      /* Modal hero stack */
-      .heroGrid{ grid-template-columns: 1fr; }
+      .tableWrap{ overflow-x:hidden; }
+      table{ table-layout:fixed; }
+      th, td{ padding:10px 10px; }
+      .colRank, .colGames, .colWin, .colLoss, .colDraw, .colWinrate{ display:none !important; }
+      .playerCol{ width:70%; }
+      .ratingCol{ width:30%; }
+      .heroGrid{ grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -625,7 +411,7 @@
 </header>
 
 <div class="container">
-  <div class="infoBar" id="infoBar" aria-label="Souhrn">
+  <div class="infoBar" aria-label="Souhrn">
     <div class="infoItem"><b>průměrné ELO</b><span id="avgElo">—</span></div>
     <div class="infoItem"><b>průměrný winrate</b><span id="avgWinrate">—</span></div>
     <div class="infoItem"><b>celkový počet her</b><span id="totalGames">—</span></div>
@@ -648,25 +434,25 @@
     <div class="tableWrap">
       <table>
         <thead>
-        <tr>
-          <th class="rank colRank">Pořadí</th>
-          <th class="playerCol">Player</th>
-          <th class="num ratingCol">Rating</th>
-          <th class="num colGames">Games</th>
-          <th class="num colWin">Win</th>
-          <th class="num colLoss">Loss</th>
-          <th class="num colDraw">Draw</th>
-          <th class="num colWinrate">Winrate</th>
-        </tr>
+          <tr>
+            <th class="rank colRank">Pořadí</th>
+            <th class="playerCol">Player</th>
+            <th class="num ratingCol">Rating</th>
+            <th class="num colGames">Games</th>
+            <th class="num colWin">Win</th>
+            <th class="num colLoss">Loss</th>
+            <th class="num colDraw">Draw</th>
+            <th class="num colWinrate">Winrate</th>
+          </tr>
         </thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
 
-    <footer>Tip: Klikni na jméno hráče pro detail. Na mobilu se zobrazuje jen Player + Rating (bez scrollu doprava).</footer>
+    <footer>Tip: Klikni na jméno hráče pro detail. Detail se načítá z listu „Player cards (SCV)“.</footer>
   </div>
 
-  <div id="error"></div>
+  <div id="error" style="display:none;"></div>
 </main>
 
 <!-- Modal -->
@@ -687,43 +473,32 @@
 </div>
 
 <script>
-  /* =========================
-     THEME TOGGLE
-     ========================= */
+  // Theme
   const htmlEl = document.documentElement;
   const themeToggle = document.getElementById("themeToggle");
   const themeIcon = document.getElementById("themeIcon");
   const themeLabel = document.getElementById("themeLabel");
-
   function applyTheme(theme){
     htmlEl.setAttribute("data-theme", theme);
     const isLight = theme === "light";
     themeIcon.textContent = isLight ? "☀️" : "🌙";
     themeLabel.textContent = isLight ? "Světlý" : "Tmavý";
   }
-
   function initTheme(){
     const saved = localStorage.getItem("theme");
-    if (saved === "light" || saved === "dark"){
-      applyTheme(saved);
-      return;
-    }
+    if (saved === "light" || saved === "dark"){ applyTheme(saved); return; }
     const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
     applyTheme(prefersLight ? "light" : "dark");
   }
-
   themeToggle.addEventListener("click", () => {
     const cur = htmlEl.getAttribute("data-theme") || "dark";
     const next = cur === "dark" ? "light" : "dark";
     applyTheme(next);
     localStorage.setItem("theme", next);
   });
-
   initTheme();
 
-  /* =========================
-     SHEETS + APP
-     ========================= */
+  // Sheets
   const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
   const ELO_SHEET_NAME = "Elo standings";
   const DATA_SHEET_NAME = "Data";
@@ -736,9 +511,9 @@
   const PLAYER_CARDS_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(PLAYER_CARDS_SHEET_NAME)}`;
 
+  // UI elements
   const statusEl = document.getElementById("status");
   const tbody = document.getElementById("tbody");
-  const errorEl = document.getElementById("error");
   const searchEl = document.getElementById("search");
   const refreshBtn = document.getElementById("refresh");
   const lastDataBadge = document.getElementById("lastDataBadge");
@@ -758,7 +533,7 @@
 
   let allRows = [];
   let lastTournamentText = "";
-  let playerCardsCache = null; // cache parsed Player cards
+  let playerCardsCache = null;
 
   function escapeHtml(str){
     return (str ?? "").toString()
@@ -766,15 +541,9 @@
       .replaceAll('"',"&quot;").replaceAll("'","&#039;");
   }
   function normalizeKey(s){
-    return (s || "")
-      .toString()
-      .trim()
-      .toLowerCase()
+    return (s || "").toString().trim().toLowerCase()
       .normalize("NFD").replace(/\p{Diacritic}/gu,"");
   }
-  function setStatus(text){ statusEl.textContent = text; }
-  function showError(msg){ errorEl.style.display="block"; errorEl.textContent = msg; }
-  function hideError(){ errorEl.style.display="none"; errorEl.textContent=""; }
   function toNumber(x){
     if (x == null) return NaN;
     const s = x.toString().replace(/\s/g,"").replace(",",".");
@@ -851,7 +620,7 @@
     return n;
   }
 
-  // MEDIÁN ELO + total games / 2
+  // Info bar: median ELO + total games /2 + avg winrate
   function updateInfoBar(){
     const ratings = allRows.map(r => r.rating).filter(Number.isFinite).sort((a,b)=>a-b);
     const gamesArr = allRows.map(r => r.games).filter(Number.isFinite);
@@ -859,16 +628,12 @@
 
     let medianElo = NaN;
     if (ratings.length){
-      const mid = Math.floor(ratings.length / 2);
-      medianElo = (ratings.length % 2 === 1)
-        ? ratings[mid]
-        : (ratings[mid - 1] + ratings[mid]) / 2;
+      const mid = Math.floor(ratings.length/2);
+      medianElo = (ratings.length % 2) ? ratings[mid] : (ratings[mid-1]+ratings[mid])/2;
     }
-
     const totalGamesRaw = gamesArr.length ? gamesArr.reduce((a,b)=>a+b,0) : NaN;
-    const totalGames = Number.isFinite(totalGamesRaw) ? (totalGamesRaw / 2) : NaN;
-
-    const avgWinrate = winrates.length ? (winrates.reduce((a,b)=>a+b,0) / winrates.length) : NaN;
+    const totalGames = Number.isFinite(totalGamesRaw) ? (totalGamesRaw/2) : NaN;
+    const avgWinrate = winrates.length ? (winrates.reduce((a,b)=>a+b,0)/winrates.length) : NaN;
 
     avgEloEl.textContent = Number.isFinite(medianElo) ? medianElo.toFixed(0) : "—";
     totalGamesEl.textContent = Number.isFinite(totalGames) ? totalGames.toFixed(0) : "—";
@@ -877,9 +642,7 @@
   }
 
   async function loadLastData(){
-    const ts = formatNow();
-    lastDataBadge.textContent = `načteno: ${ts}`;
-
+    lastDataBadge.textContent = `načteno: ${formatNow()}`;
     try{
       const u = new URL(DATA_CSV_URL);
       u.searchParams.set("_", Date.now().toString());
@@ -903,8 +666,7 @@
 
   function renderStandings(rows){
     const q = normalizeKey(searchEl.value);
-    const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q));
-    filtered.sort((a,b) => a.rank - b.rank);
+    const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q)).sort((a,b)=>a.rank-b.rank);
 
     tbody.innerHTML = "";
     if (!filtered.length){
@@ -932,10 +694,8 @@
   }
 
   async function loadStandings(){
-    hideError();
-    setStatus("Načítám…");
+    statusEl.textContent = "Načítám…";
     refreshBtn.disabled = true;
-
     try{
       const u = new URL(ELO_CSV_URL);
       u.searchParams.set("_", Date.now().toString());
@@ -944,42 +704,31 @@
       if (text.trim().startsWith("<")) throw new Error("Místo CSV přišlo HTML.");
 
       const rows = parseCSV(text);
-      if (!rows.length) throw new Error("Prázdné CSV.");
-
       const headers = rows[0].map(h => normalizeKey(h));
-      const idx = (name) => headers.indexOf(name);
+      const idx = (n) => headers.indexOf(n);
 
-      const iPlayer  = idx("player");
-      const iRating  = idx("rating");
-      const iGames   = idx("games");
-      const iWin     = idx("win");
-      const iLoss    = idx("loss");
-      const iDraw    = idx("draw");
-      const iWinrate = headers.findIndex(h => h === "winrate" || h.includes("winrate"));
-
-      if ([iPlayer,iRating,iGames,iWin,iLoss,iDraw].some(i => i === -1) || iWinrate === -1){
-        throw new Error(`Nenašel jsem sloupce player,rating,games,win,loss,draw,winrate. Hlavičky: ${headers.join(", ")}`);
+      const iPlayer=idx("player"), iRating=idx("rating"), iGames=idx("games"), iWin=idx("win"), iLoss=idx("loss"), iDraw=idx("draw");
+      const iWinrate = headers.findIndex(h => h==="winrate" || h.includes("winrate"));
+      if ([iPlayer,iRating,iGames,iWin,iLoss,iDraw].some(i=>i===-1) || iWinrate===-1){
+        throw new Error("Neplatná hlavička v Elo standings (player/rating/games/win/loss/draw/winrate).");
       }
 
       const loaded = rows.slice(1).map(r => ({
-        player: (r[iPlayer] ?? "").trim(),
-        rating: toNumber(r[iRating]),
-        games:  toNumber(r[iGames]),
-        win:    toNumber(r[iWin]),
-        loss:   toNumber(r[iLoss]),
-        draw:   toNumber(r[iDraw]),
+        player:(r[iPlayer] ?? "").trim(),
+        rating:toNumber(r[iRating]),
+        games:toNumber(r[iGames]),
+        win:toNumber(r[iWin]),
+        loss:toNumber(r[iLoss]),
+        draw:toNumber(r[iDraw]),
         winrate:(r[iWinrate] ?? "").toString().trim()
-      })).filter(x => x.player.length > 0);
+      })).filter(x=>x.player);
 
-      loaded.sort((a,b) => (b.rating || -Infinity) - (a.rating || -Infinity));
-      allRows = loaded.map((p,i) => ({ ...p, rank: i + 1 }));
+      loaded.sort((a,b)=>(b.rating||-Infinity)-(a.rating||-Infinity));
+      allRows = loaded.map((p,i)=>({ ...p, rank:i+1 }));
 
-      setStatus(`Načteno: ${allRows.length}`);
+      statusEl.textContent = `Načteno: ${allRows.length}`;
       renderStandings(allRows);
       updateInfoBar();
-    } catch(e){
-      setStatus("Chyba");
-      showError(String(e?.message || e));
     } finally {
       refreshBtn.disabled = false;
     }
@@ -987,14 +736,11 @@
 
   async function loadAll(){
     await Promise.all([loadStandings(), loadLastData()]);
-    // invalidate cache so "Player cards" refresh works after reload
-    playerCardsCache = null;
+    playerCardsCache = null; // force refresh
   }
 
-  /* =========================
-     PLAYER CARDS (SCV) loader
-     ========================= */
-  async function loadPlayerCardsCSV(){
+  // ========= PLAYER CARDS (SCV) - FIXED COLUMN MAPPING A..I =========
+  async function loadPlayerCards(){
     if (playerCardsCache) return playerCardsCache;
 
     const u = new URL(PLAYER_CARDS_CSV_URL);
@@ -1006,87 +752,62 @@
     const rows = parseCSV(text);
     if (rows.length < 2) throw new Error("Player cards (SCV): prázdné CSV");
 
-    // Expect header row in row[0]
-    const header = rows[0].map(h => normalizeKey(h));
-    const col = (name) => header.indexOf(normalizeKey(name));
-
-    // columns by letter (fallback to fixed positions):
-    // A Player, B Match ID, C tournament, D tournament_detail, E date, F Opponent (rating), G result, H (+-), I elo
-    const iPlayer = col("player") !== -1 ? col("player") : 0;
-    const iMatch  = header.findIndex(h => h === "match id" || h === "matchid") !== -1 ? header.findIndex(h => h === "match id" || h === "matchid") : 1;
-    const iTour   = col("tournament") !== -1 ? col("tournament") : 2;
-    const iTourDet= col("tournament_detail") !== -1 ? col("tournament_detail") : 3;
-    const iDate   = col("date") !== -1 ? col("date") : 4;
-    const iOpp    = header.findIndex(h => h.includes("opponent")) !== -1 ? header.findIndex(h => h.includes("opponent")) : 5;
-    const iRes    = col("result") !== -1 ? col("result") : 6;
-    const iDelta  = header.findIndex(h => h.includes("(+-)") || h.includes("+") || h.includes("+-")) !== -1 ? header.findIndex(h => h.includes("(+-)") || h.includes("+") || h.includes("+-")) : 7;
-    const iElo    = col("elo") !== -1 ? col("elo") : 8;
-
+    // Row 0 is header -> ignore. Columns fixed:
+    // A0 Player, B1 Match ID, C2 tournament, D3 tournament_detail, E4 date,
+    // F5 Opponent (rating), G6 result, H7 (+-), I8 elo
     const items = rows.slice(1).map(r => ({
-      player: (r[iPlayer] ?? "").toString().trim(),
-      matchId: toNumber((r[iMatch] ?? "").toString().trim()),
-      tournament: (r[iTour] ?? "").toString().trim(),
-      tournamentDetail: (r[iTourDet] ?? "").toString().trim(),
-      date: (r[iDate] ?? "").toString().trim(),
-      opponent: (r[iOpp] ?? "").toString().trim(),
-      result: (r[iRes] ?? "").toString().trim(),
-      delta: (r[iDelta] ?? "").toString().trim(),
-      elo: toNumber((r[iElo] ?? "").toString().trim())
+      player: (r[0] ?? "").toString().trim(),
+      matchId: toNumber((r[1] ?? "").toString().trim()),
+      tournament: (r[2] ?? "").toString().trim(),
+      tournamentDetail: (r[3] ?? "").toString().trim(),
+      date: (r[4] ?? "").toString().trim(),
+      opponent: (r[5] ?? "").toString().trim(),
+      result: (r[6] ?? "").toString().trim(),
+      delta: (r[7] ?? "").toString().trim(),
+      elo: toNumber((r[8] ?? "").toString().trim())
     })).filter(x => x.player);
 
     playerCardsCache = items;
     return items;
   }
 
-  /* =========================
-     CHART (x = matchId, y = elo)
-     ========================= */
+  // Chart x=MatchID, y=ELO
   function buildSvgLineChartXY(points){
     const clean = points.filter(p => Number.isFinite(p.x) && Number.isFinite(p.y));
-    if (clean.length < 2){
-      return `<div class="muted">Graf nelze vykreslit (málo dat).</div>`;
-    }
+    if (clean.length < 2) return `<div class="muted">Graf nelze vykreslit (málo dat).</div>`;
 
-    const w = 960, h = 220, padX = 24, padY = 18;
-    const minX = Math.min(...clean.map(p => p.x));
-    const maxX = Math.max(...clean.map(p => p.x));
-    const minY = Math.min(...clean.map(p => p.y));
-    const maxY = Math.max(...clean.map(p => p.y));
+    const w=960, h=240, padX=26, padY=18;
+    const minX=Math.min(...clean.map(p=>p.x)), maxX=Math.max(...clean.map(p=>p.x));
+    const minY=Math.min(...clean.map(p=>p.y)), maxY=Math.max(...clean.map(p=>p.y));
+    const spanX=Math.max(1, maxX-minX), spanY=Math.max(1, maxY-minY);
 
-    const spanX = Math.max(1, maxX - minX);
-    const spanY = Math.max(1, maxY - minY);
+    const X = v => padX + ((v-minX)*(w-padX*2))/spanX;
+    const Y = v => (h-padY) - ((v-minY)*(h-padY*2))/spanY;
 
-    const x = (v) => padX + ((v - minX) * (w - padX*2)) / spanX;
-    const y = (v) => (h - padY) - ((v - minY) * (h - padY*2)) / spanY;
-
-    let d = "";
+    let d="";
     for (let i=0;i<clean.length;i++){
-      const p = clean[i];
-      d += (i===0 ? " M " : " L ") + x(p.x).toFixed(2) + " " + y(p.y).toFixed(2);
+      const p=clean[i];
+      d += (i===0 ? " M " : " L ") + X(p.x).toFixed(2) + " " + Y(p.y).toFixed(2);
     }
 
-    const grid = [0, .5, 1].map(t => {
-      const yy = padY + (1 - t) * (h - padY*2);
-      return `<line x1="${padX}" y1="${yy}" x2="${w-padX}" y2="${yy}" stroke="rgba(120,120,120,.18)" />`;
+    const grid = [0,.5,1].map(t=>{
+      const yy = padY + (1-t)*(h-padY*2);
+      return `<line x1="${padX}" y1="${yy}" x2="${w-padX}" y2="${yy}" stroke="rgba(120,120,120,.18)"/>`;
     }).join("");
 
-    // axis labels (small)
-    const labelColor = "rgba(120,120,120,.75)";
     return `
-      <svg viewBox="0 0 ${w} ${h}" width="100%" height="220" role="img" aria-label="ELO chart">
+      <svg viewBox="0 0 ${w} ${h}" width="100%" height="240" role="img" aria-label="ELO chart">
         ${grid}
-        <path d="${d}" fill="none" stroke="rgba(120,120,120,.92)" stroke-width="2.5" />
-        <text x="${padX}" y="${padY-4}" fill="${labelColor}" font-size="11">ELO ${Math.round(minY)}–${Math.round(maxY)}</text>
-        <text x="${padX}" y="${h-6}" fill="${labelColor}" font-size="11">Match ID ${Math.round(minX)}–${Math.round(maxX)}</text>
-        <circle cx="${x(clean[clean.length-1].x)}" cy="${y(clean[clean.length-1].y)}" r="3.5" fill="rgba(120,120,120,.95)" />
+        <path d="${d}" fill="none" stroke="rgba(120,120,120,.92)" stroke-width="2.6"/>
+        <circle cx="${X(clean[clean.length-1].x)}" cy="${Y(clean[clean.length-1].y)}" r="3.8" fill="rgba(120,120,120,.95)"/>
+        <text x="${padX}" y="${padY-4}" fill="rgba(120,120,120,.75)" font-size="11">ELO ${Math.round(minY)}–${Math.round(maxY)}</text>
+        <text x="${padX}" y="${h-6}" fill="rgba(120,120,120,.75)" font-size="11">Match ID ${Math.round(minX)}–${Math.round(maxX)}</text>
       </svg>
     `;
   }
 
-  function buildHero2col(playerObj){
+  function buildHero(playerObj){
     const eloText = Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "";
-    const rankRight = `<span class="rankPill">${rankCellHtml(playerObj.rank)}</span>`;
-
     return `
       <div class="heroGrid">
         <div class="box boxPad">
@@ -1094,7 +815,7 @@
 
           <div class="rankLine">
             <div class="muted">Pořadí v žebříčku</div>
-            ${rankRight}
+            <span class="rankPill">${rankCellHtml(playerObj.rank)}</span>
           </div>
 
           <div style="margin-top:10px;">
@@ -1130,35 +851,33 @@
       <thead>
         <tr>
           <th class="num">Match ID</th>
-          <th>Turnaj detail</th>
-          <th>Datum</th>
+          <th>tournament_detail</th>
+          <th>date</th>
           <th>Opponent (rating)</th>
-          <th>Result</th>
+          <th>result</th>
           <th class="num">(+/-)</th>
-          <th class="num">ELO</th>
+          <th class="num">elo</th>
         </tr>
       </thead>
     `;
-
     const body = rows.map(r => `
       <tr>
         <td class="num">${Number.isFinite(r.matchId) ? r.matchId.toFixed(0) : ""}</td>
-        <td>${escapeHtml(r.tournamentDetail || "")}</td>
-        <td>${escapeHtml(r.date || "")}</td>
-        <td>${escapeHtml(r.opponent || "")}</td>
-        <td>${escapeHtml(r.result || "")}</td>
-        <td class="num">${escapeHtml(r.delta || "")}</td>
+        <td>${escapeHtml(r.tournamentDetail)}</td>
+        <td>${escapeHtml(r.date)}</td>
+        <td>${escapeHtml(r.opponent)}</td>
+        <td>${escapeHtml(r.result)}</td>
+        <td class="num">${escapeHtml(r.delta)}</td>
         <td class="num">${Number.isFinite(r.elo) ? r.elo.toFixed(0) : ""}</td>
       </tr>
     `).join("");
-
     return `<table class="tbl">${head}<tbody>${body}</tbody></table>`;
   }
 
   async function loadPlayerDetail(playerObj){
     modalName.textContent = playerObj.player;
     modalSub.textContent = "Načítám detail…";
-    modalBody.innerHTML = buildHero2col(playerObj);
+    modalBody.innerHTML = buildHero(playerObj);
     openModal();
 
     openSheetTabBtn.onclick = () => {
@@ -1166,83 +885,78 @@
     };
 
     try{
-      const allCards = await loadPlayerCardsCSV();
-      const wantedName = playerObj.player.trim();
+      const allCards = await loadPlayerCards();
 
-      const cards = allCards.filter(r => r.player === wantedName);
+      // exact match (trim), but robust vs extra spaces:
+      const wanted = playerObj.player.trim();
+      const cards = allCards.filter(r => r.player.trim() === wanted);
 
       if (!cards.length){
         modalSub.textContent = "Detail hráče";
-        modalBody.innerHTML = buildHero2col(playerObj) +
+        modalBody.innerHTML = buildHero(playerObj) +
           `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>`;
         return;
       }
 
-      // sort by Match ID for chart
-      const sortedForChart = [...cards].filter(r => Number.isFinite(r.matchId) && Number.isFinite(r.elo))
+      // sort by Match ID for chart + keep only valid points
+      const sorted = cards
+        .filter(r => Number.isFinite(r.matchId) && Number.isFinite(r.elo))
         .sort((a,b) => a.matchId - b.matchId);
 
-      const points = sortedForChart.map(r => ({ x: r.matchId, y: r.elo }));
       const chartEl = document.getElementById("eloChart");
       const chartMeta = document.getElementById("chartMeta");
 
-      chartEl.innerHTML = buildSvgLineChartXY(points);
-      if (sortedForChart.length){
-        const last = sortedForChart[sortedForChart.length-1];
-        chartMeta.textContent = `zápasů: ${sortedForChart.length} • poslední Match ID: ${last.matchId.toFixed(0)} • poslední ELO: ${last.elo.toFixed(0)}`;
+      chartEl.innerHTML = buildSvgLineChartXY(sorted.map(r => ({ x:r.matchId, y:r.elo })));
+      if (sorted.length){
+        const last = sorted[sorted.length-1];
+        chartMeta.textContent = `zápasů: ${sorted.length} • poslední Match ID: ${last.matchId.toFixed(0)} • poslední ELO: ${last.elo.toFixed(0)}`;
       } else {
-        chartMeta.textContent = `Nelze vykreslit (chybí Match ID/ELO)`;
+        chartMeta.textContent = "Nelze vykreslit (chybí Match ID/ELO)";
       }
 
-      // group by tournament (col C)
+      // group by tournament (C)
       const groups = new Map();
       for (const r of cards){
-        const key = r.tournament || "Neznámý turnaj";
+        const key = (r.tournament || "Neznámý turnaj").trim();
         if (!groups.has(key)) groups.set(key, []);
         groups.get(key).push(r);
       }
 
-      // stable ordering: tournaments by name, rows by matchId
-      const tournamentNames = Array.from(groups.keys()).sort((a,b)=>a.localeCompare(b, "cs"));
+      // order tournaments by name
+      const tournamentNames = Array.from(groups.keys()).sort((a,b)=>a.localeCompare(b,"cs"));
 
-      const sectionsHtml = tournamentNames.map(tn => {
-        const rows = groups.get(tn).slice().sort((a,b) => (a.matchId||0) - (b.matchId||0));
-        return `
-          <div class="sectionTitle">${escapeHtml(tn)}</div>
-          ${buildTournamentTable(rows)}
-        `;
+      const sectionsHtml = tournamentNames.map(name => {
+        const rows = groups.get(name).slice().sort((a,b)=>(a.matchId||0)-(b.matchId||0));
+        return `<div class="sectionTitle">${escapeHtml(name)}</div>${buildTournamentTable(rows)}`;
       }).join("");
 
       modalSub.textContent = "Detail hráče";
-      modalBody.innerHTML = buildHero2col(playerObj) + sectionsHtml;
+      modalBody.innerHTML = buildHero(playerObj) + sectionsHtml;
 
     } catch (e){
       modalSub.textContent = "Detail hráče";
-      modalBody.innerHTML = buildHero2col(playerObj) +
+      modalBody.innerHTML = buildHero(playerObj) +
         `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>` +
-        `<div class="muted" style="margin-top:10px;">(Chyba při čtení listu „${escapeHtml(PLAYER_CARDS_SHEET_NAME)}“)</div>` +
-        `<div class="muted" style="margin-top:6px;">${escapeHtml(String(e?.message || e))}</div>`;
+        `<div class="muted" style="margin-top:10px;">Chyba: ${escapeHtml(String(e?.message || e))}</div>`;
     }
   }
 
-  // events
-  searchEl.addEventListener("input", () => renderStandings(allRows));
-  refreshBtn.addEventListener("click", loadAll);
+  // Controls
   requestUploadBtn.addEventListener("click", () => { window.location.href = "https://www.seznam.cz/"; });
+  refreshBtn.addEventListener("click", loadAll);
+  searchEl.addEventListener("input", () => renderStandings(allRows));
 
   tbody.addEventListener("click", (e) => {
     const btn = e.target.closest(".playerBtn");
     if (!btn) return;
-    const playerObj = btn._playerObj;
-    if (!playerObj) return;
-    loadPlayerDetail(playerObj);
+    loadPlayerDetail(btn._playerObj);
   });
 
   closeModalBtn.addEventListener("click", closeModal);
   modalOverlay.addEventListener("click", (e) => { if (e.target === modalOverlay) closeModal(); });
   window.addEventListener("keydown", (e) => { if (e.key === "Escape" && modalOverlay.style.display === "block") closeModal(); });
 
-  // init
+  // Init
   loadAll();
 </script>
 </body>
