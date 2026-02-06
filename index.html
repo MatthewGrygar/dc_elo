@@ -77,7 +77,6 @@
         var(--bg0);
     }
 
-    /* marble feel for light theme */
     html[data-theme="light"] body{
       background:
         radial-gradient(900px 420px at 10% 0%, rgba(255,255,255,.80), transparent 55%),
@@ -481,31 +480,36 @@
       opacity: .9;
     }
 
-    .gridTableWrap{
-      overflow:auto;
+    .tbl{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
       border:1px solid var(--border2);
       border-radius:16px;
       background: var(--panel2);
     }
-    .gridTable{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0;
-    }
-    .gridTable td{
-      border-top:1px solid var(--border2);
-      border-right:1px solid var(--border2);
-      padding:8px 10px;
+    .tbl th, .tbl td{
+      padding:10px 10px;
+      border-bottom:1px solid var(--border2);
+      font-size:13px;
       vertical-align:top;
-      white-space:pre-wrap;
-      font-size: 13px;
     }
-    .gridTable tr:first-child td{ border-top:none; }
-    .gridTable td:last-child{ border-right:none; }
-    .gridTable tr:nth-child(2n) td{ background: var(--altrow); }
+    .tbl thead th{
+      background: var(--thead);
+      position: sticky;
+      top:0;
+      z-index:1;
+      text-transform: uppercase;
+      letter-spacing:.08em;
+      font-size:11px;
+      opacity:.85;
+    }
+    .tbl tr:last-child td{ border-bottom:none; }
+    .tbl td.num{ text-align:right; font-variant-numeric: tabular-nums; }
 
     /* =========================
-       MOBILE LAYOUT IMPROVEMENTS
+       MOBILE IMPROVEMENTS
        ========================= */
     @media (max-width: 560px){
       header{ padding:14px 14px 12px; }
@@ -519,11 +523,11 @@
       }
 
       h1{
-        font-size:20px;       /* menší nadpis */
+        font-size:20px;
         margin-bottom:4px;
       }
       .muted{
-        font-size:13px;       /* menší texty */
+        font-size:13px;
         line-height:1.25;
       }
       .credit{ margin-top:4px; }
@@ -533,20 +537,20 @@
       .headerRightTop{ justify-content:flex-start; width:100%; }
       .themeRow{ justify-content:flex-start; }
 
+      /* ✅ info panel pod sebe */
       .infoBar{
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;  /* místo 2 sloupců -> 1 sloupec */
         gap:8px;
         padding:10px;
       }
       .infoItem{
-        padding:10px;
-        min-height:52px;
+        padding:12px 12px;
+        min-height:54px;
       }
       .infoItem b{ font-size:10px; }
       .infoItem span{
-        font-size:14px;
+        font-size:15px;
         white-space:nowrap;
-        max-width: 140px;
       }
 
       /* Toolbar stack */
@@ -555,19 +559,30 @@
         align-items: stretch;
         gap:10px;
       }
-      .left{ width:100%; justify-content:space-between; }
+      .left{ width:100%; }
       input[type="search"]{ width:100%; }
       .right{ width:100%; justify-content:flex-end; }
 
-      /* MOBILE TABLE: only Rank / Player / Rating */
-      .colGames, .colWin, .colLoss, .colDraw, .colWinrate{
-        display:none;
+      /* ✅ Table on mobile: NO horizontal scroll, show only Player + Rating */
+      .tableWrap{
+        overflow-x:hidden; /* žádný scroll doprava */
       }
-      th.colGames, th.colWin, th.colLoss, th.colDraw, th.colWinrate,
-      td.colGames, td.colWin, td.colLoss, td.colDraw, td.colWinrate{
-        display:none;
+      table{
+        table-layout: fixed;
       }
-      .rank{ width:64px; }
+      th, td{
+        padding:10px 10px;
+      }
+      .rank{ width:0; }
+      .colRank, .colGames, .colWin, .colLoss, .colDraw, .colWinrate{
+        display:none !important;
+      }
+      .playerCol{
+        width: 70%;
+      }
+      .ratingCol{
+        width: 30%;
+      }
 
       /* Modal hero stack */
       .heroGrid{ grid-template-columns: 1fr; }
@@ -634,9 +649,9 @@
       <table>
         <thead>
         <tr>
-          <th class="rank">Pořadí</th>
-          <th>Player</th>
-          <th class="num">Rating</th>
+          <th class="rank colRank">Pořadí</th>
+          <th class="playerCol">Player</th>
+          <th class="num ratingCol">Rating</th>
           <th class="num colGames">Games</th>
           <th class="num colWin">Win</th>
           <th class="num colLoss">Loss</th>
@@ -648,7 +663,7 @@
       </table>
     </div>
 
-    <footer>Tip: Klikni na jméno hráče pro detail. Na mobilu se zobrazuje jen Player + Rating, zbytek v detailu.</footer>
+    <footer>Tip: Klikni na jméno hráče pro detail. Na mobilu se zobrazuje jen Player + Rating (bez scrollu doprava).</footer>
   </div>
 
   <div id="error"></div>
@@ -712,11 +727,14 @@
   const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
   const ELO_SHEET_NAME = "Elo standings";
   const DATA_SHEET_NAME = "Data";
+  const PLAYER_CARDS_SHEET_NAME = "Player cards (SCV)";
 
   const ELO_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(ELO_SHEET_NAME)}`;
   const DATA_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(DATA_SHEET_NAME)}`;
+  const PLAYER_CARDS_CSV_URL =
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(PLAYER_CARDS_SHEET_NAME)}`;
 
   const statusEl = document.getElementById("status");
   const tbody = document.getElementById("tbody");
@@ -740,6 +758,7 @@
 
   let allRows = [];
   let lastTournamentText = "";
+  let playerCardsCache = null; // cache parsed Player cards
 
   function escapeHtml(str){
     return (str ?? "").toString()
@@ -898,9 +917,9 @@
     for (const r of filtered){
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td class="rank">${rankCellHtml(r.rank)}</td>
-        <td><button class="playerBtn" type="button">${escapeHtml(r.player)}</button></td>
-        <td class="num">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
+        <td class="rank colRank">${rankCellHtml(r.rank)}</td>
+        <td class="playerCol"><button class="playerBtn" type="button">${escapeHtml(r.player)}</button></td>
+        <td class="num ratingCol">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
         <td class="num colGames">${safeInt(r.games)}</td>
         <td class="num colWin">${safeInt(r.win)}</td>
         <td class="num colLoss">${safeInt(r.loss)}</td>
@@ -968,6 +987,100 @@
 
   async function loadAll(){
     await Promise.all([loadStandings(), loadLastData()]);
+    // invalidate cache so "Player cards" refresh works after reload
+    playerCardsCache = null;
+  }
+
+  /* =========================
+     PLAYER CARDS (SCV) loader
+     ========================= */
+  async function loadPlayerCardsCSV(){
+    if (playerCardsCache) return playerCardsCache;
+
+    const u = new URL(PLAYER_CARDS_CSV_URL);
+    u.searchParams.set("_", Date.now().toString());
+    const { res, text } = await fetchUtf8Text(u.toString());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (text.trim().startsWith("<")) throw new Error("HTML místo CSV");
+
+    const rows = parseCSV(text);
+    if (rows.length < 2) throw new Error("Player cards (SCV): prázdné CSV");
+
+    // Expect header row in row[0]
+    const header = rows[0].map(h => normalizeKey(h));
+    const col = (name) => header.indexOf(normalizeKey(name));
+
+    // columns by letter (fallback to fixed positions):
+    // A Player, B Match ID, C tournament, D tournament_detail, E date, F Opponent (rating), G result, H (+-), I elo
+    const iPlayer = col("player") !== -1 ? col("player") : 0;
+    const iMatch  = header.findIndex(h => h === "match id" || h === "matchid") !== -1 ? header.findIndex(h => h === "match id" || h === "matchid") : 1;
+    const iTour   = col("tournament") !== -1 ? col("tournament") : 2;
+    const iTourDet= col("tournament_detail") !== -1 ? col("tournament_detail") : 3;
+    const iDate   = col("date") !== -1 ? col("date") : 4;
+    const iOpp    = header.findIndex(h => h.includes("opponent")) !== -1 ? header.findIndex(h => h.includes("opponent")) : 5;
+    const iRes    = col("result") !== -1 ? col("result") : 6;
+    const iDelta  = header.findIndex(h => h.includes("(+-)") || h.includes("+") || h.includes("+-")) !== -1 ? header.findIndex(h => h.includes("(+-)") || h.includes("+") || h.includes("+-")) : 7;
+    const iElo    = col("elo") !== -1 ? col("elo") : 8;
+
+    const items = rows.slice(1).map(r => ({
+      player: (r[iPlayer] ?? "").toString().trim(),
+      matchId: toNumber((r[iMatch] ?? "").toString().trim()),
+      tournament: (r[iTour] ?? "").toString().trim(),
+      tournamentDetail: (r[iTourDet] ?? "").toString().trim(),
+      date: (r[iDate] ?? "").toString().trim(),
+      opponent: (r[iOpp] ?? "").toString().trim(),
+      result: (r[iRes] ?? "").toString().trim(),
+      delta: (r[iDelta] ?? "").toString().trim(),
+      elo: toNumber((r[iElo] ?? "").toString().trim())
+    })).filter(x => x.player);
+
+    playerCardsCache = items;
+    return items;
+  }
+
+  /* =========================
+     CHART (x = matchId, y = elo)
+     ========================= */
+  function buildSvgLineChartXY(points){
+    const clean = points.filter(p => Number.isFinite(p.x) && Number.isFinite(p.y));
+    if (clean.length < 2){
+      return `<div class="muted">Graf nelze vykreslit (málo dat).</div>`;
+    }
+
+    const w = 960, h = 220, padX = 24, padY = 18;
+    const minX = Math.min(...clean.map(p => p.x));
+    const maxX = Math.max(...clean.map(p => p.x));
+    const minY = Math.min(...clean.map(p => p.y));
+    const maxY = Math.max(...clean.map(p => p.y));
+
+    const spanX = Math.max(1, maxX - minX);
+    const spanY = Math.max(1, maxY - minY);
+
+    const x = (v) => padX + ((v - minX) * (w - padX*2)) / spanX;
+    const y = (v) => (h - padY) - ((v - minY) * (h - padY*2)) / spanY;
+
+    let d = "";
+    for (let i=0;i<clean.length;i++){
+      const p = clean[i];
+      d += (i===0 ? " M " : " L ") + x(p.x).toFixed(2) + " " + y(p.y).toFixed(2);
+    }
+
+    const grid = [0, .5, 1].map(t => {
+      const yy = padY + (1 - t) * (h - padY*2);
+      return `<line x1="${padX}" y1="${yy}" x2="${w-padX}" y2="${yy}" stroke="rgba(120,120,120,.18)" />`;
+    }).join("");
+
+    // axis labels (small)
+    const labelColor = "rgba(120,120,120,.75)";
+    return `
+      <svg viewBox="0 0 ${w} ${h}" width="100%" height="220" role="img" aria-label="ELO chart">
+        ${grid}
+        <path d="${d}" fill="none" stroke="rgba(120,120,120,.92)" stroke-width="2.5" />
+        <text x="${padX}" y="${padY-4}" fill="${labelColor}" font-size="11">ELO ${Math.round(minY)}–${Math.round(maxY)}</text>
+        <text x="${padX}" y="${h-6}" fill="${labelColor}" font-size="11">Match ID ${Math.round(minX)}–${Math.round(maxX)}</text>
+        <circle cx="${x(clean[clean.length-1].x)}" cy="${y(clean[clean.length-1].y)}" r="3.5" fill="rgba(120,120,120,.95)" />
+      </svg>
+    `;
   }
 
   function buildHero2col(playerObj){
@@ -1012,150 +1125,110 @@
     `;
   }
 
-  function buildRawGridTable(grid){
-    const trimmed = grid.map(r => {
-      let last = -1;
-      for (let c=0;c<r.length;c++){
-        if ((r[c] ?? "").toString().trim() !== "") last = c;
-      }
-      return r.slice(0, Math.max(0, last + 1));
-    }).filter(r => r.some(cell => (cell ?? "").toString().trim() !== ""));
-
-    if (!trimmed.length) return `<div class="muted">Žádná data.</div>`;
-
-    const maxCols = Math.min(16, Math.max(...trimmed.map(r => r.length)));
-    const rowsHtml = trimmed.map(r => {
-      let cells = "";
-      for (let c=0;c<maxCols;c++){
-        const v = (r[c] ?? "").toString();
-        cells += `<td>${escapeHtml(v)}</td>`;
-      }
-      return `<tr>${cells}</tr>`;
-    }).join("");
-
-    return `
-      <div class="gridTableWrap">
-        <table class="gridTable">${rowsHtml}</table>
-      </div>
+  function buildTournamentTable(rows){
+    const head = `
+      <thead>
+        <tr>
+          <th class="num">Match ID</th>
+          <th>Turnaj detail</th>
+          <th>Datum</th>
+          <th>Opponent (rating)</th>
+          <th>Result</th>
+          <th class="num">(+/-)</th>
+          <th class="num">ELO</th>
+        </tr>
+      </thead>
     `;
-  }
 
-  function extractEloSeriesFromGrid(grid){
-    const series = [];
-    const norm = (s) => normalizeKey((s ?? "").toString()).replace(/\s+/g," ").trim();
-    const isRound = (s) => /^\s*\d+\s*$/.test((s ?? "").toString());
+    const body = rows.map(r => `
+      <tr>
+        <td class="num">${Number.isFinite(r.matchId) ? r.matchId.toFixed(0) : ""}</td>
+        <td>${escapeHtml(r.tournamentDetail || "")}</td>
+        <td>${escapeHtml(r.date || "")}</td>
+        <td>${escapeHtml(r.opponent || "")}</td>
+        <td>${escapeHtml(r.result || "")}</td>
+        <td class="num">${escapeHtml(r.delta || "")}</td>
+        <td class="num">${Number.isFinite(r.elo) ? r.elo.toFixed(0) : ""}</td>
+      </tr>
+    `).join("");
 
-    for (let r=0;r<grid.length;r++){
-      const rowN = (grid[r] || []).map(norm);
-      const iRound = rowN.indexOf("round");
-      const iElo = rowN.indexOf("elo");
-      const iMatch = rowN.indexOf("matchid");
-
-      if (iRound !== -1 && iElo !== -1 && iMatch !== -1){
-        for (let k=r+1;k<grid.length;k++){
-          const rr = grid[k] || [];
-          if (!isRound(rr[iRound])) break;
-          const eloVal = toNumber(rr[iElo] ?? "");
-          if (Number.isFinite(eloVal)) series.push(eloVal);
-        }
-      }
-    }
-    return series;
-  }
-
-  function buildSvgLineChart(values){
-    const clean = values.filter(v => Number.isFinite(v));
-    if (clean.length < 2){
-      return `<div class="muted">Graf nelze vykreslit (málo dat).</div>`;
-    }
-
-    const w = 960, h = 220, padX = 18, padY = 16;
-    const min = Math.min(...clean);
-    const max = Math.max(...clean);
-    const span = Math.max(1, max - min);
-
-    const n = values.length;
-    const x = (i) => padX + (i * (w - padX*2)) / Math.max(1, n - 1);
-    const y = (v) => (h - padY) - ((v - min) * (h - padY*2)) / span;
-
-    let d = "";
-    let started = false;
-    for (let i=0;i<values.length;i++){
-      const v = values[i];
-      if (!Number.isFinite(v)) continue;
-      d += (started ? " L " : " M ") + x(i).toFixed(2) + " " + y(v).toFixed(2);
-      started = true;
-    }
-
-    const grid = [0, .5, 1].map(t => {
-      const yy = padY + (1 - t) * (h - padY*2);
-      return `<line x1="${padX}" y1="${yy}" x2="${w-padX}" y2="${yy}" stroke="rgba(120,120,120,.18)" />`;
-    }).join("");
-
-    return `
-      <svg viewBox="0 0 ${w} ${h}" width="100%" height="220" role="img" aria-label="ELO chart">
-        ${grid}
-        <path d="${d}" fill="none" stroke="rgba(120,120,120,.90)" stroke-width="2.5" />
-        <text x="${padX}" y="${padY-2}" fill="rgba(120,120,120,.75)" font-size="11">min ${min}</text>
-        <text x="${w-padX}" y="${padY-2}" text-anchor="end" fill="rgba(120,120,120,.75)" font-size="11">max ${max}</text>
-      </svg>
-    `;
+    return `<table class="tbl">${head}<tbody>${body}</tbody></table>`;
   }
 
   async function loadPlayerDetail(playerObj){
     modalName.textContent = playerObj.player;
     modalSub.textContent = "Načítám detail…";
-    modalBody.innerHTML = buildHero2col(playerObj) + `<div class="muted">Načítám data listu…</div>`;
+    modalBody.innerHTML = buildHero2col(playerObj);
     openModal();
 
     openSheetTabBtn.onclick = () => {
       window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
     };
 
-    const playerSheetUrl =
-      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(playerObj.player)}`;
-
     try{
-      const u = new URL(playerSheetUrl);
-      u.searchParams.set("_", Date.now().toString());
+      const allCards = await loadPlayerCardsCSV();
+      const wantedName = playerObj.player.trim();
 
-      const { res, text } = await fetchUtf8Text(u.toString());
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      if (text.trim().startsWith("<")) throw new Error("HTML místo CSV");
+      const cards = allCards.filter(r => r.player === wantedName);
 
-      const grid = parseCSV(text);
-      if (!grid.length) throw new Error("EMPTY");
+      if (!cards.length){
+        modalSub.textContent = "Detail hráče";
+        modalBody.innerHTML = buildHero2col(playerObj) +
+          `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>`;
+        return;
+      }
 
-      const series = extractEloSeriesFromGrid(grid);
+      // sort by Match ID for chart
+      const sortedForChart = [...cards].filter(r => Number.isFinite(r.matchId) && Number.isFinite(r.elo))
+        .sort((a,b) => a.matchId - b.matchId);
+
+      const points = sortedForChart.map(r => ({ x: r.matchId, y: r.elo }));
       const chartEl = document.getElementById("eloChart");
       const chartMeta = document.getElementById("chartMeta");
 
-      chartEl.innerHTML = buildSvgLineChart(series);
-      if (series.length){
-        chartMeta.textContent = `zápasů: ${series.length} • poslední ELO: ${series[series.length-1].toFixed(0)}`;
+      chartEl.innerHTML = buildSvgLineChartXY(points);
+      if (sortedForChart.length){
+        const last = sortedForChart[sortedForChart.length-1];
+        chartMeta.textContent = `zápasů: ${sortedForChart.length} • poslední Match ID: ${last.matchId.toFixed(0)} • poslední ELO: ${last.elo.toFixed(0)}`;
       } else {
-        chartMeta.textContent = `ELO sloupec nenalezen`;
+        chartMeta.textContent = `Nelze vykreslit (chybí Match ID/ELO)`;
       }
 
-      modalSub.textContent = "Detail hráče";
-      modalBody.innerHTML = buildHero2col(playerObj) +
-        `<div class="sectionTitle">Data z listu hráče</div>` +
-        buildRawGridTable(grid);
+      // group by tournament (col C)
+      const groups = new Map();
+      for (const r of cards){
+        const key = r.tournament || "Neznámý turnaj";
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(r);
+      }
 
-    } catch {
+      // stable ordering: tournaments by name, rows by matchId
+      const tournamentNames = Array.from(groups.keys()).sort((a,b)=>a.localeCompare(b, "cs"));
+
+      const sectionsHtml = tournamentNames.map(tn => {
+        const rows = groups.get(tn).slice().sort((a,b) => (a.matchId||0) - (b.matchId||0));
+        return `
+          <div class="sectionTitle">${escapeHtml(tn)}</div>
+          ${buildTournamentTable(rows)}
+        `;
+      }).join("");
+
+      modalSub.textContent = "Detail hráče";
+      modalBody.innerHTML = buildHero2col(playerObj) + sectionsHtml;
+
+    } catch (e){
       modalSub.textContent = "Detail hráče";
       modalBody.innerHTML = buildHero2col(playerObj) +
         `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>` +
-        `<div class="muted" style="margin-top:10px;">(Nenalezen list se stejným názvem jako hráč.)</div>`;
+        `<div class="muted" style="margin-top:10px;">(Chyba při čtení listu „${escapeHtml(PLAYER_CARDS_SHEET_NAME)}“)</div>` +
+        `<div class="muted" style="margin-top:6px;">${escapeHtml(String(e?.message || e))}</div>`;
     }
   }
 
   // events
   searchEl.addEventListener("input", () => renderStandings(allRows));
   refreshBtn.addEventListener("click", loadAll);
-  requestUploadBtn.addEventListener("click", () => {
-    window.location.href = "https://docs.google.com/forms/d/e/1FAIpQLSd4HR8geopBrbxNWZEXo2IV9SFjLhKZS5I-AcM-13XqNJ2fjg/viewform?usp=dialog";
-  });
+  requestUploadBtn.addEventListener("click", () => { window.location.href = "https://www.seznam.cz/"; });
 
   tbody.addEventListener("click", (e) => {
     const btn = e.target.closest(".playerBtn");
