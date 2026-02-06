@@ -237,11 +237,15 @@
 
     footer{
       padding:12px;
-      opacity:.75;
+      opacity:.85;
       font-size:12px;
       border-top:1px solid var(--border2);
       background:var(--panel2);
       color:var(--muted);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
     }
 
     /* Modal */
@@ -276,10 +280,11 @@
       border-color:var(--dangerBd);
       background:var(--dangerBg);
       color:var(--dangerTx);
-      font-weight:800;
+      font-weight:900;
+      padding:10px 14px;
     }
 
-    /* Player hero (requested structure) */
+    /* Player hero */
     .heroGrid{
       display:grid;
       grid-template-columns: 380px 1fr;
@@ -295,7 +300,26 @@
     }
     .boxPad{ padding:14px; }
 
-    .heroName{ font-size:34px; font-weight:900; margin:0 0 10px; line-height:1.05; }
+    /* Left player panel: make content bottom-aligned + bigger name/rating */
+    .leftPanel{
+      display:flex;
+      flex-direction:column;
+      min-height: 410px;
+    }
+    .leftTop{
+      flex: 1 1 auto;
+    }
+    .leftBottom{
+      margin-top:auto;
+    }
+
+    .heroName{
+      font-size:38px;
+      font-weight:950;
+      margin:0 0 10px;
+      line-height:1.03;
+      letter-spacing:.2px;
+    }
     .rankLine{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
     .rankLine .muted{ font-size:13px; }
 
@@ -310,7 +334,13 @@
     }
 
     .heroEloLabel{ color:var(--muted); font-size:12px; }
-    .heroElo{ font-size:52px; font-weight:900; line-height:1; margin:6px 0 0; }
+    .heroElo{
+      font-size:60px;
+      font-weight:950;
+      line-height:1;
+      margin:7px 0 0;
+      letter-spacing:.4px;
+    }
 
     .statsGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
     .statsGridRow2{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; }
@@ -321,6 +351,12 @@
       padding:12px;
       background:var(--panel2);
       min-width:0;
+
+      /* (2) bottom-align content inside each stat */
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      min-height:72px;
     }
     .stat b{ display:block; font-size:12px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
     .stat span{ display:block; margin-top:6px; font-size:18px; font-weight:900; }
@@ -348,13 +384,16 @@
     .chartHead span{ font-size:12px; color:var(--muted); }
     #eloChart{ min-height:260px; color:var(--muted); }
 
+    /* (3) tournament section title bigger + bold */
     .sectionTitle{
       margin:18px 0 10px;
-      font-size:13px;
-      letter-spacing:.08em;
+      font-size:16px;
+      letter-spacing:.06em;
       text-transform:uppercase;
-      opacity:.9;
+      font-weight:950;
+      opacity:.95;
     }
+
     .tbl{
       width:100%;
       border-collapse:separate;
@@ -403,6 +442,9 @@
     @media (max-width: 760px){
       .metaBoxRow{ grid-template-columns: 1fr 1fr; }
       .heroGrid{ grid-template-columns: 1fr; }
+      .leftPanel{ min-height:auto; }
+      .heroName{ font-size:30px; }
+      .heroElo{ font-size:54px; }
     }
 
     @media (max-width: 560px){
@@ -449,7 +491,7 @@
       </div>
       <div>
         <h1>DC ELO žebříček</h1>
-        <div class="subtitle">Grail Series</div>
+        <div class="subtitle">by Grail Series</div>
         <div class="muted">Data načítána z Google Sheets</div>
         <div class="credit muted">
           Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně zpravuje.
@@ -513,7 +555,10 @@
       </table>
     </div>
 
-    <footer>Tip: Klikni na jméno hráče pro detail.</footer>
+    <footer>
+      <span>Tip: Klikni na jméno hráče pro detail.</span>
+      <span>verze: beta 0.9</span>
+    </footer>
   </div>
 </main>
 
@@ -928,28 +973,32 @@
 
     return `
       <div class="heroGrid">
-        <div class="box boxPad">
-          <div class="heroName">${escapeHtml(playerObj.player)}</div>
+        <div class="box boxPad leftPanel">
+          <div class="leftTop">
+            <div class="heroName">${escapeHtml(playerObj.player)}</div>
 
-          <div class="rankLine">
-            <div class="muted">Pořadí v žebříčku</div>
-            <span class="rankPill">${rankCellHtml(playerObj.rank)}</span>
+            <div class="rankLine">
+              <div class="muted">Pořadí v žebříčku</div>
+              <span class="rankPill">${rankCellHtml(playerObj.rank)}</span>
+            </div>
+
+            <div style="margin-top:10px;">
+              <div class="heroEloLabel">aktuální rating</div>
+              <div class="heroElo">${Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : ""}</div>
+            </div>
           </div>
 
-          <div style="margin-top:10px;">
-            <div class="heroEloLabel">aktuální rating</div>
-            <div class="heroElo">${Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : ""}</div>
-          </div>
+          <div class="leftBottom">
+            <div class="statsGrid">
+              <div class="stat"><b>games</b><span>${safeInt(playerObj.games)}</span></div>
+              <div class="stat"><b>winrate</b><span>${escapeHtml(playerObj.winrate || "")}</span></div>
+            </div>
 
-          <div class="statsGrid">
-            <div class="stat"><b>games</b><span>${safeInt(playerObj.games)}</span></div>
-            <div class="stat"><b>winrate</b><span>${escapeHtml(playerObj.winrate || "")}</span></div>
-          </div>
-
-          <div class="statsGridRow2">
-            <div class="stat statWin"><b>win</b><span>${safeInt(playerObj.win)}</span></div>
-            <div class="stat statLoss"><b>loss</b><span>${safeInt(playerObj.loss)}</span></div>
-            <div class="stat statDraw"><b>draw</b><span>${safeInt(playerObj.draw)}</span></div>
+            <div class="statsGridRow2">
+              <div class="stat statWin"><b>win</b><span>${safeInt(playerObj.win)}</span></div>
+              <div class="stat statLoss"><b>loss</b><span>${safeInt(playerObj.loss)}</span></div>
+              <div class="stat statDraw"><b>draw</b><span>${safeInt(playerObj.draw)}</span></div>
+            </div>
           </div>
         </div>
 
@@ -986,10 +1035,9 @@
   }
 
   function buildTournamentTable(rows){
-    const wins = rows.reduce((acc, r) => {
-      const res = (r.result || "").toString().toLowerCase();
-      return acc + (res.includes("won") ? 1 : 0);
-    }, 0);
+    const w = rows.reduce((acc, r) => acc + ((r.result||"").toLowerCase().includes("won") ? 1 : 0), 0);
+    const l = rows.reduce((acc, r) => acc + ((r.result||"").toLowerCase().includes("lost") ? 1 : 0), 0);
+    const d = rows.reduce((acc, r) => acc + ((r.result||"").toLowerCase().includes("draw") ? 1 : 0), 0);
 
     const oppRatings = rows.map(r => extractOpponentRating(r.opponent)).filter(Number.isFinite);
     const avgOpp = oppRatings.length ? (oppRatings.reduce((a,b)=>a+b,0)/oppRatings.length) : NaN;
@@ -1023,7 +1071,7 @@
     const summaryRow = `
       <tr class="summaryRow">
         <td colspan="2">Souhrn</td>
-        <td>Výhry: ${wins}</td>
+        <td>Record: ${w}-${l}-${d}</td>
         <td colspan="2" class="num">Průměr ELO soupeřů: ${Number.isFinite(avgOpp) ? avgOpp.toFixed(0) : "—"}</td>
         <td colspan="2"></td>
       </tr>
