@@ -17,10 +17,18 @@
       --hover:rgba(255,255,255,.055); --altrow:rgba(255,255,255,.02);
       --glow:rgba(255,255,255,.06);
       --btnPrimaryBg:rgba(255,255,255,.08); --btnPrimaryBd:rgba(255,255,255,.22);
+
       --winBg:rgba(60,220,120,.10); --winBd:rgba(60,220,120,.22);
       --lossBg:rgba(255,90,90,.10); --lossBd:rgba(255,90,90,.22);
       --drawBg:rgba(255,170,60,.10); --drawBd:rgba(255,170,60,.22);
+
+      --chartLine: rgba(255, 90, 90, .75);
+      --chartDot: rgba(255, 90, 90, .95);
+      --chartGrid: rgba(160,160,160,.18);
+      --chartAxis: rgba(200,200,200,.35);
+      --chartText: rgba(220,220,220,.78);
     }
+
     html[data-theme="light"]{
       --bg0:#f3efe6; --bg1:rgba(243,239,230,.70);
       --text:#151515; --muted:rgba(21,21,21,.70);
@@ -32,10 +40,18 @@
       --hover:rgba(0,0,0,.035); --altrow:rgba(0,0,0,.018);
       --glow:rgba(0,0,0,.05);
       --btnPrimaryBg:rgba(255,255,255,.75); --btnPrimaryBd:rgba(0,0,0,.14);
+
       --winBg:rgba(60,220,120,.14); --winBd:rgba(20,150,70,.22);
       --lossBg:rgba(255,90,90,.14); --lossBd:rgba(190,40,40,.22);
       --drawBg:rgba(255,170,60,.16); --drawBd:rgba(180,110,20,.22);
+
+      --chartLine: rgba(210, 60, 60, .70);
+      --chartDot: rgba(210, 60, 60, .92);
+      --chartGrid: rgba(0,0,0,.10);
+      --chartAxis: rgba(0,0,0,.24);
+      --chartText: rgba(0,0,0,.70);
     }
+
     :root{ color-scheme: light dark; }
 
     body{
@@ -100,6 +116,7 @@
       padding:10px 14px;
     }
 
+    /* Toggle (target label) */
     .themeRow{ display:flex; align-items:center; gap:8px; justify-content:flex-end; width:100%; }
     .themeToggle{
       padding:7px 10px; border-radius:999px; font-size:13px;
@@ -108,7 +125,6 @@
       cursor:pointer; user-select:none;
     }
     .themeToggle .dot{ width:8px; height:8px; border-radius:50%; background:rgba(120,120,120,.6); display:inline-block; }
-    .themeHint{ font-size:12px; color:var(--muted); }
 
     .container{ max-width:1150px; margin:0 auto; padding:0 16px; }
     main{ max-width:1150px; margin:0 auto; padding:16px; }
@@ -169,7 +185,7 @@
     .left{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
     .right{ display:flex; gap:10px; align-items:center; }
     input[type="search"]{
-      width:min(380px, 70vw);
+      width:min(420px, 70vw);
       padding:10px 12px;
       border-radius:14px;
       border:1px solid var(--border);
@@ -277,6 +293,8 @@
 
     .statsGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
     .statsGridRow2{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; }
+    .statsGridRow3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:10px; }
+
     .stat{
       border:1px solid var(--border2);
       border-radius:14px;
@@ -285,6 +303,7 @@
     }
     .stat b{ display:block; font-size:12px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
     .stat span{ display:block; margin-top:6px; font-size:18px; font-weight:900; }
+    .stat small{ display:block; color:var(--muted); margin-top:4px; font-size:12px; }
 
     .statWin{ background:var(--winBg); border-color:var(--winBd); }
     .statLoss{ background:var(--lossBg); border-color:var(--lossBd); }
@@ -293,7 +312,7 @@
     .chartHead{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px; }
     .chartHead b{ font-size:13px; letter-spacing:.08em; text-transform:uppercase; opacity:.9; }
     .chartHead span{ font-size:12px; color:var(--muted); }
-    #eloChart{ min-height:240px; color:var(--muted); }
+    #eloChart{ min-height:260px; color:var(--muted); }
 
     .sectionTitle{
       margin:18px 0 10px;
@@ -329,6 +348,10 @@
       opacity:.85;
     }
     .tbl tr:last-child td{ border-bottom:none; }
+    .summaryRow td{
+      font-weight:900;
+      background: rgba(120,120,120,.10);
+    }
 
     .bigError{
       display:flex; align-items:center; gap:12px;
@@ -367,10 +390,13 @@
       .tableWrap{ overflow-x:hidden; }
       table{ table-layout:fixed; }
       th, td{ padding:10px 10px; }
-      .colRank, .colGames, .colWin, .colLoss, .colDraw, .colWinrate{ display:none !important; }
+      /* mobile: show Player + Rating only */
+      .colRank, .colRecord, .colGames, .colWin, .colLoss, .colDraw, .colWinrate{ display:none !important; }
       .playerCol{ width:70%; }
       .ratingCol{ width:30%; }
+
       .heroGrid{ grid-template-columns:1fr; }
+      .statsGridRow3{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -399,11 +425,9 @@
 
       <div class="themeRow">
         <div class="themeToggle" id="themeToggle" title="Přepnout režim">
-          <span id="themeIcon">🌙</span>
           <span class="dot"></span>
-          <span id="themeLabel">Tmavý</span>
+          <span id="themeLabel">☀️ Světlý</span>
         </div>
-        <div class="themeHint">režim</div>
       </div>
     </div>
   </div>
@@ -437,6 +461,7 @@
             <th class="rank colRank">Pořadí</th>
             <th class="playerCol">Player</th>
             <th class="num ratingCol">Rating</th>
+            <th class="num colRecord">Record</th>
             <th class="num colGames">Games</th>
             <th class="num colWin">Win</th>
             <th class="num colLoss">Loss</th>
@@ -448,7 +473,7 @@
       </table>
     </div>
 
-    <footer>Tip: Klikni na jméno hráče pro detail. Detail se načítá z listu „Player cards (CSV)“.</footer>
+    <footer>Tip: Klikni na jméno hráče pro detail. Detail se načítá z listu „Player cards (CSV)“ + „Player summary“. Peak ELO je z „Elo standings“ (H=Peak).</footer>
   </div>
 </main>
 
@@ -470,36 +495,12 @@
 </div>
 
 <script>
-  /* THEME */
-  const htmlEl = document.documentElement;
-  const themeToggle = document.getElementById("themeToggle");
-  const themeIcon = document.getElementById("themeIcon");
-  const themeLabel = document.getElementById("themeLabel");
-  function applyTheme(theme){
-    htmlEl.setAttribute("data-theme", theme);
-    const isLight = theme === "light";
-    themeIcon.textContent = isLight ? "☀️" : "🌙";
-    themeLabel.textContent = isLight ? "Světlý" : "Tmavý";
-  }
-  function initTheme(){
-    const saved = localStorage.getItem("theme");
-    if (saved === "light" || saved === "dark"){ applyTheme(saved); return; }
-    const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
-    applyTheme(prefersLight ? "light" : "dark");
-  }
-  themeToggle.addEventListener("click", () => {
-    const cur = htmlEl.getAttribute("data-theme") || "dark";
-    const next = cur === "dark" ? "light" : "dark";
-    applyTheme(next);
-    localStorage.setItem("theme", next);
-  });
-  initTheme();
-
   /* CONFIG */
   const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
   const ELO_SHEET_NAME = "Elo standings";
   const DATA_SHEET_NAME = "Data";
   const PLAYER_CARDS_SHEET_NAME = "Player cards (CSV)";
+  const PLAYER_SUMMARY_SHEET_NAME = "Player summary";
 
   const ELO_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(ELO_SHEET_NAME)}`;
@@ -507,6 +508,8 @@
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(DATA_SHEET_NAME)}`;
   const PLAYER_CARDS_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(PLAYER_CARDS_SHEET_NAME)}`;
+  const PLAYER_SUMMARY_CSV_URL =
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(PLAYER_SUMMARY_SHEET_NAME)}`;
 
   /* UI */
   const statusEl = document.getElementById("status");
@@ -528,9 +531,32 @@
   const modalSub = document.getElementById("modalSub");
   const modalBody = document.getElementById("modalBody");
 
+  /* THEME: default dark + toggle shows TARGET label */
+  const htmlEl = document.documentElement;
+  const themeToggle = document.getElementById("themeToggle");
+  const themeLabel = document.getElementById("themeLabel");
+
+  function setTheme(theme){
+    htmlEl.setAttribute("data-theme", theme);
+    // show target mode label
+    themeLabel.textContent = (theme === "dark") ? "☀️ Světlý" : "Tmavý 🌙";
+    localStorage.setItem("theme", theme);
+  }
+  function initTheme(){
+    const saved = localStorage.getItem("theme");
+    if (saved === "light" || saved === "dark") setTheme(saved);
+    else setTheme("dark");
+  }
+  themeToggle.addEventListener("click", () => {
+    const cur = htmlEl.getAttribute("data-theme") || "dark";
+    setTheme(cur === "dark" ? "light" : "dark");
+  });
+  initTheme();
+
   let allRows = [];
   let lastTournamentText = "";
   let playerCardsCache = null;
+  let playerSummaryCache = null;
 
   function escapeHtml(str){
     return (str ?? "").toString()
@@ -607,6 +633,13 @@
     return n;
   }
 
+  function extractOpponentRating(opponentText){
+    const t = (opponentText || "").toString().trim();
+    const m = t.match(/\((\d+(?:[.,]\d+)?)\)\s*$/);
+    if (!m) return NaN;
+    return toNumber(m[1]);
+  }
+
   /* INFO BAR */
   function updateInfoBar(){
     const ratings = allRows.map(r => r.rating).filter(Number.isFinite).sort((a,b)=>a-b);
@@ -659,17 +692,19 @@
     tbody.innerHTML = "";
     if (!filtered.length){
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="8" class="muted">Nic nenalezeno.</td>`;
+      tr.innerHTML = `<td colspan="9" class="muted">Nic nenalezeno.</td>`;
       tbody.appendChild(tr);
       return;
     }
 
     for (const r of filtered){
+      const recordText = Number.isFinite(r.peak) ? r.peak.toFixed(0) : "";
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="rank colRank">${rankCellHtml(r.rank)}</td>
         <td class="playerCol"><button class="playerBtn" type="button">${escapeHtml(r.player)}</button></td>
         <td class="num ratingCol">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
+        <td class="num colRecord">${recordText}</td>
         <td class="num colGames">${safeInt(r.games)}</td>
         <td class="num colWin">${safeInt(r.win)}</td>
         <td class="num colLoss">${safeInt(r.loss)}</td>
@@ -693,10 +728,16 @@
 
       const rows = parseCSV(text);
       const headers = rows[0].map(h => normalizeKey(h));
-      const idx = (n) => headers.indexOf(n);
 
+      const idx = (n) => headers.indexOf(n);
       const iPlayer=idx("player"), iRating=idx("rating"), iGames=idx("games"), iWin=idx("win"), iLoss=idx("loss"), iDraw=idx("draw");
       const iWinrate = headers.findIndex(h => h==="winrate" || h.includes("winrate"));
+
+      // Peak can be named "peak" or "record" depending on header, but user said H Peak. We try by header first, else fallback to col index 7.
+      let iPeak = headers.indexOf("peak");
+      if (iPeak === -1) iPeak = headers.indexOf("record");
+      if (iPeak === -1) iPeak = 7; // H (0-based)
+
       if ([iPlayer,iRating,iGames,iWin,iLoss,iDraw].some(i=>i===-1) || iWinrate===-1){
         throw new Error("Neplatná hlavička v Elo standings.");
       }
@@ -704,6 +745,7 @@
       const loaded = rows.slice(1).map(r => ({
         player:(r[iPlayer] ?? "").trim(),
         rating:toNumber(r[iRating]),
+        peak:toNumber(r[iPeak]),
         games:toNumber(r[iGames]),
         win:toNumber(r[iWin]),
         loss:toNumber(r[iLoss]),
@@ -725,6 +767,7 @@
   async function loadAll(){
     await Promise.all([loadStandings(), loadLastData()]);
     playerCardsCache = null;
+    playerSummaryCache = null;
   }
 
   /* PLAYER CARDS (CSV): fixed A..I mapping */
@@ -743,57 +786,127 @@
     const items = rows.slice(1).map(r => ({
       player: (r[0] ?? "").toString().trim(),              // A
       matchId: toNumber((r[1] ?? "").toString().trim()),   // B
-      tournament: (r[2] ?? "").toString().trim(),          // C (nepoužíváme pro grouping)
-      tournamentDetail: (r[3] ?? "").toString().trim(),    // D  ✅ grouping
+      tournament: (r[2] ?? "").toString().trim(),          // C
+      tournamentDetail: (r[3] ?? "").toString().trim(),    // D
       date: (r[4] ?? "").toString().trim(),                // E
       opponent: (r[5] ?? "").toString().trim(),            // F
       result: (r[6] ?? "").toString().trim(),              // G
       delta: (r[7] ?? "").toString().trim(),               // H
-      elo: toNumber((r[8] ?? "").toString().trim())        // I ✅ chart Y
+      elo: toNumber((r[8] ?? "").toString().trim())        // I
     })).filter(x => x.player);
 
     playerCardsCache = items;
     return items;
   }
 
-  /* CHART: X=MatchID, Y=ELO */
+  /* PLAYER SUMMARY: fixed columns A, M, N, O */
+  async function loadPlayerSummary(){
+    if (playerSummaryCache) return playerSummaryCache;
+
+    const u = new URL(PLAYER_SUMMARY_CSV_URL);
+    u.searchParams.set("_", Date.now().toString());
+    const { res, text } = await fetchUtf8Text(u.toString());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (text.trim().startsWith("<")) throw new Error("HTML místo CSV");
+
+    const rows = parseCSV(text);
+    if (rows.length < 2) return [];
+
+    // 0-based indices: A=0, M=12, N=13, O=14
+    const items = rows.slice(1).map(r => ({
+      player: (r[0] ?? "").toString().trim(),
+      avgOpp: toNumber((r[12] ?? "").toString().trim()),
+      winStreak: toNumber((r[13] ?? "").toString().trim()),
+      lossStreak: toNumber((r[14] ?? "").toString().trim())
+    })).filter(x => x.player);
+
+    playerSummaryCache = items;
+    return items;
+  }
+
+  async function getSummaryForPlayer(playerName){
+    const list = await loadPlayerSummary();
+    const wanted = playerName.trim();
+    return list.find(x => x.player.trim() === wanted) || null;
+  }
+
+  /* CHART (better design): X ticks, grid, red line */
   function buildSvgLineChartXY(points){
     const clean = points.filter(p => Number.isFinite(p.x) && Number.isFinite(p.y));
     if (clean.length < 2) return `<div class="muted">Graf nelze vykreslit (málo dat).</div>`;
 
-    const w=960, h=240, padX=26, padY=18;
-    const minX=Math.min(...clean.map(p=>p.x)), maxX=Math.max(...clean.map(p=>p.x));
-    const minY=Math.min(...clean.map(p=>p.y)), maxY=Math.max(...clean.map(p=>p.y));
-    const spanX=Math.max(1, maxX-minX), spanY=Math.max(1, maxY-minY);
+    const w=980, h=280, padL=44, padR=18, padT=18, padB=42;
 
-    const X = v => padX + ((v-minX)*(w-padX*2))/spanX;
-    const Y = v => (h-padY) - ((v-minY)*(h-padY*2))/spanY;
+    const xs = clean.map(p=>p.x);
+    const ys = clean.map(p=>p.y);
+    const minX = Math.min(...xs), maxX = Math.max(...xs);
+    const minY = Math.min(...ys), maxY = Math.max(...ys);
+
+    const spanX = Math.max(1, maxX - minX);
+    const spanY = Math.max(1, maxY - minY);
+
+    const X = v => padL + ((v-minX)*(w-padL-padR))/spanX;
+    const Y = v => (h-padB) - ((v-minY)*(h-padT-padB))/spanY;
 
     let d="";
     for (let i=0;i<clean.length;i++){
       const p=clean[i];
-      d += (i===0 ? " M " : " L ") + X(p.x).toFixed(2) + " " + Y(p.y).toFixed(2);
+      d += (i===0 ? "M " : "L ") + X(p.x).toFixed(2) + " " + Y(p.y).toFixed(2) + " ";
     }
 
-    const grid = [0,.5,1].map(t=>{
-      const yy = padY + (1-t)*(h-padY*2);
-      return `<line x1="${padX}" y1="${yy}" x2="${w-padX}" y2="${yy}" stroke="rgba(120,120,120,.18)"/>`;
+    const gridLines = 4;
+    let grid = "";
+    for (let i=0;i<=gridLines;i++){
+      const t = i/gridLines;
+      const yy = padT + t*(h-padT-padB);
+      const val = Math.round(maxY - t*(maxY-minY));
+      grid += `
+        <line x1="${padL}" y1="${yy}" x2="${w-padR}" y2="${yy}" stroke="var(--chartGrid)" />
+        <text x="${padL-10}" y="${yy+4}" text-anchor="end" fill="var(--chartText)" font-size="11">${val}</text>
+      `;
+    }
+
+    const maxTicks = 8;
+    const ticks = Math.min(maxTicks, clean.length);
+    let xTicks = "";
+    for (let i=0;i<ticks;i++){
+      const idx = Math.round(i*(clean.length-1)/(ticks-1));
+      const p = clean[idx];
+      const xx = X(p.x);
+      xTicks += `
+        <line x1="${xx}" y1="${h-padB}" x2="${xx}" y2="${h-padB+6}" stroke="var(--chartAxis)" />
+        <text x="${xx}" y="${h-padB+22}" text-anchor="middle" fill="var(--chartText)" font-size="11">${p.x}</text>
+      `;
+    }
+
+    const dots = clean.map(p => {
+      const cx = X(p.x), cy = Y(p.y);
+      return `<circle cx="${cx}" cy="${cy}" r="3.2" fill="var(--chartDot)" />`;
     }).join("");
 
     return `
-      <svg viewBox="0 0 ${w} ${h}" width="100%" height="240" role="img" aria-label="ELO chart">
+      <svg viewBox="0 0 ${w} ${h}" width="100%" height="280" role="img" aria-label="ELO chart">
         ${grid}
-        <path d="${d}" fill="none" stroke="rgba(120,120,120,.92)" stroke-width="2.6"/>
-        <circle cx="${X(clean[clean.length-1].x)}" cy="${Y(clean[clean.length-1].y)}" r="3.8" fill="rgba(120,120,120,.95)"/>
-        <text x="${padX}" y="${padY-4}" fill="rgba(120,120,120,.75)" font-size="11">ELO ${Math.round(minY)}–${Math.round(maxY)}</text>
-        <text x="${padX}" y="${h-6}" fill="rgba(120,120,120,.75)" font-size="11">Match ID ${Math.round(minX)}–${Math.round(maxX)}</text>
+        <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${h-padB}" stroke="var(--chartAxis)" />
+        <line x1="${padL}" y1="${h-padB}" x2="${w-padR}" y2="${h-padB}" stroke="var(--chartAxis)" />
+        ${xTicks}
+        <path d="${d}" fill="none" stroke="var(--chartLine)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+        ${dots}
+        <text x="${padL}" y="${padT-4}" fill="var(--chartText)" font-size="11">ELO</text>
+        <text x="${w-padR}" y="${h-10}" text-anchor="end" fill="var(--chartText)" font-size="11">Match ID</text>
       </svg>
     `;
   }
 
   /* HERO */
-  function buildHero(playerObj){
+  function buildHero(playerObj, summary){
     const eloText = Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "";
+    const peakText = Number.isFinite(playerObj.peak) ? playerObj.peak.toFixed(0) : "—";
+
+    const avgOpp = summary && Number.isFinite(summary.avgOpp) ? summary.avgOpp.toFixed(0) : "—";
+    const winStreak = summary && Number.isFinite(summary.winStreak) ? summary.winStreak.toFixed(0) : "—";
+    const lossStreak = summary && Number.isFinite(summary.lossStreak) ? summary.lossStreak.toFixed(0) : "—";
+
     return `
       <div class="heroGrid">
         <div class="box boxPad">
@@ -819,6 +932,32 @@
             <div class="stat statLoss"><b>loss</b><span>${safeInt(playerObj.loss)}</span></div>
             <div class="stat statDraw"><b>draw</b><span>${safeInt(playerObj.draw)}</span></div>
           </div>
+
+          <div class="statsGridRow3">
+            <div class="stat">
+              <b>peak elo</b>
+              <span>${peakText}</span>
+              <small>z „Elo standings“</small>
+            </div>
+            <div class="stat">
+              <b>average opponent rating</b>
+              <span>${avgOpp}</span>
+              <small>z „Player summary“</small>
+            </div>
+            <div class="stat statWin">
+              <b>longest win streak</b>
+              <span>${winStreak} 🔥</span>
+              <small>z „Player summary“</small>
+            </div>
+          </div>
+
+          <div class="statsGridRow3" style="grid-template-columns:1fr;">
+            <div class="stat statLoss">
+              <b>longest loss streak</b>
+              <span>${lossStreak}</span>
+              <small>z „Player summary“</small>
+            </div>
+          </div>
         </div>
 
         <div class="box boxPad">
@@ -833,6 +972,14 @@
   }
 
   function buildTournamentTable(rows){
+    const wins = rows.reduce((acc, r) => {
+      const res = (r.result || "").toString().toLowerCase();
+      return acc + (res.includes("won") ? 1 : 0);
+    }, 0);
+
+    const oppRatings = rows.map(r => extractOpponentRating(r.opponent)).filter(Number.isFinite);
+    const avgOpp = oppRatings.length ? (oppRatings.reduce((a,b)=>a+b,0)/oppRatings.length) : NaN;
+
     const head = `
       <thead>
         <tr>
@@ -859,84 +1006,112 @@
       </tr>
     `).join("");
 
-    return `<table class="tbl">${head}<tbody>${body}</tbody></table>`;
+    const summaryRow = `
+      <tr class="summaryRow">
+        <td colspan="2">Souhrn</td>
+        <td>Výhry: ${wins}</td>
+        <td colspan="2" class="num">Průměr ELO soupeřů: ${Number.isFinite(avgOpp) ? avgOpp.toFixed(0) : "—"}</td>
+        <td colspan="2"></td>
+      </tr>
+    `;
+
+    return `<table class="tbl">${head}<tbody>${body}${summaryRow}</tbody></table>`;
   }
 
   async function loadPlayerDetail(playerObj){
-  modalName.textContent = playerObj.player;
-  modalSub.textContent = "Načítám detail…";
-  modalBody.innerHTML = buildHero(playerObj);
-  modalOverlay.style.display = "block";
-  document.body.style.overflow = "hidden";
+    modalName.textContent = playerObj.player;
+    modalSub.textContent = "Načítám detail…";
+    modalBody.innerHTML = `<div class="muted">Načítám…</div>`;
+    modalOverlay.style.display = "block";
+    document.body.style.overflow = "hidden";
 
-  openSheetTabBtn.onclick = () => {
-    window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
-  };
+    openSheetTabBtn.onclick = () => {
+      window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
+    };
 
-  try{
-    const allCards = await loadPlayerCards();
-    const wanted = playerObj.player.trim();
+    try{
+      const [allCards, summary] = await Promise.all([
+        loadPlayerCards(),
+        getSummaryForPlayer(playerObj.player)
+      ]);
 
-    // A = Player
-    const cards = allCards.filter(r => r.player.trim() === wanted);
+      const wanted = playerObj.player.trim();
+      const cards = allCards.filter(r => r.player.trim() === wanted);
 
-    if (!cards.length){
-      modalSub.textContent = "Detail hráče";
-      modalBody.innerHTML = buildHero(playerObj) +
-        `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>`;
-      return;
-    }
-
-    // Sort by B = Match ID (ascending)
-    const sortedAll = cards.slice().sort((a,b) => (a.matchId||0) - (b.matchId||0));
-
-    // Group by D = tournament_detail (keep order of first appearance)
-    const groups = new Map();
-    const groupOrder = [];
-    for (const r of sortedAll){
-      const key = (r.tournamentDetail || "Neznámé").trim();
-      if (!groups.has(key)){
-        groups.set(key, []);
-        groupOrder.push(key);
+      if (!cards.length){
+        modalSub.textContent = "Detail hráče";
+        modalBody.innerHTML = buildHero(playerObj, summary) +
+          `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>`;
+        return;
       }
-      groups.get(key).push(r);
+
+      const sortedAll = cards.slice().sort((a,b) => (a.matchId||0) - (b.matchId||0));
+
+      const groups = new Map();
+      const groupOrder = [];
+      for (const r of sortedAll){
+        const key = (r.tournamentDetail || "Neznámé").trim();
+        if (!groups.has(key)){
+          groups.set(key, []);
+          groupOrder.push(key);
+        }
+        groups.get(key).push(r);
+      }
+
+      const sectionsHtml = groupOrder.map(key => {
+        const rows = groups.get(key).slice().sort((a,b)=>(a.matchId||0)-(b.matchId||0));
+        return `<div class="sectionTitle">${escapeHtml(key)}</div>${buildTournamentTable(rows)}`;
+      }).join("");
+
+      modalSub.textContent = "Detail hráče";
+      modalBody.innerHTML = buildHero(playerObj, summary) + sectionsHtml;
+
+      const chartEl = document.getElementById("eloChart");
+      const chartMeta = document.getElementById("chartMeta");
+
+      const points = sortedAll
+        .filter(r => Number.isFinite(r.matchId) && Number.isFinite(r.elo))
+        .map(r => ({ x:r.matchId, y:r.elo }));
+
+      chartEl.innerHTML = buildSvgLineChartXY(points);
+
+      if (points.length){
+        const last = points[points.length - 1];
+        chartMeta.textContent = `zápasů: ${points.length} • poslední Match ID: ${last.x.toFixed(0)} • poslední ELO: ${last.y.toFixed(0)}`;
+      } else {
+        chartMeta.textContent = "Nelze vykreslit (chybí Match ID/ELO)";
+        chartEl.innerHTML = `<div class="muted">Graf nelze vykreslit (chybí Match ID/ELO v datech hráče).</div>`;
+      }
+
+    } catch (e){
+      modalSub.textContent = "Detail hráče";
+      modalBody.innerHTML = `<div class="bigError"><div class="icon">❌</div> Chyba při načítání: ${escapeHtml(String(e?.message || e))}</div>`;
     }
-
-    const sectionsHtml = groupOrder.map(key => {
-      const rows = groups.get(key).slice().sort((a,b)=>(a.matchId||0)-(b.matchId||0));
-      return `<div class="sectionTitle">${escapeHtml(key)}</div>${buildTournamentTable(rows)}`;
-    }).join("");
-
-    // 1) Nejprve vybuildíme celý modal (hero + tabulky)
-    modalSub.textContent = "Detail hráče";
-    modalBody.innerHTML = buildHero(playerObj) + sectionsHtml;
-
-    // 2) AŽ TEĎ naplníme graf do čerstvě vytvořených elementů
-    const chartEl = document.getElementById("eloChart");
-    const chartMeta = document.getElementById("chartMeta");
-
-    // Chart points: X = Match ID (B), Y = elo (I)
-    const points = sortedAll
-      .filter(r => Number.isFinite(r.matchId) && Number.isFinite(r.elo))
-      .map(r => ({ x: r.matchId, y: r.elo }));
-
-    chartEl.innerHTML = buildSvgLineChartXY(points);
-
-    if (points.length){
-      const last = points[points.length - 1];
-      chartMeta.textContent = `zápasů: ${points.length} • poslední Match ID: ${last.x.toFixed(0)} • poslední ELO: ${last.y.toFixed(0)}`;
-    } else {
-      chartMeta.textContent = "Nelze vykreslit (chybí Match ID/ELO)";
-      chartEl.innerHTML = `<div class="muted">Graf nelze vykreslit (chybí Match ID/ELO v datech hráče).</div>`;
-    }
-
-  } catch (e){
-    modalSub.textContent = "Detail hráče";
-    modalBody.innerHTML = buildHero(playerObj) +
-      `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>` +
-      `<div class="muted" style="margin-top:10px;">Chyba: ${escapeHtml(String(e?.message || e))}</div>`;
   }
-}
+
+  /* LOAD LAST TOURNAMENT */
+  async function loadLastData(){
+    lastDataBadge.textContent = `načteno: ${formatNow()}`;
+    try{
+      const u = new URL(DATA_CSV_URL);
+      u.searchParams.set("_", Date.now().toString());
+      const { res, text } = await fetchUtf8Text(u.toString());
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (text.trim().startsWith("<")) throw new Error("HTML místo CSV");
+
+      const rows = parseCSV(text);
+      let last = "";
+      for (let i=1;i<rows.length;i++){
+        const v = (rows[i][1] ?? "").toString().trim();
+        if (v) last = v;
+      }
+      lastTournamentText = last || "";
+      updateInfoBar();
+    } catch {
+      lastTournamentText = "";
+      updateInfoBar();
+    }
+  }
 
   /* EVENTS */
   requestUploadBtn.addEventListener("click", () => { window.location.href = "https://www.seznam.cz/"; });
