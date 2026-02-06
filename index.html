@@ -863,79 +863,80 @@
   }
 
   async function loadPlayerDetail(playerObj){
-    modalName.textContent = playerObj.player;
-    modalSub.textContent = "Načítám detail…";
-    modalBody.innerHTML = buildHero(playerObj);
-    modalOverlay.style.display = "block";
-    document.body.style.overflow = "hidden";
+  modalName.textContent = playerObj.player;
+  modalSub.textContent = "Načítám detail…";
+  modalBody.innerHTML = buildHero(playerObj);
+  modalOverlay.style.display = "block";
+  document.body.style.overflow = "hidden";
 
-    openSheetTabBtn.onclick = () => {
-      window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
-    };
+  openSheetTabBtn.onclick = () => {
+    window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
+  };
 
-    try{
-      const allCards = await loadPlayerCards();
-      const wanted = playerObj.player.trim();
+  try{
+    const allCards = await loadPlayerCards();
+    const wanted = playerObj.player.trim();
 
-      // filter by A Player
-      const cards = allCards.filter(r => r.player.trim() === wanted);
+    // A = Player
+    const cards = allCards.filter(r => r.player.trim() === wanted);
 
-      if (!cards.length){
-        modalSub.textContent = "Detail hráče";
-        modalBody.innerHTML = buildHero(playerObj) +
-          `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>`;
-        return;
-      }
-
-      // sort by Match ID (B)
-      const sortedAll = cards.slice().sort((a,b) => (a.matchId||0) - (b.matchId||0));
-
-      // chart points: X=matchId, Y=elo
-      const points = sortedAll
-        .filter(r => Number.isFinite(r.matchId) && Number.isFinite(r.elo))
-        .map(r => ({ x:r.matchId, y:r.elo }));
-
-      const chartEl = document.getElementById("eloChart");
-      const chartMeta = document.getElementById("chartMeta");
-
-      chartEl.innerHTML = buildSvgLineChartXY(points);
-      if (points.length){
-        const last = points[points.length-1];
-        chartMeta.textContent = `zápasů: ${points.length} • poslední Match ID: ${last.x.toFixed(0)} • poslední ELO: ${last.y.toFixed(0)}`;
-      } else {
-        chartMeta.textContent = "Nelze vykreslit (chybí Match ID/ELO)";
-      }
-
-      // group by D tournament_detail (unique)
-      const groups = new Map();
-      for (const r of sortedAll){
-        const key = (r.tournamentDetail || "Neznámé").trim();
-        if (!groups.has(key)) groups.set(key, []);
-        groups.get(key).push(r);
-      }
-
-      // keep groups in order of first appearance in sortedAll (more natural)
-      const groupOrder = [];
-      for (const r of sortedAll){
-        const k = (r.tournamentDetail || "Neznámé").trim();
-        if (!groupOrder.includes(k)) groupOrder.push(k);
-      }
-
-      const sectionsHtml = groupOrder.map(key => {
-        const rows = groups.get(key).slice().sort((a,b)=>(a.matchId||0)-(b.matchId||0));
-        return `<div class="sectionTitle">${escapeHtml(key)}</div>${buildTournamentTable(rows)}`;
-      }).join("");
-
-      modalSub.textContent = "Detail hráče";
-      modalBody.innerHTML = buildHero(playerObj) + sectionsHtml;
-
-    } catch (e){
+    if (!cards.length){
       modalSub.textContent = "Detail hráče";
       modalBody.innerHTML = buildHero(playerObj) +
-        `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>` +
-        `<div class="muted" style="margin-top:10px;">Chyba: ${escapeHtml(String(e?.message || e))}</div>`;
+        `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>`;
+      return;
     }
+
+    // Sort by B = Match ID (ascending)
+    const sortedAll = cards.slice().sort((a,b) => (a.matchId||0) - (b.matchId||0));
+
+    // Group by D = tournament_detail (keep order of first appearance)
+    const groups = new Map();
+    const groupOrder = [];
+    for (const r of sortedAll){
+      const key = (r.tournamentDetail || "Neznámé").trim();
+      if (!groups.has(key)){
+        groups.set(key, []);
+        groupOrder.push(key);
+      }
+      groups.get(key).push(r);
+    }
+
+    const sectionsHtml = groupOrder.map(key => {
+      const rows = groups.get(key).slice().sort((a,b)=>(a.matchId||0)-(b.matchId||0));
+      return `<div class="sectionTitle">${escapeHtml(key)}</div>${buildTournamentTable(rows)}`;
+    }).join("");
+
+    // 1) Nejprve vybuildíme celý modal (hero + tabulky)
+    modalSub.textContent = "Detail hráče";
+    modalBody.innerHTML = buildHero(playerObj) + sectionsHtml;
+
+    // 2) AŽ TEĎ naplníme graf do čerstvě vytvořených elementů
+    const chartEl = document.getElementById("eloChart");
+    const chartMeta = document.getElementById("chartMeta");
+
+    // Chart points: X = Match ID (B), Y = elo (I)
+    const points = sortedAll
+      .filter(r => Number.isFinite(r.matchId) && Number.isFinite(r.elo))
+      .map(r => ({ x: r.matchId, y: r.elo }));
+
+    chartEl.innerHTML = buildSvgLineChartXY(points);
+
+    if (points.length){
+      const last = points[points.length - 1];
+      chartMeta.textContent = `zápasů: ${points.length} • poslední Match ID: ${last.x.toFixed(0)} • poslední ELO: ${last.y.toFixed(0)}`;
+    } else {
+      chartMeta.textContent = "Nelze vykreslit (chybí Match ID/ELO)";
+      chartEl.innerHTML = `<div class="muted">Graf nelze vykreslit (chybí Match ID/ELO v datech hráče).</div>`;
+    }
+
+  } catch (e){
+    modalSub.textContent = "Detail hráče";
+    modalBody.innerHTML = buildHero(playerObj) +
+      `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>` +
+      `<div class="muted" style="margin-top:10px;">Chyba: ${escapeHtml(String(e?.message || e))}</div>`;
   }
+}
 
   /* EVENTS */
   requestUploadBtn.addEventListener("click", () => { window.location.href = "https://www.seznam.cz/"; });
