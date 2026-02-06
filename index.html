@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ELO žebříček</title>
+  <title>DC ELO žebříček</title>
 
   <style>
     html[data-theme="dark"]{
@@ -27,6 +27,10 @@
       --chartGrid: rgba(160,160,160,.18);
       --chartAxis: rgba(200,200,200,.35);
       --chartText: rgba(220,220,220,.78);
+
+      --dangerBg: rgba(255, 90, 90, .10);
+      --dangerBd: rgba(255, 90, 90, .22);
+      --dangerTx: rgba(255, 200, 200, .92);
     }
 
     html[data-theme="light"]{
@@ -50,6 +54,10 @@
       --chartGrid: rgba(0,0,0,.10);
       --chartAxis: rgba(0,0,0,.24);
       --chartText: rgba(0,0,0,.70);
+
+      --dangerBg: rgba(210, 60, 60, .10);
+      --dangerBd: rgba(210, 60, 60, .22);
+      --dangerTx: rgba(120, 20, 20, .92);
     }
 
     :root{ color-scheme: light dark; }
@@ -85,7 +93,8 @@
       display:flex; gap:16px; align-items:flex-start; justify-content:space-between;
     }
 
-    h1{ margin:0 0 6px; font-size:26px; letter-spacing:.2px; }
+    h1{ margin:0 0 4px; font-size:26px; letter-spacing:.2px; }
+    .subtitle{ margin:0 0 8px; font-size:12px; letter-spacing:.10em; text-transform:uppercase; color:var(--muted); }
     .muted{ opacity:1; color:var(--muted); }
     .credit{ margin-top:6px; }
 
@@ -263,7 +272,14 @@
     .modalTitle span{ font-size:12px; color:var(--muted); }
     .modalBody{ padding:12px; overflow:auto; }
 
-    /* Player hero - NEW LAYOUT */
+    .btnDanger{
+      border-color:var(--dangerBd);
+      background:var(--dangerBg);
+      color:var(--dangerTx);
+      font-weight:800;
+    }
+
+    /* Player hero (requested structure) */
     .heroGrid{
       display:grid;
       grid-template-columns: 380px 1fr;
@@ -278,6 +294,20 @@
       overflow:hidden;
     }
     .boxPad{ padding:14px; }
+
+    .heroName{ font-size:34px; font-weight:900; margin:0 0 10px; line-height:1.05; }
+    .rankLine{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+    .rankLine .muted{ font-size:13px; }
+
+    .rankPill{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid var(--border);
+      background:var(--chip);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      white-space:nowrap;
+    }
 
     .heroEloLabel{ color:var(--muted); font-size:12px; }
     .heroElo{ font-size:52px; font-weight:900; line-height:1; margin:6px 0 0; }
@@ -294,7 +324,6 @@
     }
     .stat b{ display:block; font-size:12px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
     .stat span{ display:block; margin-top:6px; font-size:18px; font-weight:900; }
-    .stat small{ display:block; color:var(--muted); margin-top:4px; font-size:12px; }
 
     .statWin{ background:var(--winBg); border-color:var(--winBd); }
     .statLoss{ background:var(--lossBg); border-color:var(--lossBd); }
@@ -373,13 +402,15 @@
 
     @media (max-width: 760px){
       .metaBoxRow{ grid-template-columns: 1fr 1fr; }
+      .heroGrid{ grid-template-columns: 1fr; }
     }
 
     @media (max-width: 560px){
       header{ padding:14px 14px 12px; }
       header .wrap{ flex-direction:column; gap:12px; }
       .logo{ width:84px; height:84px; flex-basis:84px; margin-top:0; }
-      h1{ font-size:20px; margin-bottom:4px; }
+      h1{ font-size:20px; margin-bottom:2px; }
+      .subtitle{ margin-bottom:6px; }
       .muted{ font-size:13px; line-height:1.25; }
 
       .headerRight{ align-items:flex-start; }
@@ -403,7 +434,6 @@
       .playerCol{ width:70%; }
       .ratingCol{ width:30%; }
 
-      .heroGrid{ grid-template-columns:1fr; }
       .metaBoxRow{ grid-template-columns:1fr; }
       #eloChart{ min-height:240px; }
     }
@@ -418,10 +448,11 @@
         <img id="logoImg" src="logo.png" alt="Logo" />
       </div>
       <div>
-        <h1>ELO žebříček</h1>
-        <div class="muted">Načítáno z Google Sheets (list: “Elo standings”).</div>
+        <h1>DC ELO žebříček</h1>
+        <div class="subtitle">Grail Series</div>
+        <div class="muted">Data načítána z Google Sheets</div>
         <div class="credit muted">
-          Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně zpravuje:
+          Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně zpravuje.
         </div>
       </div>
     </div>
@@ -482,7 +513,7 @@
       </table>
     </div>
 
-    <footer>Tip: Klikni na jméno hráče pro detail. Detail se načítá z listu „Player cards (CSV)“ + „Player summary“. Peak ELO je z „Elo standings“ (H=Peak).</footer>
+    <footer>Tip: Klikni na jméno hráče pro detail.</footer>
   </div>
 </main>
 
@@ -492,11 +523,10 @@
     <div class="modalHeader">
       <div class="modalTitle">
         <b id="modalName">Hráč</b>
-        <span id="modalSub">Načítám…</span>
+        <span id="modalSub">Detail hráče</span>
       </div>
       <div style="display:flex; gap:10px; align-items:center;">
-        <button id="openSheetTabBtn" type="button">Otevřít Sheets</button>
-        <button id="closeModalBtn" type="button">Zavřít</button>
+        <button id="closeModalBtn" class="btnDanger" type="button">Zavřít</button>
       </div>
     </div>
     <div class="modalBody" id="modalBody"></div>
@@ -533,14 +563,13 @@
 
   const modalOverlay = document.getElementById("modalOverlay");
   const closeModalBtn = document.getElementById("closeModalBtn");
-  const openSheetTabBtn = document.getElementById("openSheetTabBtn");
   const modalName = document.getElementById("modalName");
   const modalSub = document.getElementById("modalSub");
   const modalBody = document.getElementById("modalBody");
 
   const logoImg = document.getElementById("logoImg");
 
-  /* THEME */
+  /* THEME + LOGO swap */
   const htmlEl = document.documentElement;
   const themeToggle = document.getElementById("themeToggle");
   const themeLabel = document.getElementById("themeLabel");
@@ -739,20 +768,9 @@
       if (text.trim().startsWith("<")) throw new Error("Místo CSV přišlo HTML.");
 
       const rows = parseCSV(text);
-      const headers = rows[0].map(h => (h||"").toString().trim().toLowerCase());
 
-      // fallback: H is index 7
-      let iPeak = headers.indexOf("peak");
-      if (iPeak === -1) iPeak = 7;
-
-      // required columns
-      const iPlayer = 0;              // A
-      const iRating = 1;              // B
-      const iGames = 2;               // C
-      const iWin = 3;                 // D
-      const iLoss = 4;                // E
-      const iDraw = 5;                // F
-      const iWinrate = 6;             // G
+      // fixed cols for Elo standings (A..G), Peak in H => index 7
+      const iPlayer = 0, iRating = 1, iGames=2, iWin=3, iLoss=4, iDraw=5, iWinrate=6, iPeak=7;
 
       const loaded = rows.slice(1).map(r => ({
         player:(r[iPlayer] ?? "").trim(),
@@ -834,7 +852,7 @@
     return list.find(x => x.player.trim() === wanted) || null;
   }
 
-  /* CHART: equally spaced X, labels are Match ID */
+  /* CHART: equally spaced X (index), labels are Match ID */
   function buildSvgLineChartEqualX(points){
     const clean = points
       .filter(p => Number.isFinite(p.matchId) && Number.isFinite(p.elo))
@@ -859,7 +877,6 @@
       d += (i===0 ? "M " : "L ") + X(i).toFixed(2) + " " + Y(clean[i].elo).toFixed(2) + " ";
     }
 
-    // grid y
     const gridLines = 4;
     let grid = "";
     for (let i=0;i<=gridLines;i++){
@@ -872,7 +889,6 @@
       `;
     }
 
-    // X ticks - evenly spaced by index
     const maxTicks = 8;
     const ticks = Math.min(maxTicks, clean.length);
     let xTicks = "";
@@ -913,8 +929,17 @@
     return `
       <div class="heroGrid">
         <div class="box boxPad">
-          <div class="heroEloLabel">aktuální rating</div>
-          <div class="heroElo">${Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : ""}</div>
+          <div class="heroName">${escapeHtml(playerObj.player)}</div>
+
+          <div class="rankLine">
+            <div class="muted">Pořadí v žebříčku</div>
+            <span class="rankPill">${rankCellHtml(playerObj.rank)}</span>
+          </div>
+
+          <div style="margin-top:10px;">
+            <div class="heroEloLabel">aktuální rating</div>
+            <div class="heroElo">${Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : ""}</div>
+          </div>
 
           <div class="statsGrid">
             <div class="stat"><b>games</b><span>${safeInt(playerObj.games)}</span></div>
@@ -941,22 +966,18 @@
             <div class="stat">
               <b>peak elo</b>
               <span>${peakText}</span>
-              <small>z „Elo standings“</small>
             </div>
             <div class="stat">
               <b>average opponent rating</b>
               <span>${avgOpp}</span>
-              <small>z „Player summary“</small>
             </div>
             <div class="stat statWin">
               <b>longest win streak</b>
               <span>${winStreak} 🔥</span>
-              <small>z „Player summary“</small>
             </div>
             <div class="stat statLoss">
               <b>longest loss streak</b>
               <span>${lossStreak}</span>
-              <small>z „Player summary“</small>
             </div>
           </div>
         </div>
@@ -1017,10 +1038,6 @@
     modalBody.innerHTML = `<div class="muted">Načítám…</div>`;
     modalOverlay.style.display = "block";
     document.body.style.overflow = "hidden";
-
-    openSheetTabBtn.onclick = () => {
-      window.open(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`, "_blank", "noopener,noreferrer");
-    };
 
     try{
       const [allCards, summary] = await Promise.all([
