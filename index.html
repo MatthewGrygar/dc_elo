@@ -95,7 +95,10 @@
       display:flex; align-items:center; justify-content:center;
       overflow:hidden; margin-top:-4px;
     }
-    .logo img{ width:100%; height:100%; object-fit:contain; display:block; filter: drop-shadow(0 10px 22px rgba(0,0,0,.22)); }
+    .logo img{
+      width:100%; height:100%; object-fit:contain; display:block;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.22));
+    }
 
     .headerRight{ display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
     .headerRightTop{ display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
@@ -116,7 +119,6 @@
       padding:10px 14px;
     }
 
-    /* Toggle (target label) */
     .themeRow{ display:flex; align-items:center; gap:8px; justify-content:flex-end; width:100%; }
     .themeToggle{
       padding:7px 10px; border-radius:999px; font-size:13px;
@@ -185,7 +187,7 @@
     .left{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
     .right{ display:flex; gap:10px; align-items:center; }
     input[type="search"]{
-      width:min(420px, 70vw);
+      width:min(520px, 70vw);
       padding:10px 12px;
       border-radius:14px;
       border:1px solid var(--border);
@@ -261,10 +263,10 @@
     .modalTitle span{ font-size:12px; color:var(--muted); }
     .modalBody{ padding:12px; overflow:auto; }
 
-    /* Player hero */
+    /* Player hero - NEW LAYOUT */
     .heroGrid{
       display:grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 380px 1fr;
       gap:12px;
       margin-bottom:14px;
       align-items:stretch;
@@ -277,29 +279,18 @@
     }
     .boxPad{ padding:14px; }
 
-    .heroName{ font-size:30px; font-weight:900; margin:0 0 8px; }
-    .rankLine{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .rankPill{
-      display:inline-flex; align-items:center; gap:8px;
-      border:1px solid var(--border);
-      background:var(--chip);
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      white-space:nowrap;
-    }
     .heroEloLabel{ color:var(--muted); font-size:12px; }
     .heroElo{ font-size:52px; font-weight:900; line-height:1; margin:6px 0 0; }
 
     .statsGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
     .statsGridRow2{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; }
-    .statsGridRow3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top:10px; }
 
     .stat{
       border:1px solid var(--border2);
       border-radius:14px;
       padding:12px;
       background:var(--panel2);
+      min-width:0;
     }
     .stat b{ display:block; font-size:12px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
     .stat span{ display:block; margin-top:6px; font-size:18px; font-weight:900; }
@@ -308,6 +299,20 @@
     .statWin{ background:var(--winBg); border-color:var(--winBd); }
     .statLoss{ background:var(--lossBg); border-color:var(--lossBd); }
     .statDraw{ background:var(--drawBg); border-color:var(--drawBd); }
+
+    .rightCol{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      height:100%;
+    }
+    .chartBox{ flex: 2 1 auto; }
+    .metaBoxRow{
+      flex: 1 1 auto;
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:10px;
+    }
 
     .chartHead{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px; }
     .chartHead b{ font-size:13px; letter-spacing:.08em; text-transform:uppercase; opacity:.9; }
@@ -366,6 +371,10 @@
     html[data-theme="light"] .bigError{ color:#7a1f1f; }
     .bigError .icon{ font-size:22px; }
 
+    @media (max-width: 760px){
+      .metaBoxRow{ grid-template-columns: 1fr 1fr; }
+    }
+
     @media (max-width: 560px){
       header{ padding:14px 14px 12px; }
       header .wrap{ flex-direction:column; gap:12px; }
@@ -390,13 +399,13 @@
       .tableWrap{ overflow-x:hidden; }
       table{ table-layout:fixed; }
       th, td{ padding:10px 10px; }
-      /* mobile: show Player + Rating only */
       .colRank, .colRecord, .colGames, .colWin, .colLoss, .colDraw, .colWinrate{ display:none !important; }
       .playerCol{ width:70%; }
       .ratingCol{ width:30%; }
 
       .heroGrid{ grid-template-columns:1fr; }
-      .statsGridRow3{ grid-template-columns: 1fr; }
+      .metaBoxRow{ grid-template-columns:1fr; }
+      #eloChart{ min-height:240px; }
     }
   </style>
 </head>
@@ -406,7 +415,7 @@
   <div class="wrap">
     <div class="headerLeft">
       <div class="logo">
-        <img src="logo.png" alt="Logo" onerror="this.onerror=null;this.src='logo.jpg';" />
+        <img id="logoImg" src="logo.png" alt="Logo" />
       </div>
       <div>
         <h1>ELO žebříček</h1>
@@ -495,7 +504,6 @@
 </div>
 
 <script>
-  /* CONFIG */
   const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
   const ELO_SHEET_NAME = "Elo standings";
   const DATA_SHEET_NAME = "Data";
@@ -511,7 +519,6 @@
   const PLAYER_SUMMARY_CSV_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(PLAYER_SUMMARY_SHEET_NAME)}`;
 
-  /* UI */
   const statusEl = document.getElementById("status");
   const tbody = document.getElementById("tbody");
   const searchEl = document.getElementById("search");
@@ -531,16 +538,23 @@
   const modalSub = document.getElementById("modalSub");
   const modalBody = document.getElementById("modalBody");
 
-  /* THEME: default dark + toggle shows TARGET label */
+  const logoImg = document.getElementById("logoImg");
+
+  /* THEME */
   const htmlEl = document.documentElement;
   const themeToggle = document.getElementById("themeToggle");
   const themeLabel = document.getElementById("themeLabel");
 
+  function syncLogo(){
+    const theme = htmlEl.getAttribute("data-theme") || "dark";
+    logoImg.src = (theme === "light") ? "logo2.png" : "logo.png";
+  }
+
   function setTheme(theme){
     htmlEl.setAttribute("data-theme", theme);
-    // show target mode label
     themeLabel.textContent = (theme === "dark") ? "☀️ Světlý" : "Tmavý 🌙";
     localStorage.setItem("theme", theme);
+    syncLogo();
   }
   function initTheme(){
     const saved = localStorage.getItem("theme");
@@ -640,7 +654,6 @@
     return toNumber(m[1]);
   }
 
-  /* INFO BAR */
   function updateInfoBar(){
     const ratings = allRows.map(r => r.rating).filter(Number.isFinite).sort((a,b)=>a-b);
     const gamesArr = allRows.map(r => r.games).filter(Number.isFinite);
@@ -673,7 +686,7 @@
       const rows = parseCSV(text);
       let last = "";
       for (let i=1;i<rows.length;i++){
-        const v = (rows[i][1] ?? "").toString().trim(); // col B
+        const v = (rows[i][1] ?? "").toString().trim();
         if (v) last = v;
       }
       lastTournamentText = last || "";
@@ -684,7 +697,6 @@
     }
   }
 
-  /* STANDINGS */
   function renderStandings(rows){
     const q = normalizeKey(searchEl.value);
     const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q)).sort((a,b)=>a.rank-b.rank);
@@ -727,20 +739,20 @@
       if (text.trim().startsWith("<")) throw new Error("Místo CSV přišlo HTML.");
 
       const rows = parseCSV(text);
-      const headers = rows[0].map(h => normalizeKey(h));
+      const headers = rows[0].map(h => (h||"").toString().trim().toLowerCase());
 
-      const idx = (n) => headers.indexOf(n);
-      const iPlayer=idx("player"), iRating=idx("rating"), iGames=idx("games"), iWin=idx("win"), iLoss=idx("loss"), iDraw=idx("draw");
-      const iWinrate = headers.findIndex(h => h==="winrate" || h.includes("winrate"));
-
-      // Peak can be named "peak" or "record" depending on header, but user said H Peak. We try by header first, else fallback to col index 7.
+      // fallback: H is index 7
       let iPeak = headers.indexOf("peak");
-      if (iPeak === -1) iPeak = headers.indexOf("record");
-      if (iPeak === -1) iPeak = 7; // H (0-based)
+      if (iPeak === -1) iPeak = 7;
 
-      if ([iPlayer,iRating,iGames,iWin,iLoss,iDraw].some(i=>i===-1) || iWinrate===-1){
-        throw new Error("Neplatná hlavička v Elo standings.");
-      }
+      // required columns
+      const iPlayer = 0;              // A
+      const iRating = 1;              // B
+      const iGames = 2;               // C
+      const iWin = 3;                 // D
+      const iLoss = 4;                // E
+      const iDraw = 5;                // F
+      const iWinrate = 6;             // G
 
       const loaded = rows.slice(1).map(r => ({
         player:(r[iPlayer] ?? "").trim(),
@@ -764,13 +776,6 @@
     }
   }
 
-  async function loadAll(){
-    await Promise.all([loadStandings(), loadLastData()]);
-    playerCardsCache = null;
-    playerSummaryCache = null;
-  }
-
-  /* PLAYER CARDS (CSV): fixed A..I mapping */
   async function loadPlayerCards(){
     if (playerCardsCache) return playerCardsCache;
 
@@ -799,7 +804,6 @@
     return items;
   }
 
-  /* PLAYER SUMMARY: fixed columns A, M, N, O */
   async function loadPlayerSummary(){
     if (playerSummaryCache) return playerSummaryCache;
 
@@ -812,7 +816,7 @@
     const rows = parseCSV(text);
     if (rows.length < 2) return [];
 
-    // 0-based indices: A=0, M=12, N=13, O=14
+    // A=0, M=12, N=13, O=14
     const items = rows.slice(1).map(r => ({
       player: (r[0] ?? "").toString().trim(),
       avgOpp: toNumber((r[12] ?? "").toString().trim()),
@@ -830,30 +834,32 @@
     return list.find(x => x.player.trim() === wanted) || null;
   }
 
-  /* CHART (better design): X ticks, grid, red line */
-  function buildSvgLineChartXY(points){
-    const clean = points.filter(p => Number.isFinite(p.x) && Number.isFinite(p.y));
+  /* CHART: equally spaced X, labels are Match ID */
+  function buildSvgLineChartEqualX(points){
+    const clean = points
+      .filter(p => Number.isFinite(p.matchId) && Number.isFinite(p.elo))
+      .slice();
+
     if (clean.length < 2) return `<div class="muted">Graf nelze vykreslit (málo dat).</div>`;
 
     const w=980, h=280, padL=44, padR=18, padT=18, padB=42;
 
-    const xs = clean.map(p=>p.x);
-    const ys = clean.map(p=>p.y);
-    const minX = Math.min(...xs), maxX = Math.max(...xs);
+    const ys = clean.map(p=>p.elo);
     const minY = Math.min(...ys), maxY = Math.max(...ys);
-
-    const spanX = Math.max(1, maxX - minX);
     const spanY = Math.max(1, maxY - minY);
 
-    const X = v => padL + ((v-minX)*(w-padL-padR))/spanX;
+    const X = (i) => {
+      const span = Math.max(1, clean.length - 1);
+      return padL + (i*(w-padL-padR))/span;
+    };
     const Y = v => (h-padB) - ((v-minY)*(h-padT-padB))/spanY;
 
     let d="";
     for (let i=0;i<clean.length;i++){
-      const p=clean[i];
-      d += (i===0 ? "M " : "L ") + X(p.x).toFixed(2) + " " + Y(p.y).toFixed(2) + " ";
+      d += (i===0 ? "M " : "L ") + X(i).toFixed(2) + " " + Y(clean[i].elo).toFixed(2) + " ";
     }
 
+    // grid y
     const gridLines = 4;
     let grid = "";
     for (let i=0;i<=gridLines;i++){
@@ -866,21 +872,21 @@
       `;
     }
 
+    // X ticks - evenly spaced by index
     const maxTicks = 8;
     const ticks = Math.min(maxTicks, clean.length);
     let xTicks = "";
     for (let i=0;i<ticks;i++){
       const idx = Math.round(i*(clean.length-1)/(ticks-1));
-      const p = clean[idx];
-      const xx = X(p.x);
+      const xx = X(idx);
       xTicks += `
         <line x1="${xx}" y1="${h-padB}" x2="${xx}" y2="${h-padB+6}" stroke="var(--chartAxis)" />
-        <text x="${xx}" y="${h-padB+22}" text-anchor="middle" fill="var(--chartText)" font-size="11">${p.x}</text>
+        <text x="${xx}" y="${h-padB+22}" text-anchor="middle" fill="var(--chartText)" font-size="11">${clean[idx].matchId}</text>
       `;
     }
 
-    const dots = clean.map(p => {
-      const cx = X(p.x), cy = Y(p.y);
+    const dots = clean.map((p,i) => {
+      const cx = X(i), cy = Y(p.elo);
       return `<circle cx="${cx}" cy="${cy}" r="3.2" fill="var(--chartDot)" />`;
     }).join("");
 
@@ -898,29 +904,17 @@
     `;
   }
 
-  /* HERO */
   function buildHero(playerObj, summary){
-    const eloText = Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : "";
-    const peakText = Number.isFinite(playerObj.peak) ? playerObj.peak.toFixed(0) : "—";
-
     const avgOpp = summary && Number.isFinite(summary.avgOpp) ? summary.avgOpp.toFixed(0) : "—";
     const winStreak = summary && Number.isFinite(summary.winStreak) ? summary.winStreak.toFixed(0) : "—";
     const lossStreak = summary && Number.isFinite(summary.lossStreak) ? summary.lossStreak.toFixed(0) : "—";
+    const peakText = Number.isFinite(playerObj.peak) ? playerObj.peak.toFixed(0) : "—";
 
     return `
       <div class="heroGrid">
         <div class="box boxPad">
-          <div class="heroName">${escapeHtml(playerObj.player)}</div>
-
-          <div class="rankLine">
-            <div class="muted">Pořadí v žebříčku</div>
-            <span class="rankPill">${rankCellHtml(playerObj.rank)}</span>
-          </div>
-
-          <div style="margin-top:10px;">
-            <div class="heroEloLabel">aktuální rating</div>
-            <div class="heroElo">${escapeHtml(eloText)}</div>
-          </div>
+          <div class="heroEloLabel">aktuální rating</div>
+          <div class="heroElo">${Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : ""}</div>
 
           <div class="statsGrid">
             <div class="stat"><b>games</b><span>${safeInt(playerObj.games)}</span></div>
@@ -932,8 +926,18 @@
             <div class="stat statLoss"><b>loss</b><span>${safeInt(playerObj.loss)}</span></div>
             <div class="stat statDraw"><b>draw</b><span>${safeInt(playerObj.draw)}</span></div>
           </div>
+        </div>
 
-          <div class="statsGridRow3">
+        <div class="rightCol">
+          <div class="box boxPad chartBox">
+            <div class="chartHead">
+              <b>Vývoj ELO</b>
+              <span id="chartMeta" class="muted">Načítám data hráče…</span>
+            </div>
+            <div id="eloChart" class="muted">Načítám data hráče…</div>
+          </div>
+
+          <div class="metaBoxRow">
             <div class="stat">
               <b>peak elo</b>
               <span>${peakText}</span>
@@ -949,23 +953,12 @@
               <span>${winStreak} 🔥</span>
               <small>z „Player summary“</small>
             </div>
-          </div>
-
-          <div class="statsGridRow3" style="grid-template-columns:1fr;">
             <div class="stat statLoss">
               <b>longest loss streak</b>
               <span>${lossStreak}</span>
               <small>z „Player summary“</small>
             </div>
           </div>
-        </div>
-
-        <div class="box boxPad">
-          <div class="chartHead">
-            <b>Vývoj ELO</b>
-            <span id="chartMeta" class="muted">Načítám data hráče…</span>
-          </div>
-          <div id="eloChart" class="muted">Načítám data hráče…</div>
         </div>
       </div>
     `;
@@ -1020,7 +1013,7 @@
 
   async function loadPlayerDetail(playerObj){
     modalName.textContent = playerObj.player;
-    modalSub.textContent = "Načítám detail…";
+    modalSub.textContent = "Detail hráče";
     modalBody.innerHTML = `<div class="muted">Načítám…</div>`;
     modalOverlay.style.display = "block";
     document.body.style.overflow = "hidden";
@@ -1039,7 +1032,6 @@
       const cards = allCards.filter(r => r.player.trim() === wanted);
 
       if (!cards.length){
-        modalSub.textContent = "Detail hráče";
         modalBody.innerHTML = buildHero(playerObj, summary) +
           `<div class="bigError"><div class="icon">❌</div> Podrobná data hráče nenalezena</div>`;
         return;
@@ -1048,22 +1040,18 @@
       const sortedAll = cards.slice().sort((a,b) => (a.matchId||0) - (b.matchId||0));
 
       const groups = new Map();
-      const groupOrder = [];
+      const order = [];
       for (const r of sortedAll){
         const key = (r.tournamentDetail || "Neznámé").trim();
-        if (!groups.has(key)){
-          groups.set(key, []);
-          groupOrder.push(key);
-        }
+        if (!groups.has(key)){ groups.set(key, []); order.push(key); }
         groups.get(key).push(r);
       }
 
-      const sectionsHtml = groupOrder.map(key => {
+      const sectionsHtml = order.map(key => {
         const rows = groups.get(key).slice().sort((a,b)=>(a.matchId||0)-(b.matchId||0));
         return `<div class="sectionTitle">${escapeHtml(key)}</div>${buildTournamentTable(rows)}`;
       }).join("");
 
-      modalSub.textContent = "Detail hráče";
       modalBody.innerHTML = buildHero(playerObj, summary) + sectionsHtml;
 
       const chartEl = document.getElementById("eloChart");
@@ -1071,49 +1059,29 @@
 
       const points = sortedAll
         .filter(r => Number.isFinite(r.matchId) && Number.isFinite(r.elo))
-        .map(r => ({ x:r.matchId, y:r.elo }));
+        .map(r => ({ matchId:r.matchId, elo:r.elo }));
 
-      chartEl.innerHTML = buildSvgLineChartXY(points);
+      chartEl.innerHTML = buildSvgLineChartEqualX(points);
 
       if (points.length){
         const last = points[points.length - 1];
-        chartMeta.textContent = `zápasů: ${points.length} • poslední Match ID: ${last.x.toFixed(0)} • poslední ELO: ${last.y.toFixed(0)}`;
+        chartMeta.textContent = `zápasů: ${points.length} • poslední Match ID: ${last.matchId.toFixed(0)} • poslední ELO: ${last.elo.toFixed(0)}`;
       } else {
         chartMeta.textContent = "Nelze vykreslit (chybí Match ID/ELO)";
         chartEl.innerHTML = `<div class="muted">Graf nelze vykreslit (chybí Match ID/ELO v datech hráče).</div>`;
       }
 
     } catch (e){
-      modalSub.textContent = "Detail hráče";
       modalBody.innerHTML = `<div class="bigError"><div class="icon">❌</div> Chyba při načítání: ${escapeHtml(String(e?.message || e))}</div>`;
     }
   }
 
-  /* LOAD LAST TOURNAMENT */
-  async function loadLastData(){
-    lastDataBadge.textContent = `načteno: ${formatNow()}`;
-    try{
-      const u = new URL(DATA_CSV_URL);
-      u.searchParams.set("_", Date.now().toString());
-      const { res, text } = await fetchUtf8Text(u.toString());
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      if (text.trim().startsWith("<")) throw new Error("HTML místo CSV");
-
-      const rows = parseCSV(text);
-      let last = "";
-      for (let i=1;i<rows.length;i++){
-        const v = (rows[i][1] ?? "").toString().trim();
-        if (v) last = v;
-      }
-      lastTournamentText = last || "";
-      updateInfoBar();
-    } catch {
-      lastTournamentText = "";
-      updateInfoBar();
-    }
+  async function loadAll(){
+    await Promise.all([loadStandings(), loadLastData()]);
+    playerCardsCache = null;
+    playerSummaryCache = null;
   }
 
-  /* EVENTS */
   requestUploadBtn.addEventListener("click", () => { window.location.href = "https://www.seznam.cz/"; });
   refreshBtn.addEventListener("click", loadAll);
   searchEl.addEventListener("input", () => renderStandings(allRows));
@@ -1144,7 +1112,6 @@
     }
   });
 
-  /* INIT */
   loadAll();
 </script>
 </body>
