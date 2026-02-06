@@ -109,7 +109,7 @@
       filter: drop-shadow(0 10px 22px rgba(0,0,0,.22));
     }
 
-    .headerRight{ display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
+    .headerRight{ display:flex; flex-direction:column; gap:10px; align-items:flex-end; width:auto; }
     .headerRightTop{ display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
 
     .badge{
@@ -128,7 +128,6 @@
       padding:10px 14px;
     }
 
-    .themeRow{ display:flex; align-items:center; gap:8px; justify-content:flex-end; width:100%; }
     .themeToggle{
       padding:7px 10px; border-radius:999px; font-size:13px;
       display:inline-flex; align-items:center; gap:8px;
@@ -346,7 +345,6 @@
     .statsGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
     .statsGridRow2{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; }
 
-    /* (1) label top, value bottom */
     .stat{
       border:1px solid var(--border2);
       border-radius:14px;
@@ -355,7 +353,7 @@
       min-width:0;
       display:flex;
       flex-direction:column;
-      justify-content:space-between; /* label at top, value at bottom */
+      justify-content:space-between; /* label top, value bottom */
       min-height:78px;
     }
     .stat b{
@@ -407,11 +405,12 @@
 
     /* Tournament table */
     .tblWrap{
-      overflow-x:auto; /* (5) allow horizontal scroll (always safe) */
+      overflow-x:auto;
       border-radius:16px;
+      -webkit-overflow-scrolling:touch;
     }
     .tbl{
-      min-width:920px; /* ensures scrolling on mobile */
+      min-width:920px;
       width:100%;
       border-collapse:separate;
       border-spacing:0;
@@ -472,41 +471,49 @@
       .subtitle{ margin-bottom:4px; font-size:11px; }
       .muted{ font-size:12px; line-height:1.25; }
 
-      /* (3) On mobile: show "načteno" + theme toggle side-by-side and smaller */
-      .headerRight{ align-items:flex-start; width:100%; gap:8px; }
+      /* (2) mobile header: row1 = loaded + toggle, row2 = request button right */
+      .headerRight{ width:100%; align-items:stretch; gap:8px; }
       .headerRightTop{
         width:100%;
-        justify-content:flex-start;
-        flex-wrap:nowrap;
+        display:grid;
+        grid-template-columns: 1fr auto; /* badge + toggle */
         gap:8px;
+        align-items:center;
+        justify-content:space-between;
       }
       .badge{ font-size:11px; padding:6px 8px; }
-      .themeRow{ display:none; } /* hide separate row on mobile */
-      .themeToggle{
-        font-size:11px;
-        padding:6px 8px;
+      .themeToggle{ font-size:11px; padding:6px 8px; }
+
+      #requestUploadBtn{
+        align-self:flex-end;
+        justify-self:end;
+        width:auto;
+        padding:8px 10px;
+        border-radius:12px;
+        font-size:12px;
       }
+
       button{ padding:8px 10px; border-radius:12px; font-size:12px; }
-      .btnPrimary{ padding:8px 10px; font-size:12px; }
 
-      /* Put request button on next line to reduce clutter */
-      #requestUploadBtn{ width:100%; }
-
-      /* (2) info panels thin like PC */
+      /* (3) info panels narrower */
+      .container{ padding:0 12px; }
       .infoBar{
         grid-template-columns:1fr;
-        gap:8px;
-        padding:10px;
-      }
-      .infoItem{
-        padding:8px 10px;     /* thinner */
-        min-height:44px;      /* thinner */
+        gap:6px;
+        padding:8px;
         border-radius:14px;
       }
+      .infoItem{
+        padding:6px 10px;
+        min-height:38px;
+        border-radius:12px;
+      }
       .infoItem b{ font-size:10px; }
-      .infoItem span{ font-size:14px; }
+      .infoItem span{ font-size:13px; }
 
-      /* (4) Toolbar one row */
+      main{ padding:12px; }
+
+      /* Toolbar one row */
       .toolbar{
         flex-direction:row;
         align-items:center;
@@ -514,7 +521,7 @@
       }
       .left{
         width:100%;
-        flex-wrap:nowrap; /* keep one row */
+        flex-wrap:nowrap;
         gap:8px;
       }
       #status{ flex:0 0 auto; }
@@ -524,49 +531,48 @@
         border-radius:12px;
         min-width:0;
       }
-      .right{
-        flex:0 0 auto;
-        justify-content:flex-end;
-      }
+      .right{ flex:0 0 auto; }
       #refresh{ padding:9px 10px; border-radius:12px; }
 
-      /* Main table: no horizontal scroll; show only Player+ELO */
+      /* (1) Mobile standings table: show Rank + Player + Rating */
       .tableWrap{ overflow-x:hidden; }
       table{ table-layout:fixed; }
       th, td{ padding:10px 10px; }
-      .colRank, .colRecord, .colGames, .colWin, .colLoss, .colDraw, .colWinrate{ display:none !important; }
-      .playerCol{ width:70%; }
-      .ratingCol{ width:30%; }
+      .colPeak, .colGames, .colWin, .colLoss, .colDraw, .colWinrate{ display:none !important; }
 
-      /* (5) Player card mobile */
-      #eloChart{ min-height:190px; } /* shorter chart */
-      .chartBox{ padding:12px; }
+      .colRank{ width:58px; }
+      .playerCol{ width:62%; }
+      .ratingCol{ width:28%; }
+
+      /* Modal full-screen on mobile (4) */
+      .modalOverlay{ padding:0; }
+      .modal{
+        max-width:none;
+        width:100vw;
+        height:100vh;
+        border-radius:0;
+        border:none;
+      }
+      .modalBody{ padding:12px; }
+
+      /* Player card: no horizontal scrolling except tables */
+      .heroGrid{ grid-template-columns:1fr; }
+      #eloChart{ min-height:180px; }
       .metaBoxRow{
-        grid-template-columns:1fr; /* one row per stat */
+        grid-template-columns:1fr;
         gap:8px;
       }
-      /* one-line stat: label + value */
       .metaBoxRow .stat{
-        min-height:44px;
+        min-height:42px;
         flex-direction:row;
         align-items:center;
         justify-content:space-between;
         padding:10px 12px;
       }
-      .metaBoxRow .stat b{
-        font-size:11px;
-        letter-spacing:.06em;
-        margin:0;
-      }
-      .metaBoxRow .stat span{
-        margin:0;
-        font-size:14px;
-        font-weight:950;
-        text-align:right;
-      }
+      .metaBoxRow .stat b{ font-size:11px; margin:0; }
+      .metaBoxRow .stat span{ margin:0; font-size:14px; font-weight:950; text-align:right; }
 
-      /* Tournament tables: ensure horizontal scroll is obvious */
-      .tblWrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+      .tblWrap{ overflow-x:auto; }
       .tbl{ min-width:920px; }
     }
   </style>
@@ -596,11 +602,8 @@
           <span class="dot"></span>
           <span id="themeLabel">☀️ Světlý</span>
         </div>
-        <button class="btnPrimary" id="requestUploadBtn" type="button">ZAŽÁDAT O NAHRÁNÍ DAT</button>
       </div>
-
-      <!-- Desktop-only row (hidden on mobile) -->
-      <div class="themeRow" aria-hidden="true"></div>
+      <button class="btnPrimary" id="requestUploadBtn" type="button">ZAŽÁDAT O NAHRÁNÍ DAT</button>
     </div>
   </div>
 </header>
@@ -633,7 +636,7 @@
             <th class="rank colRank">Pořadí</th>
             <th class="playerCol">Player</th>
             <th class="num ratingCol">Rating</th>
-            <th class="num colRecord">Record</th>
+            <th class="num colPeak">PEAK</th>
             <th class="num colGames">Games</th>
             <th class="num colWin">Win</th>
             <th class="num colLoss">Loss</th>
@@ -647,7 +650,7 @@
 
     <footer>
       <span>Tip: Klikni na jméno hráče pro detail.</span>
-      <span>verze: beta 0.9</span>
+      <span>verze: 0.9.14-beta</span>
     </footer>
   </div>
 </main>
@@ -810,13 +813,6 @@
     return n;
   }
 
-  function extractOpponentRating(opponentText){
-    const t = (opponentText || "").toString().trim();
-    const m = t.match(/\((\d+(?:[.,]\d+)?)\)\s*$/);
-    if (!m) return NaN;
-    return toNumber(m[1]);
-  }
-
   function updateInfoBar(){
     const ratings = allRows.map(r => r.rating).filter(Number.isFinite).sort((a,b)=>a-b);
     const gamesArr = allRows.map(r => r.games).filter(Number.isFinite);
@@ -873,13 +869,13 @@
     }
 
     for (const r of filtered){
-      const recordText = Number.isFinite(r.peak) ? r.peak.toFixed(0) : "";
+      const peakText = Number.isFinite(r.peak) ? r.peak.toFixed(0) : "";
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="rank colRank">${rankCellHtml(r.rank)}</td>
         <td class="playerCol"><button class="playerBtn" type="button">${escapeHtml(r.player)}</button></td>
         <td class="num ratingCol">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
-        <td class="num colRecord">${recordText}</td>
+        <td class="num colPeak">${peakText}</td>
         <td class="num colGames">${safeInt(r.games)}</td>
         <td class="num colWin">${safeInt(r.win)}</td>
         <td class="num colLoss">${safeInt(r.loss)}</td>
@@ -930,7 +926,7 @@
   async function loadPlayerCards(){
     if (playerCardsCache) return playerCardsCache;
 
-    const u = new URL(PLAYER_CARDS_CSV_URL);
+    const u = new URL(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent("Player cards (CSV)")}`);
     u.searchParams.set("_", Date.now().toString());
     const { res, text } = await fetchUtf8Text(u.toString());
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1055,12 +1051,10 @@
         <div class="box boxPad leftPanel">
           <div class="leftTop">
             <div class="heroName">${escapeHtml(playerObj.player)}</div>
-
             <div class="rankLine">
               <div class="muted">Pořadí v žebříčku</div>
               <span class="rankPill">${rankCellHtml(playerObj.rank)}</span>
             </div>
-
             <div style="margin-top:10px;">
               <div class="heroEloLabel">aktuální rating</div>
               <div class="heroElo">${Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : ""}</div>
@@ -1091,26 +1085,21 @@
           </div>
 
           <div class="metaBoxRow">
-            <div class="stat">
-              <b>peak elo</b>
-              <span>${peakText}</span>
-            </div>
-            <div class="stat">
-              <b>average opponent rating</b>
-              <span>${avgOpp}</span>
-            </div>
-            <div class="stat statWin">
-              <b>longest win streak</b>
-              <span>${winStreak} 🔥</span>
-            </div>
-            <div class="stat statLoss">
-              <b>longest loss streak</b>
-              <span>${lossStreak}</span>
-            </div>
+            <div class="stat"><b>peak elo</b><span>${peakText}</span></div>
+            <div class="stat"><b>average opponent rating</b><span>${avgOpp}</span></div>
+            <div class="stat statWin"><b>longest win streak</b><span>${winStreak} 🔥</span></div>
+            <div class="stat statLoss"><b>longest loss streak</b><span>${lossStreak}</span></div>
           </div>
         </div>
       </div>
     `;
+  }
+
+  function extractOpponentRating(opponentText){
+    const t = (opponentText || "").toString().trim();
+    const m = t.match(/\((\d+(?:[.,]\d+)?)\)\s*$/);
+    if (!m) return NaN;
+    return toNumber(m[1]);
   }
 
   function buildTournamentTable(rows){
@@ -1167,11 +1156,7 @@
     document.body.style.overflow = "hidden";
 
     try{
-      const [allCards, summary] = await Promise.all([
-        loadPlayerCards(),
-        getSummaryForPlayer(playerObj.player)
-      ]);
-
+      const [allCards, summary] = await Promise.all([loadPlayerCards(), getSummaryForPlayer(playerObj.player)]);
       const wanted = playerObj.player.trim();
       const cards = allCards.filter(r => r.player.trim() === wanted);
 
@@ -1226,7 +1211,9 @@
     playerSummaryCache = null;
   }
 
-  requestUploadBtn.addEventListener("click", () => { window.location.href = "https://www.seznam.cz/"; });
+  requestUploadBtn.addEventListener("click", () => {
+    window.location.href = "https://forms.gle/Y7aHApF5NLFLw6MP9";
+  });
   refreshBtn.addEventListener("click", loadAll);
   searchEl.addEventListener("input", () => renderStandings(allRows));
 
