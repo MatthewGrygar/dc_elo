@@ -1,4 +1,11 @@
 // modal.js
+// setModalOnCloseRequest umožní navázat vlastní akci na zavření (např. návrat URL zpět na seznam).
+let __modalOnCloseRequest = null;
+
+export function setModalOnCloseRequest(fn){
+  __modalOnCloseRequest = (typeof fn === "function") ? fn : null;
+}
+
 export function ensureModal() {
   let overlay = document.getElementById("modalOverlay");
   if (overlay) return overlay;
@@ -28,14 +35,14 @@ export function ensureModal() {
   document.body.appendChild(overlay);
 
   overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeModal();
+    if (e.target === overlay) (__modalOnCloseRequest ? __modalOnCloseRequest() : closeModal());
   });
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && overlay.style.display === "block") closeModal();
+    if (e.key === "Escape" && overlay.style.display === "block") (__modalOnCloseRequest ? __modalOnCloseRequest() : closeModal());
   });
 
-  overlay.querySelector("#closeModalBtn").addEventListener("click", closeModal);
+  overlay.querySelector("#closeModalBtn").addEventListener("click", () => (__modalOnCloseRequest ? __modalOnCloseRequest() : closeModal()));
 
   return overlay;
 }
@@ -55,15 +62,6 @@ export function openModal({ title, subtitle, html, fullscreen }) {
   document.body.style.overflow = "hidden";
 }
 
-// zpřístupnění pro non-module skripty (menu/aktuality)
-try{
-  window.openModal = openModal;
-  window.closeModal = closeModal;
-  window.setModalContent = setModalContent;
-  window.setModalHeaderMeta = setModalHeaderMeta;
-  window.setModalActions = setModalActions;
-}catch(e){}
-
 export function closeModal() {
   const overlay = document.getElementById("modalOverlay");
   if (!overlay) return;
@@ -77,6 +75,15 @@ export function closeModal() {
   const actions = overlay.querySelector("#modalActions");
   if (actions) actions.innerHTML = "";
 }
+
+// zpřístupnění i mimo ES moduly (např. common.js, aktuality.js)
+try{
+  window.openModal = openModal;
+  window.closeModal = closeModal;
+  window.setModalContent = setModalContent;
+  window.setModalHeaderMeta = setModalHeaderMeta;
+  window.setModalActions = setModalActions;
+}catch(e){}
 
 export function setModalContent(html) {
   const overlay = ensureModal();

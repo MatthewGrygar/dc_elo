@@ -19,7 +19,7 @@
         <div class="subtitle">by Grail Series</div>
         <div class="muted">Data načítána z Google Sheets</div>
         <div class="credit muted">
-          Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně spravuje.
+          Za veškerá data děkujeme <b>Ervinovi Kučovi</b>, který data současně zpravuje.
         </div>
       </div>
     </div>
@@ -34,11 +34,11 @@
         </button>
 
         <div class="menuPanel" id="menuPanel" aria-hidden="true">
-          <!-- <button class="menuItem" id="menuUpload" type="button">NAHRÁNÍ DAT</button> -->
+          <button class="menuItem" id="menuUpload" type="button">NAHRÁNÍ DAT</button>
           <button class="menuItem" id="menuNews" type="button">AKTUALITY</button>
-          <!-- <button class="menuItem" id="menuTitles" type="button">TITULY</button>
+          <button class="menuItem" id="menuTitles" type="button">TITULY</button>
           <button class="menuItem" id="menuContact" type="button">KONTAKT</button>
-          <button class="menuItem" id="menuRecords" type="button">REKORDY</button> -->
+          <button class="menuItem" id="menuRecords" type="button">REKORDY</button>
 
           <div class="menuDivider"></div>
 
@@ -68,12 +68,25 @@
 <main>
   <div class="card">
     <div class="toolbar">
-      <div class="left">
+      <div class="toolbarSearchRow">
         <span id="status" class="badge">Načítám…</span>
         <input id="search" type="search" placeholder="Hledat hráče…" autocomplete="off" />
       </div>
-      <div class="right">
+
+      <div class="toolbarControlsRow">
         <button id="refresh" type="button">Znovu načíst</button>
+
+        <div class="ratedToggle" title="Zobrazí jen hráče s Rating Class (Class A–D)">
+          <span class="ratedToggleText">
+            <span class="labelFull">Pouze hodnocení hráči</span>
+            <span class="labelShort">Pouze hodnocení</span>
+          </span>
+
+          <label class="switch" aria-label="Pouze hodnocení hráči">
+            <input id="ratedOnly" type="checkbox" />
+            <span class="slider" aria-hidden="true"></span>
+          </label>
+        </div>
       </div>
     </div>
 
@@ -98,7 +111,7 @@
 
     <footer>
       <span>Tip: Klikni na jméno hráče pro detail.</span>
-      <span>verze: beta 0.9</span>
+      <span>verze: 1.1.0</span>
     </footer>
   </div>
 </main>

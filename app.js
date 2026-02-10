@@ -1,4 +1,4 @@
-import { openModal, setModalActions, setModalContent, setModalHeaderMeta } from "./modal.js";
+import { openModal, setModalActions, setModalContent, setModalHeaderMeta, closeModal, setModalOnCloseRequest } from "./modal.js";
 import { openOpponentsModal } from "./opponents.js";
 
 const SHEET_ID = "1y98bzsIRpVv0_cGNfbITapucO5A6izeEz5lTM92ZbIA";
@@ -19,6 +19,7 @@ const PLAYER_SUMMARY_CSV_URL =
 const statusEl = document.getElementById("status");
 const tbody = document.getElementById("tbody");
 const searchEl = document.getElementById("search");
+const ratedOnlyEl = document.getElementById("ratedOnly");
 const refreshBtn = document.getElementById("refresh");
 const lastDataBadge = document.getElementById("lastDataBadge");
 
@@ -38,6 +39,170 @@ let allRows = [];
 let lastTournamentText = "";
 let playerCardsCache = null;
 let playerSummaryCache = null;
+
+// -------------------- SLUG ROUTING + VT --------------------
+let slugToPlayer = new Map();
+let pendingSlugToOpen = null;
+
+function getBasePath(){
+  // GitHub Pages project site base: /<repo>/
+  const parts = window.location.pathname.split("/").filter(Boolean);
+  // If served from root (local dev), parts[0] may be undefined
+  return parts.length ? `/${parts[0]}/` : "/";
+}
+
+function stripDiacritics(s){
+  return (s || "").toString().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+}
+
+function baseSlugFromName(playerName){
+  const name = (playerName || "").toString().trim();
+  if (!name) return "";
+  const parts = name.split(/\s+/).filter(Boolean);
+  const first = parts[0] || "";
+  const last = parts[parts.length - 1] || "";
+  const joined = `${first}_${last}`;
+  const cleaned = stripDiacritics(joined)
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_]/g, "")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return cleaned;
+}
+
+function buildDeterministicSlugs(playerNamesInDataOrder){
+  const counts = new Map();
+  const out = [];
+  for (const name of playerNamesInDataOrder){
+    const base = baseSlugFromName(name);
+    const next = (counts.get(base) || 0) + 1;
+    counts.set(base, next);
+    out.push(next === 1 ? base : `${base}_${next}`);
+  }
+  return out;
+}
+
+function normalizeVT(v){
+  const s = (v ?? "").toString().trim();
+  if (!s) return null;
+  const u = s.toUpperCase();
+  if (u === "UNRANKED") return null;
+  if (/^VT[1-4]$/.test(u)) return u;
+  return null;
+}
+
+function vtToClass(vt){
+  // Map VT1–VT4 to consistent class tokens used in CSS
+  if (!vt) return "";
+  if (vt === "VT1") return "classA";
+  if (vt === "VT2") return "classB";
+  if (vt === "VT3") return "classC";
+  if (vt === "VT4") return "classD";
+  return "";
+}
+
+function vtToBadgeText(vt){
+  if (!vt) return "";
+  if (vt === "VT1") return "Class A";
+  if (vt === "VT2") return "Class B";
+  if (vt === "VT3") return "Class C";
+  if (vt === "VT4") return "Class D";
+  return "";
+}
+
+function vtBadgeHtml(vt){
+  if (!vt) return "";
+  const txt = vtToBadgeText(vt);
+  return `<span class="vtBadge ${vtToClass(vt)}" aria-label="${escapeHtml(txt)}">${escapeHtml(txt)}</span>`;
+}
+
+function vtDetailText(vt){
+  // Text under player name (profile)
+  if (!vt) return "";
+  const t = vtToBadgeText(vt);
+  return t ? `Rating ${t}` : "";
+}
+
+
+function getSlugFromLocation(){
+  const base = getBasePath();
+  const path = window.location.pathname;
+  if (!path.startsWith(base)) return null;
+  const rest = path.slice(base.length).replace(/^\/+|\/+$/g, "");
+  if (!rest) return null;
+  // Ignore real files like kontakt.html
+  if (rest.includes(".")) return null;
+  // Only first segment
+  return rest.split("/")[0];
+}
+
+let __closeModalRaw = closeModal;
+function openPlayerModal(playerObj){
+  openModal({ title: playerObj.player, subtitle: "Detail hráče", html: `<div class="muted">Načítám…</div>` });
+  loadPlayerDetail(playerObj);
+}
+
+function navigateToPlayer(playerObj){
+  const slug = playerObj?.slug;
+  if (!slug) return;
+  const url = getBasePath() + slug;
+  history.pushState({ __playerSlug: slug }, "", url);
+  openPlayerModal(playerObj);
+}
+
+function normalizeSpaRedirectIfPresent(){
+  const params = new URLSearchParams(window.location.search);
+  const r = params.get("r") || params.get("redirect");
+  if (!r) return;
+  const base = getBasePath();
+  const clean = r.toString().replace(/^\/+/, "").replace(/\/+$/, "");
+  history.replaceState(history.state || {}, "", base + clean);
+}
+
+function applyRoute(){
+  // Do not interfere with mobile "page" history in common.js
+  if (history.state && history.state.__mobilePage) return;
+
+  const slug = getSlugFromLocation();
+  if (!slug){
+    try{ __closeModalRaw?.(); }catch(e){}
+    return;
+  }
+
+  if (!slugToPlayer.size){
+    pendingSlugToOpen = slug;
+    return;
+  }
+
+  const playerObj = slugToPlayer.get(slug);
+  if (!playerObj){
+    try{ __closeModalRaw?.(); }catch(e){}
+    return;
+  }
+
+  openPlayerModal(playerObj);
+}
+
+
+
+function closePlayerDetailAndRoute(){
+  const slug = getSlugFromLocation();
+  // Close modal UI immediately
+  try{ closeModal(); }catch(e){}
+  if (!slug) return;
+
+  // If we got here via in-app navigation (pushState with __playerSlug), go back to list so forward returns detail.
+  if (history.state && history.state.__playerSlug){
+    try{ history.back(); }catch(e){}
+    return;
+  }
+
+  // Direct entry to /<slug> (or unknown history state): keep user in app and reset URL to list.
+  try{
+    history.pushState({}, "", getBasePath());
+  }catch(e){}
+}
 
 // posledně otevřený detail hráče (pro Protihráče / návrat)
 let currentPlayerDetail = null;
@@ -157,6 +322,7 @@ async function loadLastData(){
   try{
     const u = new URL(DATA_CSV_URL);
     u.searchParams.set("_", Date.now().toString());
+    console.log("[ELO] Fetch last tournament CSV:", u.toString());
     const { res, text } = await fetchUtf8Text(u.toString());
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     if (text.trim().startsWith("<")) throw new Error("HTML místo CSV");
@@ -170,6 +336,7 @@ async function loadLastData(){
     lastTournamentText = last || "";
     updateInfoBar();
   } catch {
+    console.warn("[ELO] Failed to load last tournament info (Data sheet)");
     lastTournamentText = "";
     updateInfoBar();
   }
@@ -177,7 +344,11 @@ async function loadLastData(){
 
 function renderStandings(rows){
   const q = normalizeKey(searchEl.value);
-  const filtered = rows.filter(r => !q || normalizeKey(r.player).includes(q)).sort((a,b)=>a.rank-b.rank);
+  const ratedOnly = !!(ratedOnlyEl && ratedOnlyEl.checked);
+  const filtered = rows
+    .filter(r => (!ratedOnly || !!r.vt))
+    .filter(r => !q || normalizeKey(r.player).includes(q))
+    .sort((a,b)=>a.rank-b.rank);
 
   tbody.innerHTML = "";
   if (!filtered.length){
@@ -187,12 +358,16 @@ function renderStandings(rows){
     return;
   }
 
-  for (const r of filtered){
+  for (let i = 0; i < filtered.length; i++){
+    const r = filtered[i];
+    // When "Pouze hodnocení hráči" is ON, re-number rank only for the displayed (rated) players.
+    // When OFF, keep the original global rank from the full standings.
+    const displayRank = ratedOnly ? (i + 1) : r.rank;
     const peakText = Number.isFinite(r.peak) ? r.peak.toFixed(0) : "";
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="rank colRank">${rankCellHtml(r.rank)}</td>
-      <td class="playerCol"><button class="playerBtn" type="button">${escapeHtml(shortenPlayerNameForMobile(r.player))}</button></td>
+      <td class="rank colRank">${rankCellHtml(displayRank)}</td>
+      <td class="playerCol"><span class="nameWrap"><button class="playerBtn" type="button">${escapeHtml(shortenPlayerNameForMobile(r.player))}</button>${vtBadgeHtml(r.vt)}</span></td>
       <td class="num ratingCol">${Number.isFinite(r.rating) ? r.rating.toFixed(0) : ""}</td>
       <td class="num colPeak">${peakText}</td>
       <td class="num colGames">${safeInt(r.games)}</td>
@@ -212,15 +387,18 @@ async function loadStandings(){
   try{
     const u = new URL(ELO_CSV_URL);
     u.searchParams.set("_", Date.now().toString());
+    console.log("[ELO] Fetch standings CSV:", u.toString());
     const { res, text } = await fetchUtf8Text(u.toString());
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     if (text.trim().startsWith("<")) throw new Error("Místo CSV přišlo HTML.");
 
     const rows = parseCSV(text);
 
-    const iPlayer = 0, iRating = 1, iGames=2, iWin=3, iLoss=4, iDraw=5, iWinrate=6, iPeak=7;
+    const iPlayer = 0, iRating = 1, iGames=2, iWin=3, iLoss=4, iDraw=5, iWinrate=6, iPeak=7, iVT=8;
 
-    const loaded = rows.slice(1).map(r => ({
+    // Preserve original data order for deterministic slug collision resolution
+    const loadedInDataOrder = rows.slice(1).map((r, idx) => ({
+      _dataIndex: idx,
       player:(r[iPlayer] ?? "").trim(),
       rating:toNumber(r[iRating]),
       peak:toNumber(r[iPeak]),
@@ -228,15 +406,32 @@ async function loadStandings(){
       win:toNumber(r[iWin]),
       loss:toNumber(r[iLoss]),
       draw:toNumber(r[iDraw]),
-      winrate:(r[iWinrate] ?? "").toString().trim()
+      winrate:(r[iWinrate] ?? "").toString().trim(),
+      vt: normalizeVT(r[iVT])
     })).filter(x=>x.player);
 
+    const slugs = buildDeterministicSlugs(loadedInDataOrder.map(x => x.player));
+    loadedInDataOrder.forEach((x, i) => { x.slug = slugs[i]; });
+
+    const loaded = loadedInDataOrder.slice();
     loaded.sort((a,b)=>(b.rating||-Infinity)-(a.rating||-Infinity));
     allRows = loaded.map((p,i)=>({ ...p, rank:i+1 }));
+
+    slugToPlayer = new Map(allRows.map(p => [p.slug, p]));
 
     statusEl.textContent = `Načteno: ${allRows.length}`;
     renderStandings(allRows);
     updateInfoBar();
+
+    // If the current URL is /<slug>, open it after data is ready (deep link / back-forward)
+    if (pendingSlugToOpen){
+      pendingSlugToOpen = null;
+      applyRoute();
+    }
+  } catch (e){
+    console.error("[ELO] Failed to load standings:", e);
+    statusEl.textContent = "Chyba načítání dat";
+    tbody.innerHTML = `<tr><td colspan="9" class="muted">❌ Data se nepodařilo načíst. Zkus „Znovu načíst“.</td></tr>`;
   } finally {
     refreshBtn.disabled = false;
   }
@@ -379,6 +574,7 @@ function buildHero(playerObj, summary){
             ${escapeHtml(playerObj.player)}
             ${Number.isFinite(rankNum) ? `<span class="heroRank ${rankClass}">#${rankNum}</span>` : ""}
           </div>
+          ${playerObj.vt ? `<div class="heroVT ${vtToClass(playerObj.vt)}">${escapeHtml(vtDetailText(playerObj.vt))}</div>` : ""}
           <div style="margin-top:10px;">
             <div class="heroEloLabel">aktuální rating</div>
             <div class="heroElo">${Number.isFinite(playerObj.rating) ? playerObj.rating.toFixed(0) : ""}</div>
@@ -680,13 +876,51 @@ if (themeToggle && !window.__themeHandled) themeToggle.addEventListener("click",
 /* Events */
 refreshBtn.addEventListener("click", loadAll);
 searchEl.addEventListener("input", () => renderStandings(allRows));
+if (ratedOnlyEl){
+  ratedOnlyEl.addEventListener("change", () => renderStandings(allRows));
+}
+
 
 tbody.addEventListener("click", (e) => {
   const btn = e.target.closest(".playerBtn");
   if (!btn) return;
-  openModal({ title: btn._playerObj.player, subtitle: "Detail hráče", html: `<div class="muted">Načítám…</div>` });
-  loadPlayerDetail(btn._playerObj);
+  navigateToPlayer(btn._playerObj);
 });
 
-/* Init */
+/* Init: GitHub Pages SPA redirect + routing */
+normalizeSpaRedirectIfPresent();
+
+// Wire close so it updates URL deterministically
+if (!__closeModalRaw){
+  __closeModalRaw = window.closeModal;
+  window.closeModal = function(){
+    const base = getBasePath();
+    const slug = getSlugFromLocation();
+    const hasPlayerState = !!(history.state && history.state.__playerSlug);
+
+    // Close UI first
+    try{ __closeModalRaw?.(); }catch(e){}
+
+    // If we are on a player route, return to base.
+    if (slug){
+      // If the player route was opened from within the app (pushState), go back.
+      // If this is a deep link, replace so we don't leave the site.
+      if (hasPlayerState && window.history.length > 1){
+        try{ history.back(); return; }catch(e){}
+      }
+      try{ history.replaceState({}, "", base); }catch(e){}
+    }
+  };
+}
+
+// Back/forward support
+// When user clicks "Zavřít" in detail, also restore route back to list
+setModalOnCloseRequest(closePlayerDetailAndRoute);
+
+window.addEventListener("popstate", () => applyRoute());
+
+// Apply route immediately (if user opened /<slug>)
+applyRoute();
+
+// Load data
 loadAll();

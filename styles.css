@@ -23,6 +23,15 @@ html[data-theme="dark"]{
   --dangerBg: rgba(255, 90, 90, .10);
   --dangerBd: rgba(255, 90, 90, .22);
   --dangerTx: rgba(255, 200, 200, .92);
+
+  /* Rating Class palette (dark) */
+  --classA-bg:#0F2A1E; --classA-fg:#7FE0B2;
+  --classB-bg:#2B240A; --classB-fg:#FFD76A;
+  --classC-bg:#2B160B; --classC-fg:#FDBA74;
+  --classD-bg:#2B0D10; --classD-fg:#FF8A94;
+  --toggle-off-bg: rgba(120,120,120,.22);
+  --toggle-on-bg: rgba(70, 160, 115, .40);
+  --toggle-thumb: rgba(245,245,245,.92);
 }
 
 html[data-theme="light"]{
@@ -50,6 +59,12 @@ html[data-theme="light"]{
   --dangerBg: rgba(210, 60, 60, .10);
   --dangerBd: rgba(210, 60, 60, .22);
   --dangerTx: rgba(120, 20, 20, .92);
+
+  /* Rating Class palette (light) */
+  --classA-bg:#E8F7EE; --classA-fg:#1F7A4D;
+  --classB-bg:#FFF7D6; --classB-fg:#9A7B00;
+  --classC-bg:#FFE9D6; --classC-fg:#B45309;
+  --classD-bg:#FFE3E6; --classD-fg:#B4232C;
 }
 
 :root{ color-scheme: light dark; }
@@ -62,6 +77,9 @@ body{
     radial-gradient(900px 500px at 80% 0%, rgba(255,215,0,.08), transparent 60%),
     radial-gradient(900px 500px at 20% 80%, rgba(80,120,255,.06), transparent 60%),
     var(--bg0);
+  --toggle-off-bg: rgba(140,140,140,.35);
+  --toggle-on-bg: rgba(90, 180, 130, .45);
+  --toggle-thumb: rgba(255,255,255,.92);
 }
 html[data-theme="light"] body{
   background:
@@ -291,6 +309,78 @@ input[type="search"]:focus{
   box-shadow:0 0 0 4px var(--glow);
 }
 
+
+/* "Pouze hodnocení hráči" – moderní toggle switch (slider) */
+.toolbarSearchRow{ display:flex; gap:12px; align-items:center; flex: 1 1 auto; }
+.toolbarControlsRow{ display:flex; gap:12px; align-items:center; margin-left:auto; justify-content:flex-end; }
+
+.ratedToggle{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  user-select:none;
+}
+.ratedToggleText{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.2;
+  display:inline-flex;
+  align-items:center;
+  white-space:nowrap;
+}
+.ratedToggleText .labelShort{ display:none; }
+
+.switch{
+  position:relative;
+  width:46px;
+  height:26px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  flex: 0 0 auto;
+}
+.switch input{
+  position:absolute;
+  width:1px; height:1px;
+  padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0);
+  white-space:nowrap; border:0;
+}
+.slider{
+  position:absolute;
+  inset:0;
+  border-radius:999px;
+  background:var(--toggle-off-bg);
+  border:1px solid var(--border2);
+  transition: background .18s ease, border-color .18s ease;
+}
+.slider::before{
+  content:"";
+  position:absolute;
+  width:22px;
+  height:22px;
+  left:2px;
+  top:50%;
+  transform:translateY(-50%);
+  border-radius:999px;
+  background:var(--toggle-thumb);
+  box-shadow:0 2px 10px rgba(0,0,0,.25);
+  transition: transform .18s ease, background .18s ease;
+}
+.switch input:checked + .slider{
+  background:var(--toggle-on-bg);
+  border-color: rgba(120, 180, 140, .45);
+}
+.switch input:checked + .slider::before{
+  transform:translateY(-50%) translateX(20px);
+}
+.switch:focus-within .slider{
+  box-shadow:0 0 0 4px var(--glow);
+}
+
+
+
 .tableWrap{ overflow:auto; }
 table{ width:100%; border-collapse:separate; border-spacing:0; }
 thead th{
@@ -312,6 +402,40 @@ tbody tr:hover{ background:var(--hover); }
   border:none; background:none; color:inherit; cursor:pointer; padding:0; font:inherit;
   text-decoration:underline; text-decoration-color:rgba(120,120,120,.35); text-underline-offset:3px;
 }
+
+
+/* Player name + class badge wrapper for perfect vertical centering */
+.nameWrap{
+  display:flex
+  ;
+  min-width:0;
+  flex-wrap:nowrap;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* VT badge (pill) – small, unobtrusive */
+.vtBadge{
+  display:inline-flex;
+  white-space:nowrap;
+  flex-shrink:0;
+  align-items:center;
+  justify-content:center;
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.04em;
+  border:1px solid currentColor;
+  background:var(--chip);
+  vertical-align:middle;
+  line-height:1.2;
+}
+.vtBadge.classA{ background:var(--classA-bg); color:var(--classA-fg); }
+.vtBadge.classB{ background:var(--classB-bg); color:var(--classB-fg); }
+.vtBadge.classC{ background:var(--classC-bg); color:var(--classC-fg); }
+.vtBadge.classD{ background:var(--classD-bg); color:var(--classD-fg); }
 .r1{ color:#ffd54a; font-weight:900; }
 .r2{ color:#b6bcc8; font-weight:900; }
 html[data-theme="light"] .r2{ color:#6b6f77; }
@@ -416,16 +540,42 @@ html[data-theme="light"] .btnOpponents{
   margin:0 0 10px;
   line-height:1.03;
   letter-spacing:.2px;
+
+  /* Keep player name + rank as a single headline that wraps naturally */
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:8px 10px;
 }
+
+
+/* Rating Class banner under player name in detail card */
+.heroVT{
+  margin-top:4px;
+  display:inline-flex;
+  align-items:center;
+  padding:3px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.02em;
+  border:1px solid currentColor;
+  line-height:1.1;
+}
+.heroVT.classA{ background:var(--classA-bg); color:var(--classA-fg); }
+.heroVT.classB{ background:var(--classB-bg); color:var(--classB-fg); }
+.heroVT.classC{ background:var(--classC-bg); color:var(--classC-fg); }
+.heroVT.classD{ background:var(--classD-bg); color:var(--classD-fg); }
+
 
 /* Rank badge přímo za jménem hráče (např. "Dung Nguyen #1") */
 .heroRank{
   display:inline-flex;
   align-items:center;
-  margin-left:10px;
+  margin-left:0;
   padding:4px 10px;
   border-radius:999px;
-  font-size:14px;
+  font-size:16px;
   font-weight:900;
   letter-spacing:.04em;
   vertical-align:middle;
@@ -489,20 +639,20 @@ html[data-theme="light"] .heroRank.rank2{
   justify-content:center;
   border:1px solid var(--border);
   background:var(--chip);
-  padding:3px 8px;
+  padding:2px 8px;
   border-radius:8px;
   font-size:12px;
-  line-height:1;
+  line-height:1.2;
   min-width:28px;
   height:22px;
 }
 
-.heroEloLabel{ color:var(--muted); font-size:12px; }
+.heroEloLabel{ color:var(--muted); font-size:12px; margin-bottom:2px; }
 .heroElo{
   font-size:60px;
   font-weight:950;
-  line-height:1;
-  margin:10px 0 0;
+  line-height:1.2;
+  margin:4px 0 0;
   letter-spacing:.4px;
 }
 
@@ -634,9 +784,38 @@ html[data-theme="light"] .bigError{ color:#7a1f1f; }
   header .wrap{ flex-direction:column; gap:10px; }
   .logo{ width:76px; height:76px; flex-basis:76px; margin-top:0; }
   h1{ font-size:19px; margin-bottom:2px; }
-  .subtitle{ margin-bottom:4px; font-size:11px; }
+  .subtitle
+  /* Table row stability on mobile (long names + Class badge) */
+  .playerCol .nameWrap{ gap:6px; }
+  .playerBtn{
+    max-width: 100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    display:inline-block;
+  }
+  .vtBadge{ white-space:nowrap; }
+  th, td{ padding:10px 8px; }
+  .colRank{ width:52px; padding-left:8px; padding-right:6px; }
+{ margin-bottom:4px; font-size:11px; }
   .muted{ font-size:12px; line-height:1.25; }
 
+
+  /* Toolbar (list) – mobile layout:
+     row1: search full width
+     row2: only toggle (refresh hidden on mobile)
+  */
+  .toolbar{ flex-direction:column; align-items:stretch; gap:10px; position:relative; }
+  .toolbarSearchRow{ width:100%; }
+  input[type="search"]{ width:100%; }
+  /* Keep status visible but out of the search row flow */
+  #status{ position:absolute; top:12px; right:12px; }
+  /* Hide the refresh button on mobile only (desktop stays unchanged) */
+  #refresh{ display:none; }
+  .toolbarControlsRow{ width:100%; justify-content:flex-end; gap:10px; }
+  .ratedToggle{ flex: 0 0 auto; justify-content:flex-end; }
+  .ratedToggleText .labelFull{ display:none; }
+  .ratedToggleText .labelShort{ display:inline; }
   /* mobile header: row1 = loaded + toggle, row2 = request button right */
   .headerRight{ width:100%; align-items:stretch; gap:8px; }
   .headerRightTop{
