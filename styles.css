@@ -140,6 +140,19 @@ button:hover{ filter: brightness(1.06); }
   padding:10px 14px;
 }
 
+/* inline link (titulní stránka) */
+.inlineLink{
+  color:inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(120, 160, 255, .55);
+  font-weight: 700;
+}
+.inlineLink:hover{
+  filter: brightness(1.12);
+  text-decoration-color: rgba(120, 160, 255, .85);
+}
+
 /* Menu button + dropdown */
 .btnIcon{
   display:inline-flex;
@@ -155,6 +168,24 @@ button:hover{ filter: brightness(1.06); }
   font-size:20px;
   box-shadow:0 8px 24px rgba(0,0,0,.18);
 }
+
+/* Podpořit (tlačítko vpravo nahoře vedle menu) */
+.btnSupport{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  height:44px;
+  padding:0 14px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background:var(--chip);
+  color:var(--text);
+  box-shadow:0 8px 24px rgba(0,0,0,.14);
+}
+.btnSupportIcon{ font-size:16px; line-height:1; }
+.btnSupportText{ font-weight:900; letter-spacing:.02em; }
+.btnSupport:hover{ filter: brightness(1.06); }
 
 .headerRightTop{
   display:flex;
@@ -471,6 +502,29 @@ footer{
   overflow:hidden;
   display:flex; flex-direction:column;
 }
+
+/* Kompaktní varianta modalu – používá se pouze pro titulní stránku (Anonimizace) */
+.modalOverlay.isAnon .modal{
+  max-width:680px;
+  height:auto;
+  max-height:calc(100vh - 36px);
+}
+.modalOverlay.isAnon .modalBody{
+  padding:18px;
+  padding-bottom:18px;
+}
+
+/* Kompaktní varianta modalu – používá se pouze pro titulní stránku (Podpořit) */
+.modalOverlay.isSupport .modal{
+  /* Užší, "premium" varianta */
+  max-width:460px;
+  height:auto;
+  max-height:calc(100vh - 36px);
+}
+.modalOverlay.isSupport .modalBody{
+  padding:18px;
+  padding-bottom:18px;
+}
 .modalHeader{
   display:flex; align-items:center; justify-content:space-between; gap:10px;
   padding:12px;
@@ -492,6 +546,173 @@ footer{
 }
 
 .modalActions{ display:flex; gap:10px; align-items:center; }
+
+/* anonymizace modal (titulní stránka) */
+.anonModal{
+  max-width: 100%;
+}
+.anonH1{
+  margin: 2px 0 10px;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: .01em;
+}
+.anonModal p{
+  margin: 0 0 12px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.anonModal p:first-of-type{
+  color: var(--text);
+  font-weight: 700;
+}
+.anonActions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top: 14px;
+}
+
+a.btnPrimary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+}
+
+.btnAnon{
+  border-radius: 14px;
+  padding: 12px 16px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.16);
+}
+.btnAnon:hover{
+  filter: brightness(1.10);
+}
+
+/* Podpořit modal (titulní stránka) */
+.supportModal{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  max-width:390px;
+  margin:0 auto;
+}
+
+.supportHero{
+  width:100%;
+  text-align:center;
+  padding: 2px 0 2px;
+}
+.supportTitle{
+  font-size: 28px;
+  font-weight: 950;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+.supportBrand{
+  margin-top: 6px;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: .92;
+}
+.supportTagline{
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.supportQrWrap{
+  width:100%;
+  display:flex;
+  justify-content:center;
+}
+.supportQr{
+  /* kompaktnější, stále dobře skenovatelné */
+  width:min(310px, 86vw);
+  max-width:100%;
+  height:auto;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background:color-mix(in srgb, var(--panel) 70%, transparent);
+  padding:10px;
+  box-shadow:0 14px 38px rgba(0,0,0,.22);
+}
+html[data-theme="light"] .supportQr{
+  border:1px solid rgba(0,0,0,.10);
+  box-shadow:0 12px 30px rgba(0,0,0,.12);
+}
+.supportInfo{
+  width:100%;
+  max-width:380px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:16px;
+  background:color-mix(in srgb, var(--panel) 62%, transparent);
+  backdrop-filter: blur(8px);
+  padding:12px 14px;
+  line-height:1.45;
+}
+html[data-theme="light"] .supportInfo{
+  border:1px solid rgba(0,0,0,.10);
+  background:color-mix(in srgb, var(--panel) 82%, transparent);
+}
+.supportInfoTitle{
+  font-weight:950;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  font-size:12px;
+  margin-bottom:6px;
+  color:var(--muted);
+}
+.supportInfoLine{
+  margin:0 0 6px;
+  color:var(--text);
+}
+.supportInfoLine b{
+  display:inline-block;
+  font-size:11px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  opacity:.85;
+  margin-right:6px;
+}
+
+.supportNote{
+  width:100%;
+  max-width:380px;
+  border-radius:14px;
+  padding:10px 14px;
+  border:1px solid rgba(60, 200, 120, .28);
+  background: rgba(60, 200, 120, .14);
+  color: var(--text);
+  text-align:center;
+  line-height:1.35;
+}
+html[data-theme="light"] .supportNote{
+  border:1px solid rgba(20, 140, 70, .28);
+  background: rgba(20, 140, 70, .10);
+}
+.supportThanks{
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:.01em;
+  padding-top:2px;
+  opacity:.92;
+}
+
+.btnIconClose{
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 14px;
+  background: var(--chip);
+  border: 1px solid var(--border);
+  font-weight: 900;
+  line-height: 1;
+}
+.btnIconClose:hover{ filter: brightness(1.10); }
 
 /* zelené tlačítko v detailu hráče */
 .btnOpponents{
