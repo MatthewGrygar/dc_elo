@@ -5,14 +5,25 @@ import { initI18n, t, setLang, getLang, onLangChange, langToSegment } from "./i1
 
 const htmlEl = document.documentElement;
 
+function isLangSeg(seg){
+  return (seg === "eng" || seg === "cz" || seg === "fr");
+}
 function getRepoBase(){
+  // Works both for:
+  //  - GitHub Pages project site: /<repo>/<lang>/...
+  //  - Root deploy (own domain): /<lang>/...
   const parts = window.location.pathname.split("/").filter(Boolean);
-  return parts.length ? `/${parts[0]}/` : "/";
+  if (!parts.length) return "/";
+  return isLangSeg(parts[0]) ? "/" : `/${parts[0]}/`;
 }
 function getLangSegment(){
   const parts = window.location.pathname.split("/").filter(Boolean);
+  if (!parts.length) return null;
+  // Root deploy: /<lang>/...
+  if (isLangSeg(parts[0])) return parts[0];
+  // Project deploy: /<repo>/<lang>/...
   const seg = parts[1] || "";
-  return (seg === "eng" || seg === "cz" || seg === "fr") ? seg : null;
+  return isLangSeg(seg) ? seg : null;
 }
 function getBasePath(){
   const repoBase = getRepoBase();

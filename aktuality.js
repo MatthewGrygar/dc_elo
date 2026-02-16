@@ -1,9 +1,17 @@
 import { openModal } from "./modal.js";
 import { getLang, t } from "./i18n.js";
 
+function isLangSeg(seg){
+  return (seg === "eng" || seg === "cz" || seg === "fr");
+}
+
 function getRepoBase(){
+  // Works both for:
+  //  - GitHub Pages project site: /<repo>/<lang>/...
+  //  - Root deploy (own domain): /<lang>/...
   const parts = window.location.pathname.split("/").filter(Boolean);
-  return parts.length ? `/${parts[0]}/` : "/";
+  if (!parts.length) return "/";
+  return isLangSeg(parts[0]) ? "/" : `/${parts[0]}/`;
 }
 
 function assetUrl(rel){

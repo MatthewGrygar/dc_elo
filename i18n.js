@@ -24,8 +24,12 @@ export function segmentToLang(seg){
 
 export function detectLangFromPath(){
   const parts = window.location.pathname.split("/").filter(Boolean);
-  const seg = parts[1] || "";
-  return segmentToLang(seg);
+  // Works both for:
+  //  - GitHub Pages project site: /<repo>/<lang>/...
+  //  - Root deploy (own domain): /<lang>/...
+  const seg0 = parts[0] || "";
+  const seg1 = parts[1] || "";
+  return segmentToLang(seg0) || segmentToLang(seg1);
 }
 
 export function detectPreferredLang(){
