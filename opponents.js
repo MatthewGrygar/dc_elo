@@ -91,7 +91,7 @@ function renderOpponentsTable(stats) {
   return `<div class="tblWrap oppNoScroll"><table class="tbl tblOpponents">${head}<tbody>${body}</tbody></table></div>`;
 }
 
-export function openOpponentsModal({ playerName, cards, onBack }) {
+export function openOpponentsModal({ playerName, cards, mode, onBack }) {
   setModalHeaderMeta({ title: playerName || "Player", subtitle: i18nT("opp_subtitle") });
 
   setModalActions(`
@@ -110,10 +110,20 @@ export function openOpponentsModal({ playerName, cards, onBack }) {
 
   const stats = buildOpponentsStats(cards);
 
+  const normalizedMode = (mode === "elo") ? "ELO" : "DCPR";
+  // Keep i18n base label, just prefix by current mode (prevents ELO/DCPR duplicates).
+  // cs: "DCPR soupeři hráče: ..." (matches requested wording closely)
+  // en/fr: "ELO Opponents of player: ..." (still clear and consistent)
+  const baseLabel = (i18nT("opp_section_title") || "").toString().trim();
+  const labelMaybeLower = baseLabel
+    ? (baseLabel.charAt(0).toLowerCase() + baseLabel.slice(1))
+    : baseLabel;
+  const sectionLabel = `${normalizedMode} ${labelMaybeLower}`.trim();
+
   setModalContent(`
     <div class="box boxPad">
       <div class="oppHeaderRow">
-        <div class="sectionTitle">${i18nT("opp_section_title")} ${escapeHtml(playerName || "")}</div>
+        <div class="sectionTitle">${escapeHtml(sectionLabel)} ${escapeHtml(playerName || "")}</div>
         <input id="oppSearchInput" type="text" placeholder="${i18nT("opp_search_placeholder")}" autocomplete="off" />
       </div>
       ${renderOpponentsTable(stats)}

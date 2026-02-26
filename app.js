@@ -1149,8 +1149,8 @@ async function loadPlayerDetail(playerObj){
     const wanted = playerObj.player.trim();
     const cardsElo = (eloCardsAll || []).filter(r => r.player.trim() === wanted);
     const cardsDcpr = (dcprCardsAll || []).filter(r => r.player.trim() === wanted);
-    // Keep a combined view for features like "Protihráči".
-    // (Mode-specific views below use cardsElo / cardsDcpr separately.)
+    // Keep a combined view for backward compatibility / checks.
+    // NOTE: "Protihráči" must be mode-specific, otherwise ELO+DCPR duplicate each match.
     const cardsAny = [...cardsElo, ...cardsDcpr];
 
     if (!cardsAny.length){
@@ -1161,7 +1161,7 @@ async function loadPlayerDetail(playerObj){
       return;
     }
 
-    // Uložíme pro Protihráče
+    // Uložíme pro Protihráče (legacy shape kept, not currently used elsewhere)
     currentPlayerDetail = { playerObj, cards: cardsAny };
 
     // Tlačítko "Protihráči" v horní liště (vedle Zavřít)
@@ -1171,9 +1171,12 @@ async function loadPlayerDetail(playerObj){
       if (!btn) return;
       btn.addEventListener("click", () => {
         // Otevře "stránku" Protihráči v rámci stejného modalu
+        // Mode-specific cards prevent duplicates when player has both ELO and DCPR records.
+        const modeCards = (currentMode === "elo") ? sortedEloAll : sortedDcprAll;
         openOpponentsModal({
           playerName: playerObj.player,
-          cards: cardsAny,
+          mode: currentMode,
+          cards: modeCards,
           onBack: () => {
             openModal({ title: playerObj.player, subtitle: t("player_detail"), html: `<div class="muted">${t("loading")}</div>` });
             loadPlayerDetail(playerObj);
